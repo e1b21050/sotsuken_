@@ -159,20 +159,37 @@ function tokenNumber(word) {
 function processCode(code) {
     let lines = code.split('\n');
     let lineNumber = 1;
+    let str_flg = 0;
     lines.forEach(line => {
         let tabCount = (line.match(/^ +/) || [''])[0].length / 4;
         console.log(`Tab: ${tabCount}`);
         let words = line.split(/(\s+|(?=[^\w\s])|(?<=[^\w\s]))/g).filter(Boolean);
+        let combinedString = '';
         words.forEach(word => {
             if (/\s{4,}/.test(word) && word.length % 4 === 0) {
-                    for (let i = 0; i < tabCount; i++) {
-                        let newToken = createToken('\t', tk_type.TK_TAB, lineNumber, tokenNumber('\t'));
-                        console.log(`Line: ${newToken.lineNumber} Type: ${tokenTypeToString(newToken.type)} Value: /t Number: ${newToken.tkNumber}`);
+                for (let i = 0; i < tabCount; i++) {
+                    let newToken = createToken('\t', tk_type.TK_TAB, lineNumber, tokenNumber('\t'));
+                    console.log(`Line: ${newToken.lineNumber} Type: ${tokenTypeToString(newToken.type)} Value: /t Number: ${newToken.tkNumber}`);
+                }
+            } else  {
+                if(word === '"') {
+                    str_flg++;
+                    combinedString += word;
+                    if(str_flg === 2) {
+                        let newToken = createToken(combinedString, tk_type.TK_STRING, lineNumber, tokenNumber(combinedString));
+                        console.log(`Line: ${newToken.lineNumber} Type: ${tokenTypeToString(newToken.type)} Value: ${newToken.word} Number: ${newToken.tkNumber}`);
+                        combinedString = '';
+                        str_flg = 0;
+                    }   
+                }else {
+                    if(str_flg === 0 && !/\s{1,}/.test(word)){
+                        let type = getTokenType(word);
+                        let newToken = createToken(word, type, lineNumber, tokenNumber(word));
+                        console.log(`Line: ${newToken.lineNumber} Type: ${tokenTypeToString(newToken.type)} Value: ${newToken.word} Number: ${newToken.tkNumber}`);
+                    }else if(str_flg === 1) {
+                        combinedString += word;
                     }
-            } else if(!/\s{1,}/.test(word)) {
-                let type = getTokenType(word);
-                let newToken = createToken(word, type, lineNumber, tokenNumber(word));
-                console.log(`Line: ${newToken.lineNumber} Type: ${tokenTypeToString(newToken.type)} Value: ${newToken.word} Number: ${newToken.tkNumber}`);
+                }
             }
         });
         let newToken = createToken('\n', tk_type.TK_ENTER, lineNumber, tokenNumber('\n'));
