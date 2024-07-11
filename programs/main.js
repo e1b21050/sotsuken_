@@ -17,6 +17,12 @@ const tk_type = {
     TK_IN: 'TK_IN',
     TK_TAB: 'TK_TAB',
     TK_ENTER: 'TK_ENTER',
+    TK_RANGE: 'TK_RANGE',
+    TK_SEPARATOR: 'TK_SEPARATOR',
+    TK_END: 'TK_END',
+    TK_IF: 'TK_IF',
+    TK_ELIF: 'TK_ELIF',
+    TK_ELSE: 'TK_ELSE',
     TK_DELIMITER: 'TK_DELIMITER' 
 };
 
@@ -92,11 +98,29 @@ function getTokenType(word) {
     if (word === 'in') {
         return tk_type.TK_IN;
     }
+    if (word === 'range') {
+        return tk_type.TK_RANGE;
+    }
     if (word === '\t') { 
         return tk_type.TK_TAB;
     }
     if (word === '\n') { 
         return tk_type.TK_ENTER;
+    }
+    if (word === 'sep') {
+        return tk_type.TK_SEPARATOR;
+    }
+    if (word === 'end') {
+        return tk_type.TK_END;
+    }
+    if (word === 'if') {
+        return tk_type.TK_IF;
+    }
+    if (word === 'elif') {
+        return tk_type.TK_ELIF;
+    }
+    if (word === 'else') {
+        return tk_type.TK_ELSE;
     }
 
     return tk_type.TK_IDENTIFIER;
@@ -146,11 +170,29 @@ function tokenNumber(word) {
     if (word === 'in') {
         return 14;
     }
-    if (word === '\t' || word === '    ') {
+    if (word === 'range') {
         return 15;
     }
-    if (word === '\n') {
+    if (word === '\t' || word === '    ') {
         return 16;
+    }
+    if (word === '\n') {
+        return 17;
+    }
+    if (word === 'sep') {
+        return 18;
+    }
+    if (word === 'end') {
+        return 19;
+    }
+    if (word === 'if') {
+        return 20;
+    }
+    if (word === 'elif') {
+        return 21;
+    }
+    if (word === 'else') {
+        return 22;
     }
     return 1;
 }
