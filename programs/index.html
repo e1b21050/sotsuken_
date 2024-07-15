@@ -8,8 +8,24 @@
 <body>
     <div id="editor"></div>
     <button id = run>実行</button>
+    <p>＜字句解析＞</p>
+    <div id="output">
+        <table id="tokenTable">
+            <thead>
+                <tr>
+                    <th>Line</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                    <th>Number</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="ace.js"></script>
-    <script src="main.js"></script>
+    <script src="scanner.js"></script>
+    <script src="parser.js"></script>
 </body>
 </html>
