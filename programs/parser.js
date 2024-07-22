@@ -3,6 +3,8 @@ let pushRun_parser = document.getElementById("run");
 let currentTokenIndex = 0;
 let tokens = [];
 let token;
+let nestedLevel;
+let nestedLevel_t;
 
 function tokenName(tokenNumber) {
     switch (tokenNumber) {
@@ -48,8 +50,22 @@ function tokenName(tokenNumber) {
             return tk_type.TK_ELIF;
         case 22:
             return tk_type.TK_ELSE;
+        case 23:
+            return tk_type.TK_WHILE;
+        case 24:
+            return tk_type.TK_L_BRACE;
+        case 25:
+            return tk_type.TK_R_BRACE;
+        case 26:
+            return tk_type.TK_PLUS;
+        case 27:
+            return tk_type.TK_MINUS;
+        case 28:
+            return tk_type.TK_MULTIPLY;
+        case 29:
+            return tk_type.TK_DIVIDE;
         default:
-            return tk_type.TK_IDENTIFIER;;
+            return tk_type.TK_IDENTIFIER;
     }
 }
 
@@ -64,25 +80,44 @@ function peekNextToken() {
 function parseTokens(tokenList) {
     tokens = tokenList;
     currentTokenIndex = 0;
+    token = null; // トークンをリセット
     try {
-        while (currentTokenIndex < tokens.length) {
-            parseStatement();
-        }
+        parseProgram();
         console.log("構文解析成功");
     } catch (error) {
         console.error("構文エラー: " + error.message);
     }
 }
 
+function parseProgram() {
+    while (currentTokenIndex < tokens.length) {
+        parseStatement();
+    }
+}
+
 function parseStatement() {
     token = getNextToken();
-    console.log("parseStatement: " + token.type);
     switch (token.type) {
         case tk_type.TK_IDENTIFIER:
             parseExpressionStatement();
             break;
         case tk_type.TK_PRINT:
             parsePrintStatement();
+            break;
+        case tk_type.TK_IF:
+            parseIfStatement();
+            break;
+        case tk_type.TK_FOR:
+            parseForStatement();
+            break;
+        case tk_type.TK_WHILE:
+            parseWhileStatement();
+            break;
+        case tk_type.TK_L_BRACE:
+            parseCompoundStatement();
+            break;
+        case tk_type.TK_TAB:
+            parseIndentedStatementsSecond();
             break;
         case tk_type.TK_ENTER:
             break;
@@ -91,119 +126,280 @@ function parseStatement() {
     }
 }
 
+function parseCompoundStatement() {
+    while (peekNextToken().type !== tk_type.TK_R_BRACE) {
+        parseStatement();
+    }
+    token = getNextToken(); // Consume '}'
+}
+
+function parseExpressionStatement() {
+    parseExpression();
+    if (token.type !== tk_type.TK_ENTER) {
+        token = getNextToken();
+    }
+    if(token.type !== tk_type.TK_ENTER) {
+        token = getNextToken(); // Consume ENTER
+    }
+    
+    if (token.type !== tk_type.TK_ENTER) {
+        if(token.type === tk_type.TK_COMMA) {
+            throw new Error("'[' が必要です");
+        }else{
+            throw new Error("式文の後に改行が必要です");
+        }
+    }
+}
+
+function parseIfStatement() {
+    parseExpression();
+    if (token.type !== tk_type.TK_COLON) {
+        throw new Error("':' が必要です");
+    }
+    token = getNextToken(); // Consume ':'
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("if文の後に改行が必要です");
+    }
+    parseIndentedStatements();
+    if (peekNextToken().type === tk_type.TK_ELIF) {
+        parseElifStatement();
+    }
+    if (peekNextToken().type === tk_type.TK_ELSE) {
+        parseElseStatement();
+    }
+}
+
+function parseElifStatement() {
+    token = getNextToken(); // Consume 'elif'
+    parseExpression();
+    if (token.type !== tk_type.TK_COLON) {
+        throw new Error("':' が必要です");
+    }
+    token = getNextToken(); // Consume ':'
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("elif文の後に改行が必要です");
+    }
+    parseIndentedStatements();
+}
+
+function parseElseStatement() {
+    token = getNextToken(); // Consume 'else'
+    if (token.type !== tk_type.TK_COLON) {
+        throw new Error("':' が必要です");
+    }
+    token = getNextToken(); // Consume ':'
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("else文の後に改行が必要です");
+    }
+    parseIndentedStatements();
+}
+
+function parseForStatement() {
+    token = getNextToken();
+    console.log(token.word);
+    if (token.type !== tk_type.TK_IDENTIFIER) {
+        throw new Error("識別子が必要です");
+    }
+    token = getNextToken(); // Consume identifier
+    
+    if (token.type !== tk_type.TK_IN) {
+        throw new Error("'in' が必要です");
+    }
+    token = getNextToken(); // Consume 'in'
+    
+    if (token.type !== tk_type.TK_RANGE) {
+        parseExpression();
+    } else {
+        parseRangeExpression();
+    }
+    
+    if (token.type !== tk_type.TK_COLON) {
+        throw new Error("':' が必要です");
+    }
+    token = getNextToken(); // Consume ':'
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("for文の後に改行が必要です");
+    }
+    parseIndentedStatements();
+}
+
+function parseRangeExpression() {
+    token = getNextToken(); // Consume 'range'
+    if (token.type !== tk_type.TK_L_PAR) {
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    parseExpression();
+    
+    if (token.type !== tk_type.TK_R_PAR) {
+        throw new Error("')' が必要です");
+    }
+    token = getNextToken(); // Consume ')'
+}
+
+function parseWhileStatement() {
+    parseExpression();
+    if (token.type !== tk_type.TK_COLON) {
+        throw new Error("':' が必要です");
+    }
+    token = getNextToken(); // Consume ':'
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("while文の後に改行が必要です");
+    }
+    parseIndentedStatements();
+}
+
 function parsePrintStatement() {
     token = getNextToken();
-    console.log("parsePrintStatement: " + token.type);
     if (token.type !== tk_type.TK_L_PAR) {
         throw new Error("'(' が必要です");
     }
 
     token = getNextToken();
-    console.log("parsePrintStatement: " + token.type);
     while (token.type !== tk_type.TK_R_PAR) {
         parseExpression();
-        console.log("parsePrintStatement: " + token.type);
-        token = getNextToken();
         if (token.type === tk_type.TK_COMMA) {
-            getNextToken(); // ',' を消費
-            token = getNextToken();
-            if (token.type === tk_type.TK_IDENTIFIER) {
-                if (token.value === "sep") {
-                    parseSepStatement();
-                } else if (token.value === "end") {
-                    parseEndStatement();
+            token = getNextToken(); // ',' を消費
+            if (token.type === tk_type.TK_R_PAR) {
+                token = getNextToken();
+                break;
+            }else if(token.type === tk_type.TK_SEPARATOR || token.type === tk_type.TK_END) {
+                token = getNextToken();
+                if(token.type !== tk_type.TK_EQUAL){
+                    throw new Error("sepまたはendの後に'='が必要です");
                 }
+                token = getNextToken();
+                if(token.type !== tk_type.TK_STRING){
+                    throw new Error("sepまたはendの後に文字列が必要です");
+                }
+                token = getNextToken();
+                break;
             }
         } else {
             break;
         }
     }
-
-    if(token.type !== tk_type.TK_R_PAR){
-        token = getNextToken(); 
-    }
-    console.log("parsePrintStatement: " + token.type);
     if (token.type !== tk_type.TK_R_PAR) {
         throw new Error("')' が必要です");
     }
 
     token = getNextToken();
-    if(token.type !== tk_type.TK_ENTER){
-        token = getNextToken(); 
-    }
-    console.log("parsePrintStatement: " + token.type);
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("print文の後に改行が必要です");
     }
 }
 
-function parseSepStatement() {
-    if (token.type !== tk_type.TK_IDENTIFIER || token.value !== "sep") {
-        throw new Error("'sep' が必要です");
-    }
-    token = getNextToken();
-    if (token.type !== tk_type.TK_EQUAL) {
-        throw new Error("'=' が必要です");
-    }
-    token = getNextToken();
-    if (token.type !== tk_type.TK_STRING) {
-        throw new Error("sepには文字列が必要です");
-    }
-    token = getNextToken();
-}
-
-function parseEndStatement() {
-    if (token.type !== tk_type.TK_IDENTIFIER || token.value !== "end") {
-        throw new Error("'end' が必要です");
-    }
-    token = getNextToken();
-    if (token.type !== tk_type.TK_EQUAL) {
-        throw new Error("'=' が必要です");
-    }
-    token = getNextToken();
-    if (token.type !== tk_type.TK_STRING) {
-        throw new Error("endには文字列が必要です");
-    }
-    token = getNextToken();
-}
-
-function parseExpressionStatement() {
-    parseExpression();
-    if(token.type !== tk_type.TK_ENTER){
-        token = getNextToken(); 
-    }
-    console.log("parseExpressionStatement: " + token.type);
-    if (token.type !== tk_type.TK_ENTER) {
-        throw new Error("式文の後に改行が必要です");
-    }
-}
-
 function parseExpression() {
-    if (token.type === tk_type.TK_IDENTIFIER) {
-        token = getNextToken();
-        if (token.type === tk_type.TK_EQUAL) {
-            parseExpression2();
-        } 
+    parseAssignmentExpression();
+}
+
+function parseAssignmentExpression() {
+    parseLogicalExpression();
+    if (token.type === tk_type.TK_EQUAL) {
+        token = getNextToken(); // Consume '='
+        parseExpression();
+    }
+}
+
+function parseLogicalExpression() {
+    parseArithmeticExpression();
+}
+
+function parseArithmeticExpression() {
+    parseTerm();
+    while (token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS) {
+        token = getNextToken(); // Consume '+' or '-'
+        parseTerm();
+    }
+}
+
+function parseTerm() {
+    parseFactor();
+    while (token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE) {
+        token = getNextToken(); // Consume '*' or '/'
+        parseFactor();
+    }
+}
+
+function parseFactor() {
+    if (token.type === tk_type.TK_L_PAR) {
+        token = getNextToken(); // Consume '('
+        parseExpression();
+
+        if (token.type !== tk_type.TK_R_PAR) {
+            throw new Error("')' が必要です");
+        }
+        token = getNextToken(); // Consume ')'
+    } else if (token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING || token.type === tk_type.TK_IDENTIFIER) {
+        token = getNextToken(); // Consume literal or identifier
+        if (token.type === tk_type.TK_L_INDEX) {
+            parseIndexingExpression();
+            if(token.type === tk_type.TK_L_INDEX) {
+                parseIndexingExpression();
+            }
+        }
+    } else if (token.type === tk_type.TK_L_INDEX) {
+        parseListLiteral();
     } else {
-        parseExpression2();
+        throw new Error("不明な因子です: " + token.tokenNumber);
     }
 }
 
-function parseExpression2() {
-    if(token.type === tk_type.TK_EQUAL){
+function parseListLiteral() {
+    token = getNextToken(); // Consume '['
+    while (token.type !== tk_type.TK_R_INDEX) {
+        parseExpression();
+        if (token.type === tk_type.TK_COMMA) {
+            token = getNextToken(); // ',' を消費
+        } else {
+            break;
+        }
+    }
+    if (token.type !== tk_type.TK_R_INDEX) {
+        throw new Error("']' が必要です");
+    }
+    token = getNextToken(); // Consume ']'
+}
+
+function parseIndexingExpression() {
+    token = getNextToken(); // Consume '['
+    parseExpression();
+    if (token.type !== tk_type.TK_R_INDEX) {
+        throw new Error("']' が必要です");
+    }
+    token = getNextToken(); // Consume ']'
+}
+
+function parseIndentedStatements() {
+    nestedLevel = token.tabCount;
+    for (let i = 0; i < nestedLevel+1; i++) {
         token = getNextToken();
     }
-    console.log("parseExpression2: " + token.type);
-    if (token.type !== tk_type.TK_IDENTIFIER && token.type !== tk_type.TK_INTEGER &&
-        token.type !== tk_type.TK_FLOAT && token.type !== tk_type.TK_STRING && token.type !== tk_type.TK_R_PAR) {
-        throw new Error("識別子、整数、実数、または文字列が必要です");
+    nestedLevel_t = token.tabCount;
+     
+    if (nestedLevel_t === nestedLevel) {
+        throw new Error("インデントが必要です");
     }
+    parseStatement();
+    token = getNextToken();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    pushRun_parser.addEventListener("click", function() {
+function parseIndentedStatementsSecond() {
+    nestedLevel = nestedLevel_t;
+    token = getNextToken();
+    nestedLevel_t = token.tabCount;
+    if (nestedLevel_t !== nestedLevel) {
+        throw new Error("インデントが間違っています");
+    }
+    parseStatement();
+    token = getNextToken();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    pushRun_parser.addEventListener("click", function () {
         let code = editor.getSession().getValue();
-        let parsedTokens = processCode(code);
+        parsedTokens = []; 
+        parsedTokens = processCode(code);
         parseTokens(parsedTokens);
     });
 });
