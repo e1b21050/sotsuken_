@@ -7,9 +7,10 @@
 </head>
 <body>
     <div id="editor"></div>
-    <button id = run>実行</button>
-    <p>＜字句解析＞</p>
-    <div id="output">
+    <button id="run">実行</button>
+    <div id="result" font-size: 18px><p>＜構文解析ログ＞</p></div>
+    <div id="output" font-size: 18px>
+        <p>＜字句解析＞</p>
         <table id="tokenTable">
             <thead>
                 <tr>
@@ -23,6 +24,7 @@
             <tbody></tbody>
         </table>
     </div>
+    <div id="execute" font-size: 18px><p>＜実行結果＞</p></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="ace.js"></script>
     <script src="scanner.js"></script>
