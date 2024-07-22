@@ -25,6 +25,13 @@ const tk_type = {
     TK_IF: 'TK_IF',
     TK_ELIF: 'TK_ELIF',
     TK_ELSE: 'TK_ELSE',
+    TK_WHILE: 'TK_WHILE',
+    TK_L_BRACE: 'TK_L_BRACE',
+    TK_R_BRACE: 'TK_R_BRACE',
+    TK_PLUS: 'TK_PLUS',
+    TK_MINUS: 'TK_MINUS',
+    TK_MULTIPLY: 'TK_MULTIPLY',
+    TK_DIVIDE: 'TK_DIVIDE',
     TK_DELIMITER: 'TK_DELIMITER'
 };
 
@@ -55,7 +62,7 @@ function isFloat(word) {
 }
 
 function isString(word) {
-    return /^".*"$/.test(word);
+    return /^".*"$/.test(word) || /^'.*'$/.test(word);
 }
 
 function getTokenType(word) {
@@ -80,6 +87,13 @@ function getTokenType(word) {
     if (word === 'if') return tk_type.TK_IF;
     if (word === 'elif') return tk_type.TK_ELIF;
     if (word === 'else') return tk_type.TK_ELSE;
+    if (word === 'while') return tk_type.TK_WHILE;
+    if (word === '{') return tk_type.TK_L_BRACE;
+    if (word === '}') return tk_type.TK_R_BRACE;
+    if (word === '+') return tk_type.TK_PLUS;
+    if (word === '-') return tk_type.TK_MINUS;
+    if (word === '*') return tk_type.TK_MULTIPLY;
+    if (word === '/') return tk_type.TK_DIVIDE;
 
     return tk_type.TK_IDENTIFIER;
 }
@@ -106,6 +120,13 @@ function tokenNumber(word) {
     if (word === 'if') return 20;
     if (word === 'elif') return 21;
     if (word === 'else') return 22;
+    if (word === 'while') return 23;
+    if (word === '{') return 24;
+    if (word === '}') return 25;
+    if (word === '+') return 26;
+    if (word === '-') return 27;
+    if (word === '*') return 28;
+    if (word === '/') return 29;
     return 1;
 }
 
@@ -133,7 +154,7 @@ function processCode(code) {
                     parsedTokens.push(newToken);
                 }
             } else {
-                if (word === '"') {
+                if (word === '"' || word === "'") {
                     if (isString) {
                         combinedString += word;
                         let newToken = createToken(combinedString, tk_type.TK_STRING, lineNumber, tokenNumber(combinedString), tabCount);
