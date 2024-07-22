@@ -46,6 +46,10 @@ function tokenName(tokenNumber) {
         case 27: return tk_type.TK_MINUS;
         case 28: return tk_type.TK_MULTIPLY;
         case 29: return tk_type.TK_DIVIDE;
+        case 30: return tk_type.TK_GREATER;
+        case 31: return tk_type.TK_LESS;
+        case 32: return tk_type.TK_EXCLAMATION;
+        case 33: return tk_type.TK_SHARP;
         default: return tk_type.TK_IDENTIFIER;
     }
 }
@@ -105,9 +109,18 @@ function parseStatement() {
             break;
         case tk_type.TK_ENTER:
             break;
+        case tk_type.TK_SHARP:
+            parserCommentStatement();
+            break;
         default:
             appendToResult(token.word);
             throw new Error("不明な文です: " + token.tokenNumber);
+    }
+}
+
+function parserCommentStatement() {
+    while (peekNextToken().type !== tk_type.TK_ENTER) {
+        token = getNextToken();
     }
 }
 
@@ -137,6 +150,7 @@ function parseExpressionStatement() {
 }
 
 function parseIfStatement() {
+    token = getNextToken(); // Consume 'if'
     parseExpression();
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
@@ -146,10 +160,11 @@ function parseIfStatement() {
         throw new Error("if文の後に改行が必要です");
     }
     parseIndentedStatements();
-    if (peekNextToken().type === tk_type.TK_ELIF) {
+    token = getNextToken();
+    if (token.type === tk_type.TK_ELIF) {
         parseElifStatement();
     }
-    if (peekNextToken().type === tk_type.TK_ELSE) {
+    if (token.type === tk_type.TK_ELSE) {
         parseElseStatement();
     }
 }
@@ -165,6 +180,13 @@ function parseElifStatement() {
         throw new Error("elif文の後に改行が必要です");
     }
     parseIndentedStatements();
+    token = getNextToken();
+    if (token.type === tk_type.TK_ELIF) {
+        parseElifStatement();
+    }
+    if (token.type === tk_type.TK_ELSE) {
+        parseElseStatement();
+    }
 }
 
 function parseElseStatement() {
@@ -222,6 +244,7 @@ function parseRangeExpression() {
 }
 
 function parseWhileStatement() {
+    token = getNextToken(); // Consume 'while'
     parseExpression();
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
@@ -281,6 +304,24 @@ function parseAssignmentExpression() {
     parseLogicalExpression();
     if (token.type === tk_type.TK_EQUAL) {
         token = getNextToken(); // Consume '='
+        if(token.type === tk_type.TK_EQUAL){
+            token = getNextToken(); // Consume '='
+        }
+        parseExpression();
+    }else if(token.type === tk_type.TK_GREATER || token.type === tk_type.TK_LESS){
+        token = getNextToken(); // Consume '>' or '<'
+        if(token.type === tk_type.TK_EQUAL){
+            token = getNextToken(); // Consume '='
+        }
+        parseExpression();
+    }else if(token.type === tk_type.TK_EXCLAMATION){
+        token = getNextToken(); // Consume '!'
+        if(token.type === tk_type.TK_EQUAL){
+            token = getNextToken(); // Consume '='
+        }
+        parseExpression();
+    }else if(token.type === tk_type.TK_IN){
+        token = getNextToken(); // Consume 'in'
         parseExpression();
     }
 }
@@ -293,6 +334,9 @@ function parseArithmeticExpression() {
     parseTerm();
     while (token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS) {
         token = getNextToken(); // Consume '+' or '-'
+        if(token.type === tk_type.TK_EQUAL){
+            token = getNextToken(); // Consume '='
+        }
         parseTerm();
     }
 }
@@ -301,6 +345,12 @@ function parseTerm() {
     parseFactor();
     while (token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE) {
         token = getNextToken(); // Consume '*' or '/'
+        if(token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
+            token = getNextToken(); // Consume '*' or '/'
+        }
+        if(token.type === tk_type.TK_EQUAL){
+            token = getNextToken(); // Consume '='
+        }
         parseFactor();
     }
 }

@@ -32,6 +32,10 @@ const tk_type = {
     TK_MINUS: 'TK_MINUS',
     TK_MULTIPLY: 'TK_MULTIPLY',
     TK_DIVIDE: 'TK_DIVIDE',
+    TK_GREATER: 'TK_GREATER',
+    TK_LESS: 'TK_LESS',
+    TK_EXCLAMATION: 'TK_EXCLAMATION', 
+    TK_SHARP: 'TK_SHARP',
     TK_DELIMITER: 'TK_DELIMITER'
 };
 
@@ -94,6 +98,10 @@ function getTokenType(word) {
     if (word === '-') return tk_type.TK_MINUS;
     if (word === '*') return tk_type.TK_MULTIPLY;
     if (word === '/') return tk_type.TK_DIVIDE;
+    if (word === '>') return tk_type.TK_GREATER;
+    if (word === '<') return tk_type.TK_LESS;
+    if (word === '!') return tk_type.TK_EXCLAMATION;
+    if (word === '#') return tk_type.TK_SHARP;
 
     return tk_type.TK_IDENTIFIER;
 }
@@ -127,6 +135,10 @@ function tokenNumber(word) {
     if (word === '-') return 27;
     if (word === '*') return 28;
     if (word === '/') return 29;
+    if (word === '>') return 30;
+    if (word === '<') return 31;
+    if (word === '!') return 32;
+    if (word === '#') return 33;
     return 1;
 }
 
