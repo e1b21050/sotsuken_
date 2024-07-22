@@ -1,4 +1,5 @@
 let pushRun_parser = document.getElementById("run");
+let resultDiv = document.getElementById("result"); // 追加
 
 let currentTokenIndex = 0;
 let tokens = [];
@@ -6,66 +7,46 @@ let token;
 let nestedLevel;
 let nestedLevel_t;
 
+function appendToResult(message, isError = false) {
+    let resultElement = document.createElement('p');
+    resultElement.textContent = message;
+    if (isError) {
+        resultElement.style.color = 'red'; // エラーメッセージを赤くする
+    }
+    resultDiv.appendChild(resultElement);
+}
+
 function tokenName(tokenNumber) {
     switch (tokenNumber) {
-        case 2:
-            return tk_type.TK_INTEGER;
-        case 3:
-            return tk_type.TK_FLOAT;
-        case 4:
-            return tk_type.TK_STRING;
-        case 5:
-            return tk_type.TK_PRINT;
-        case 6:
-            return tk_type.TK_L_PAR;
-        case 7:
-            return tk_type.TK_R_PAR;
-        case 8:
-            return tk_type.TK_COMMA;
-        case 9:
-            return tk_type.TK_EQUAL;
-        case 10:
-            return tk_type.TK_COLON;
-        case 11:
-            return tk_type.TK_L_INDEX;
-        case 12:
-            return tk_type.TK_R_INDEX;
-        case 13:
-            return tk_type.TK_FOR;
-        case 14:
-            return tk_type.TK_IN;
-        case 15:
-            return tk_type.TK_RANGE;
-        case 16:
-            return tk_type.TK_TAB;
-        case 17:
-            return tk_type.TK_ENTER;
-        case 18:
-            return tk_type.TK_SEPARATOR;
-        case 19:
-            return tk_type.TK_END;
-        case 20:
-            return tk_type.TK_IF;
-        case 21:
-            return tk_type.TK_ELIF;
-        case 22:
-            return tk_type.TK_ELSE;
-        case 23:
-            return tk_type.TK_WHILE;
-        case 24:
-            return tk_type.TK_L_BRACE;
-        case 25:
-            return tk_type.TK_R_BRACE;
-        case 26:
-            return tk_type.TK_PLUS;
-        case 27:
-            return tk_type.TK_MINUS;
-        case 28:
-            return tk_type.TK_MULTIPLY;
-        case 29:
-            return tk_type.TK_DIVIDE;
-        default:
-            return tk_type.TK_IDENTIFIER;
+        case 2: return tk_type.TK_INTEGER;
+        case 3: return tk_type.TK_FLOAT;
+        case 4: return tk_type.TK_STRING;
+        case 5: return tk_type.TK_PRINT;
+        case 6: return tk_type.TK_L_PAR;
+        case 7: return tk_type.TK_R_PAR;
+        case 8: return tk_type.TK_COMMA;
+        case 9: return tk_type.TK_EQUAL;
+        case 10: return tk_type.TK_COLON;
+        case 11: return tk_type.TK_L_INDEX;
+        case 12: return tk_type.TK_R_INDEX;
+        case 13: return tk_type.TK_FOR;
+        case 14: return tk_type.TK_IN;
+        case 15: return tk_type.TK_RANGE;
+        case 16: return tk_type.TK_TAB;
+        case 17: return tk_type.TK_ENTER;
+        case 18: return tk_type.TK_SEPARATOR;
+        case 19: return tk_type.TK_END;
+        case 20: return tk_type.TK_IF;
+        case 21: return tk_type.TK_ELIF;
+        case 22: return tk_type.TK_ELSE;
+        case 23: return tk_type.TK_WHILE;
+        case 24: return tk_type.TK_L_BRACE;
+        case 25: return tk_type.TK_R_BRACE;
+        case 26: return tk_type.TK_PLUS;
+        case 27: return tk_type.TK_MINUS;
+        case 28: return tk_type.TK_MULTIPLY;
+        case 29: return tk_type.TK_DIVIDE;
+        default: return tk_type.TK_IDENTIFIER;
     }
 }
 
@@ -81,11 +62,14 @@ function parseTokens(tokenList) {
     tokens = tokenList;
     currentTokenIndex = 0;
     token = null; // トークンをリセット
+     // 結果表示エリアをリセット
+     resultDiv.innerHTML = '＜構文解析ログ＞';
+
     try {
         parseProgram();
-        console.log("構文解析成功");
+        appendToResult("正常に終了しました");
     } catch (error) {
-        console.error("構文エラー: " + error.message);
+        appendToResult(token.lineNumber + "行目  構文エラー: " + error.message, true);
     }
 }
 
@@ -122,6 +106,7 @@ function parseStatement() {
         case tk_type.TK_ENTER:
             break;
         default:
+            appendToResult(token.word);
             throw new Error("不明な文です: " + token.tokenNumber);
     }
 }
@@ -196,7 +181,6 @@ function parseElseStatement() {
 
 function parseForStatement() {
     token = getNextToken();
-    console.log(token.word);
     if (token.type !== tk_type.TK_IDENTIFIER) {
         throw new Error("識別子が必要です");
     }
@@ -381,7 +365,9 @@ function parseIndentedStatements() {
         throw new Error("インデントが必要です");
     }
     parseStatement();
-    token = getNextToken();
+    if(token.type !== tk_type.TK_ENTER){
+        token = getNextToken();
+    }   
 }
 
 function parseIndentedStatementsSecond() {
