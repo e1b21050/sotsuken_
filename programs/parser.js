@@ -89,7 +89,6 @@ function parseProgram() {
 // 構文解析のための関数
 function parseStatement() {
     token = getNextToken();
-    console.log(token.type, token.word);
     switch (token.type) {
         case tk_type.TK_IDENTIFIER:
             parseExpressionStatement();
@@ -154,6 +153,7 @@ function parseExpressionStatement() {
         if(token.type === tk_type.TK_COMMA) {
             throw new Error("'[' が必要です");
         }else{
+            console.log(token.type, token.word);
             throw new Error("式文の後に改行が必要です");
         }
     }
@@ -313,14 +313,189 @@ function parseExpression() {
 
 // 代入式の解析
 function parseAssignmentExpression() {
-    parseLogicalExpression();
+    // 代入の左辺の識別子リストを解析
+    let leftIdentifiers = parseListExpression();
+    let rightList = [];
+    
     if (token.type === tk_type.TK_EQUAL) {
         token = getNextToken(); // Consume '='
         if(token.type === tk_type.TK_EQUAL){
             token = getNextToken(); // Consume '='
         }
-        parseExpression();
+        if(token.type === tk_type.TK_IDENTIFIER || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING){
+            // 代入の右辺の識別子リストを解析
+            rightList = parseListExpression();
+            // 左辺と右辺の識別子や値の数をチェック
+            if (leftIdentifiers.length !== rightList.length) {
+                throw new Error("代入の左辺と右辺の要素数が一致しません");
+            }
+        }if(token.type === tk_type.TK_INT){
+            parseInt();    
+        }else if(token.type === tk_type.TK_INPUT){
+            parseInput();
+        }else if(token.type === tk_type.TK_MAP){
+            parseMap();
+        }else if(token.type === tk_type.TK_SPLIT){
+            parseSplit();
+        }else if(token.type === tk_type.TK_L_INDEX){
+            parseLists();
+        }else if(token.type === tk_type.TK_LIST){
+            parseList();
+        }
     }
+}
+
+function parseInt(){
+    token = getNextToken(); // Consume 'int'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    if(token.type === tk_type.TK_INPUT){
+        parseInput();     
+    }
+    token = getNextToken(); // Consume ')'
+}
+
+function parseInput(){
+    token = getNextToken(); // Consume 'input'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    if(token.type !== tk_type.TK_R_PAR){
+        throw new Error("')' が必要です");
+    }
+    token = getNextToken(); // Consume ')'
+    if(token.type === tk_type.TK_DOT){
+        token = getNextToken(); // Consume '.'
+        if(token.type !== tk_type.TK_SPLIT){
+            throw new Error("splitが必要です");
+        }else{
+            parseSplit();
+        }
+    }
+}
+
+function parseMap(){
+    token = getNextToken(); // Consume 'map'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    if(token.type !== tk_type.TK_INT && token.type !== tk_type.TK_FLOAT){
+        throw new Error("intまたはfloatが必要です");
+    }
+    token = getNextToken(); // Consume 'int' or 'float'
+    if(token.type !== tk_type.TK_COMMA){
+        throw new Error("',' が必要です");
+    }
+    token = getNextToken(); // Consume ','
+    if(token.type === tk_type.TK_INPUT){
+        parseInput();
+    }
+    token = getNextToken(); // Consume ')'
+
+}
+
+function parseSplit(){
+    token = getNextToken(); // Consume 'split'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    if(token.type === tk_type.TK_STRING){
+        token = getNextToken(); // Consume 'string'
+    }
+    if(token.type !== tk_type.TK_R_PAR){
+        throw new Error("')' が必要です");
+    }
+    token = getNextToken(); // Consume ')'
+}
+
+function parseList(){
+    token = getNextToken(); // Consume 'list'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    if(token.type === tk_type.TK_MAP){
+        parseMap();
+    }
+    if(token.type !== tk_type.TK_R_PAR){
+        throw new Error("')' が必要です");
+    }
+    token = getNextToken(); // Consume ')'
+}
+
+function parseLists(){
+    token = getNextToken(); // Consume '['
+    if(token.type === tk_type.TK_INT){
+        parseInt();
+    }else if(token.type === tk_type.TK_INPUT){
+        parseInput();
+    }else if(token.type === tk_type.TK_MAP){
+        parseMap();
+    }else if(token.type === tk_type.TK_LIST){
+        parseList();
+    }
+    console.log(token.type, token.word);
+    if(token.type !== tk_type.TK_FOR){
+        throw new Error("'for' が必要です");
+    }
+    token = getNextToken(); // Consume 'for'
+    if(token.type !== tk_type.TK_IDENTIFIER){
+        throw new Error("識別子が必要です");
+    }
+    token = getNextToken(); // Consume identifier
+    if(token.type !== tk_type.TK_IN){
+        throw new Error("'in' が必要です");
+    }
+    token = getNextToken(); // Consume 'in'
+    if(token.type !== tk_type.TK_RANGE){
+        throw new Error("'range' が必要です");
+    }
+    token = getNextToken(); // Consume 'range'
+    if(token.type !== tk_type.TK_L_PAR){
+        throw new Error("'(' が必要です");
+    }
+    token = getNextToken(); // Consume '('
+    parseExpression();
+    if(token.type !== tk_type.TK_R_PAR){
+        throw new Error("')' が必要です");
+    }
+    token = getNextToken(); // Consume ')'
+    if(token.type !== tk_type.TK_R_INDEX){
+        throw new Error("']' が必要です");
+    }
+    token = getNextToken(); // Consume ']'
+
+}
+
+function parseListExpression() {
+    let identifiers = [];
+    while (token.type === tk_type.TK_IDENTIFIER || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING) {
+        identifiers.push(token);
+        token = getNextToken();
+        if (token.type === tk_type.TK_COMMA) {
+            token = getNextToken(); // Consume ','
+        } else {
+            break;
+        }
+    }
+    return identifiers;
+}
+
+function parseExpressionList() {
+    let expressions = [];
+    parseExpression();
+    expressions.push(token);
+    while (token.type === tk_type.TK_COMMA) {
+        token = getNextToken(); // Consume ','
+        parseExpression();
+        expressions.push(token);
+    }
+    return expressions;
 }
 // 論理式の解析
 function parseLogicalExpression() {
@@ -389,14 +564,14 @@ function parseFactor() {
             }
         }
     } else if (token.type === tk_type.TK_L_INDEX) {
-        parseListLiteral();
+        parseListExpressionLiteral();
     } else {
         console.log(token.type, token.word);
         throw new Error("不明な因子です: " + token.tokenNumber);
     }
 }
 // リストリテラルの解析
-function parseListLiteral() {
+function parseListExpressionLiteral() {
     token = getNextToken(); // Consume '['
     while (token.type !== tk_type.TK_R_INDEX) {
         parseExpression();

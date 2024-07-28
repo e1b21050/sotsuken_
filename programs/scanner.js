@@ -38,6 +38,13 @@ const tk_type = {
     TK_SHARP: 'TK_SHARP',
     TK_PERCENT: 'TK_PERCENT',
     TK_NOT: 'TK_NOT',
+    TK_DOT: 'TK_DOT',
+    TK_INT: 'TK_INT',
+    TK_FLOAT: 'TK_FLOAT',
+    TK_INPUT: 'TK_INPUT',
+    TK_MAP: 'TK_MAP',
+    TK_LIST: 'TK_LIST',
+    TK_SPLIT: 'TK_SPLIT',
     TK_DELIMITER: 'TK_DELIMITER'
 };
 
@@ -106,7 +113,13 @@ function getTokenType(word) {
     if (word === '#') return tk_type.TK_SHARP;
     if (word === '%') return tk_type.TK_PERCENT;
     if (word === 'not') return tk_type.TK_NOT;
-
+    if (word === '.') return tk_type.TK_DOT;
+    if (word === 'int') return tk_type.TK_INT;
+    if (word === 'float') return tk_type.TK_FLOAT;
+    if (word === 'input') return tk_type.TK_INPUT;
+    if (word === 'map') return tk_type.TK_MAP;
+    if (word === 'list') return tk_type.TK_LIST;
+    if (word === 'split') return tk_type.TK_SPLIT;
 
     return tk_type.TK_IDENTIFIER;
 }
@@ -146,6 +159,13 @@ function tokenNumber(word) {
     if (word === '#') return 33;
     if (word === '%') return 34;
     if (word === 'not') return 35;
+    if (word === '.') return 36;
+    if (word === 'int') return 37;
+    if (word === 'float') return 38;
+    if (word === 'input') return 39;
+    if (word === 'map') return 40;
+    if (word === 'list') return 41;
+    if (word === 'split') return 42;
     return 1;
 }
 
@@ -191,6 +211,15 @@ function processCode(code) {
                     if (isInteger(word) && i + 1 < words.length && words[i + 1] === '.') {
                         let floatValue = word + '.';
                         i++;
+                        if (i + 1 < words.length && isInteger(words[i + 1])) {
+                            floatValue += words[i + 1];
+                            i++;
+                        }
+                        let newToken = createToken(floatValue, tk_type.TK_FLOAT, lineNumber, tokenNumber(floatValue), tabCount);
+                        addRowToTable(newToken);
+                        parsedTokens.push(newToken);
+                    } else if (word === '.' && i + 1 < words.length && isInteger(words[i + 1])) {
+                        let floatValue = word;
                         if (i + 1 < words.length && isInteger(words[i + 1])) {
                             floatValue += words[i + 1];
                             i++;
