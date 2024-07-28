@@ -36,6 +36,8 @@ const tk_type = {
     TK_LESS: 'TK_LESS',
     TK_EXCLAMATION: 'TK_EXCLAMATION', 
     TK_SHARP: 'TK_SHARP',
+    TK_PERCENT: 'TK_PERCENT',
+    TK_NOT: 'TK_NOT',
     TK_DELIMITER: 'TK_DELIMITER'
 };
 
@@ -102,6 +104,9 @@ function getTokenType(word) {
     if (word === '<') return tk_type.TK_LESS;
     if (word === '!') return tk_type.TK_EXCLAMATION;
     if (word === '#') return tk_type.TK_SHARP;
+    if (word === '%') return tk_type.TK_PERCENT;
+    if (word === 'not') return tk_type.TK_NOT;
+
 
     return tk_type.TK_IDENTIFIER;
 }
@@ -139,6 +144,8 @@ function tokenNumber(word) {
     if (word === '<') return 31;
     if (word === '!') return 32;
     if (word === '#') return 33;
+    if (word === '%') return 34;
+    if (word === 'not') return 35;
     return 1;
 }
 
