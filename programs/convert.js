@@ -37,6 +37,8 @@ mystdout.getvalue()
             // 実行結果を表示
             document.getElementById("execute").innerHTML = "<p>＜実行結果＞</p><pre>" + formattedOutput + "</pre>";
         } catch (error) {
+            console.error(error);
+            document.getElementById("execute").innerHTML = "<p>＜エラー＞</p><pre>" + error + "</pre>";
         }
     });
 }

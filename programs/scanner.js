@@ -45,6 +45,7 @@ const tk_type = {
     TK_MAP: 'TK_MAP',
     TK_LIST: 'TK_LIST',
     TK_SPLIT: 'TK_SPLIT',
+    TK_IMPORT: 'TK_IMPORT',
     TK_DELIMITER: 'TK_DELIMITER'
 };
 
@@ -120,6 +121,7 @@ function getTokenType(word) {
     if (word === 'map') return tk_type.TK_MAP;
     if (word === 'list') return tk_type.TK_LIST;
     if (word === 'split') return tk_type.TK_SPLIT;
+    if (word === 'import') return tk_type.TK_IMPORT;
 
     return tk_type.TK_IDENTIFIER;
 }
@@ -166,6 +168,7 @@ function tokenNumber(word) {
     if (word === 'map') return 40;
     if (word === 'list') return 41;
     if (word === 'split') return 42;
+    if (word === 'import') return 43;
     return 1;
 }
 
