@@ -7,6 +7,7 @@ let token;
 let token_t;
 let nestedLevel;
 let nestedLevel_t;
+let identifierImport;
 
 function appendToResult(message, isError = false) {
     let resultElement = document.createElement('p');
@@ -76,6 +77,7 @@ function parseTokens(tokenList) {
         parseProgram();
         appendToResult("正常に終了しました");
     } catch (error) {
+        console.log(token.type, token.word);
         appendToResult(token.lineNumber + "行目  構文エラー: " + error.message, true);
     }
 }
@@ -90,6 +92,9 @@ function parseProgram() {
 function parseStatement() {
     token = getNextToken();
     switch (token.type) {
+        case tk_type.TK_IMPORT:
+            parseImportStatement();
+            break;
         case tk_type.TK_IDENTIFIER:
             parseExpressionStatement();
             break;
@@ -128,6 +133,19 @@ function parseStatement() {
     }
 }
 
+// import文の解析
+function parseImportStatement() {
+    token = getNextToken(); // Consume 'import'
+    if (token.type !== tk_type.TK_IDENTIFIER) {
+        throw new Error("識別子が必要です");
+    }
+    identifierImport = token;
+    token = getNextToken(); // Consume identifier
+    if (token.type !== tk_type.TK_ENTER) {
+        throw new Error("import文の後に改行が必要です");
+    }
+}
+
 // コメント文の解析
 function parserCommentStatement() {
     while (peekNextToken().type !== tk_type.TK_ENTER) {
@@ -153,7 +171,6 @@ function parseExpressionStatement() {
         if(token.type === tk_type.TK_COMMA) {
             throw new Error("'[' が必要です");
         }else{
-            console.log(token.type, token.word);
             throw new Error("式文の後に改行が必要です");
         }
     }
@@ -277,20 +294,19 @@ function parsePrintStatement() {
         parseExpression();
         if (token.type === tk_type.TK_COMMA) {
             token = getNextToken(); // ',' を消費
-            if (token.type === tk_type.TK_R_PAR) {
-                token = getNextToken();
-                break;
-            }else if(token.type === tk_type.TK_SEPARATOR || token.type === tk_type.TK_END) {
-                token = getNextToken();
-                if(token.type !== tk_type.TK_EQUAL){
-                    throw new Error("sepまたはendの後に'='が必要です");
-                }
-                token = getNextToken();
-                if(token.type !== tk_type.TK_STRING){
-                    throw new Error("sepまたはendの後に文字列が必要です");
-                }
-                token = getNextToken();
-                break;
+        } else if (token.type === tk_type.TK_SEPARATOR || token.type === tk_type.TK_END) {
+            let keyword = token.type;
+            token = getNextToken(); // 'sep' または 'end' を消費
+            if (token.type !== tk_type.TK_EQUAL) {
+                throw new Error("sepまたはendの後に'='が必要です");
+            }
+            token = getNextToken(); // '=' を消費
+            if (token.type !== tk_type.TK_STRING) {
+                throw new Error("sepまたはendの後に文字列が必要です");
+            }
+            token = getNextToken(); // 文字列を消費
+            if (token.type === tk_type.TK_COMMA) {
+                token = getNextToken(); // ',' を消費
             }
         } else {
             break;
@@ -305,6 +321,7 @@ function parsePrintStatement() {
         throw new Error("print文の後に改行が必要です");
     }
 }
+
 
 // 式の解析
 function parseExpression() {
@@ -323,11 +340,17 @@ function parseAssignmentExpression() {
             token = getNextToken(); // Consume '='
         }
         if(token.type === tk_type.TK_IDENTIFIER || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING){
-            // 代入の右辺の識別子リストを解析
-            rightList = parseListExpression();
-            // 左辺と右辺の識別子や値の数をチェック
-            if (leftIdentifiers.length !== rightList.length) {
-                throw new Error("代入の左辺と右辺の要素数が一致しません");
+            token = getNextToken(); // Consume identifier
+            if(token.type === tk_type.TK_COMMA){ 
+                token = getNextToken(); // Consume ','   
+                // 代入の右辺の識別子リストを解析
+                rightList = parseListExpression();
+                // 左辺と右辺の識別子や値の数をチェック
+                if (leftIdentifiers.length !== rightList.length + 1) {
+                    throw new Error("代入の左辺と右辺の要素数が一致しません");
+                }
+            }else{
+                parseLogicalExpression();
             }
         }if(token.type === tk_type.TK_INT){
             parseInt();    
@@ -338,13 +361,27 @@ function parseAssignmentExpression() {
         }else if(token.type === tk_type.TK_SPLIT){
             parseSplit();
         }else if(token.type === tk_type.TK_L_INDEX){
-            parseLists();
+            token = getNextToken(); // Consume '['
+            if(token.type === tk_type.TK_INT || token.type === tk_type.TK_INPUT || token.type === tk_type.TK_MAP || token.type === tk_type.TK_LIST){
+                parseLists();
+            }else{
+                parseListExpressionLiteral();
+            }
         }else if(token.type === tk_type.TK_LIST){
             parseList();
         }
+    }else if(token.type === tk_type.TK_L_INDEX){
+        parseIndexingExpression();
+        if(token.type === tk_type.TK_L_INDEX) {
+            parseIndexingExpression();
+        }
+    }else{
+        parseLogicalExpression();
+        
     }
 }
 
+// int文の解析
 function parseInt(){
     token = getNextToken(); // Consume 'int'
     if(token.type !== tk_type.TK_L_PAR){
@@ -356,7 +393,7 @@ function parseInt(){
     }
     token = getNextToken(); // Consume ')'
 }
-
+// input文の解析
 function parseInput(){
     token = getNextToken(); // Consume 'input'
     if(token.type !== tk_type.TK_L_PAR){
@@ -376,7 +413,7 @@ function parseInput(){
         }
     }
 }
-
+// map文の解析
 function parseMap(){
     token = getNextToken(); // Consume 'map'
     if(token.type !== tk_type.TK_L_PAR){
@@ -397,7 +434,7 @@ function parseMap(){
     token = getNextToken(); // Consume ')'
 
 }
-
+// split文の解析
 function parseSplit(){
     token = getNextToken(); // Consume 'split'
     if(token.type !== tk_type.TK_L_PAR){
@@ -412,7 +449,7 @@ function parseSplit(){
     }
     token = getNextToken(); // Consume ')'
 }
-
+// list文の解析
 function parseList(){
     token = getNextToken(); // Consume 'list'
     if(token.type !== tk_type.TK_L_PAR){
@@ -429,7 +466,6 @@ function parseList(){
 }
 
 function parseLists(){
-    token = getNextToken(); // Consume '['
     if(token.type === tk_type.TK_INT){
         parseInt();
     }else if(token.type === tk_type.TK_INPUT){
@@ -471,7 +507,7 @@ function parseLists(){
     token = getNextToken(); // Consume ']'
 
 }
-
+// リスト式の解析
 function parseListExpression() {
     let identifiers = [];
     while (token.type === tk_type.TK_IDENTIFIER || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING) {
@@ -532,7 +568,7 @@ function parseArithmeticExpression() {
 function parseTerm() {
     parseFactor();
     while (token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE || token.type === tk_type.TK_PERCENT) {
-        token = getNextToken(); // Consume '*' or '/'
+        token = getNextToken(); // Consume '*' or '/' or '%'
         if(token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
             token = getNextToken(); // Consume '*' or '/'
         }
@@ -565,14 +601,26 @@ function parseFactor() {
         }
     } else if (token.type === tk_type.TK_L_INDEX) {
         parseListExpressionLiteral();
-    } else {
-        console.log(token.type, token.word);
-        throw new Error("不明な因子です: " + token.tokenNumber);
+    } else if(token.type === tk_type.TK_DOT){
+        token = getNextToken(); // Consume '.'
+        if(token.type === tk_type.TK_IDENTIFIER){
+            token = getNextToken(); // Consume identifier
+        }else{
+            throw new Error("識別子が必要です");
+        }
+        if(token.type === tk_type.TK_L_PAR){
+            token = getNextToken(); // Consume '('
+            parseExpression();
+            if(token.type === tk_type.TK_R_PAR){
+                token = getNextToken(); // Consume ')'
+            }else{
+                throw new Error("')' が必要です");
+            }
+        }
     }
 }
 // リストリテラルの解析
 function parseListExpressionLiteral() {
-    token = getNextToken(); // Consume '['
     while (token.type !== tk_type.TK_R_INDEX) {
         parseExpression();
         if (token.type === tk_type.TK_COMMA) {

@@ -11,7 +11,7 @@
 <数字> → ‘0’ | ‘1’ | ‘2’ | ‘3’ | ‘4’ | ‘5’ | ‘6’ | ‘7’ | ‘8’ | ‘9’
 
 <キーワード> → ‘print’ | ‘for’ | ‘in’ | ‘range’| 'sep' | 'end' | 'if' | 'elif' | 'else' | 
-'while' | 'int' | 'float' | 'input' | 'split' | 'map' | 'list'
+'while' | 'int' | 'float' | 'input' | 'split' | 'map' | 'list' | 'import'
 
 <整数> → <数字>{<数字>}
 
@@ -34,7 +34,9 @@
 
 <プログラム> := {<文>}
 
-<文> := <複合文> | <式文> | <if文> | <for文> | <while文> | <代入文> 
+<文> := <import文> |<複合文> | <式文> | <if文> | <for文> | <while文> | <代入文> 
+
+<import文> := 'import' <識別子>
 
 <複合文> := '{' {<文>} '}'
 
