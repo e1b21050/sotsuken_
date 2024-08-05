@@ -355,8 +355,8 @@ function parseInt(){
     if(token.type === tk_type.TK_INPUT){
         parseInput();     
     }
-    if(token.type === tk_type.TK_STRING){
-        token = getNextToken(); // Consume 'string'
+    if(token.type === tk_type.TK_STRING || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT){
+        token = getNextToken(); // Consume 'string or integer or float'
     }
     token = getNextToken(); // Consume ')'
 }
