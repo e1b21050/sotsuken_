@@ -71,9 +71,9 @@
 <代入文> := <識別子> {{',' <識別子>} [',' ]} '=' ( <式> | <int式> | <float式> | <input式> | 
 <map式> | <list式>)
 
-<int式> := 'int' '(' <input式> ')'
+<int式> := 'int' '(' <input式> | <文字列> ')'
 
-<float式> := 'float' '(' <input式> ')'
+<float式> := 'float' '(' <input式> | <文字列>')'
 
 <input式> := 'input' '(' ')' {'.' <split式>}
 

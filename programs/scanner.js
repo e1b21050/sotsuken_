@@ -40,7 +40,7 @@ const tk_type = {
     TK_NOT: 'TK_NOT',
     TK_DOT: 'TK_DOT',
     TK_INT: 'TK_INT',
-    TK_FLOAT: 'TK_FLOAT',
+    TK_FL: 'TK_FL',
     TK_INPUT: 'TK_INPUT',
     TK_MAP: 'TK_MAP',
     TK_LIST: 'TK_LIST',
@@ -116,7 +116,7 @@ function getTokenType(word) {
     if (word === 'not') return tk_type.TK_NOT;
     if (word === '.') return tk_type.TK_DOT;
     if (word === 'int') return tk_type.TK_INT;
-    if (word === 'float') return tk_type.TK_FLOAT;
+    if (word === 'float') return tk_type.TK_FL;
     if (word === 'input') return tk_type.TK_INPUT;
     if (word === 'map') return tk_type.TK_MAP;
     if (word === 'list') return tk_type.TK_LIST;
