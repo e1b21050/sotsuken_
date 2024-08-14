@@ -338,6 +338,10 @@ function parseAssignmentExpression() {
         if(token.type === tk_type.TK_L_INDEX) {
             parseIndexingExpression();
         }
+        if(token.type === tk_type.TK_IN){
+            token = getNextToken(); // Consume 'in'
+            parseExpression();
+        }
     }else if(token.type === tk_type.TK_INT){
         parseInt();
     }else{
@@ -518,6 +522,18 @@ function parseLogicalExpression() {
     }else if(token.type === tk_type.TK_IN){
         token = getNextToken(); // Consume 'in'
         parseExpression();
+    }else if(token.type === tk_type.TK_AND || token.type === tk_type.TK_OR){
+        token = getNextToken(); // Consume 'and' or 'or'
+        parseExpression();
+    }else if(token.type === tk_type.TK_NOT){
+        token = getNextToken(); // Consume 'not'
+        if(token.type === tk_type.TK_IN){
+            token = getNextToken(); // Consume 'in'
+        }
+        parseExpression();
+    }
+    if(token.type === tk_type.TK_EQUAL || token.type === tk_type.TK_GREATER || token.type === tk_type.TK_LESS || token.type === tk_type.TK_EXCLAMATION || token.type === tk_type.TK_IN || token.type === tk_type.TK_AND || token.type === tk_type.TK_OR){
+        parseLogicalExpression();
     }
 }
 // 算術式の解析
