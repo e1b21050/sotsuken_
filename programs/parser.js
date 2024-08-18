@@ -7,7 +7,9 @@ let token;
 let token_t;
 let nestedLevel;
 let nestedLevel_t;
+let nestedlevel_if;
 let identifierImport;
+let cnt_else = new Number(nestedLevel);
 
 function appendToResult(message, isError = false) {
     let resultElement = document.createElement('p');
@@ -97,7 +99,7 @@ function parseStatement() {
 function parseImportStatement() {
     token = getNextToken(); // Consume 'import'
     if (token.type !== tk_type.TK_IDENTIFIER) {
-        throw new Error("識別子が必要です");
+        throw new Error("importの後に識別子が必要です");
     }
     identifierImport = token;
     token = getNextToken(); // Consume identifier
@@ -138,6 +140,8 @@ function parseExpressionStatement() {
 
 // if文の解析
 function parseIfStatement() {
+    nestedlevel_if = token.tabCount;
+    cnt_else[nestedLevel] = 0;
     token = getNextToken(); // Consume 'if'
     parseExpression();
     if (token.type !== tk_type.TK_COLON) {
@@ -155,6 +159,9 @@ function parseIfStatement() {
 
 // elif文の解析
 function parseElifStatement() {
+    if(isNaN(nestedlevel_if)){
+        throw new Error("if文が必要です");
+    }
     token = getNextToken(); // Consume 'elif'
     parseExpression();
     if (token.type !== tk_type.TK_COLON) {
@@ -169,6 +176,13 @@ function parseElifStatement() {
 
 // else文の解析
 function parseElseStatement() {
+    if(isNaN(nestedlevel_if)){
+        throw new Error("if文が必要です");
+    }
+    cnt_else[nestedLevel] += 1;
+    if(cnt_else[nestedLevel] > 1){
+        throw new Error("else文は連続してはいけません");
+    }
     token = getNextToken(); // Consume 'else'
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
@@ -184,12 +198,12 @@ function parseElseStatement() {
 function parseForStatement() {
     token = getNextToken();
     if (token.type !== tk_type.TK_IDENTIFIER) {
-        throw new Error("識別子が必要です");
+        throw new Error("forの後に識別子が必要です");
     }
     token = getNextToken(); // Consume identifier
     
     if (token.type !== tk_type.TK_IN) {
-        throw new Error("'in' が必要です");
+        throw new Error("識別子の後に 'in' が必要です");
     }
     token = getNextToken(); // Consume 'in'
     
@@ -294,6 +308,12 @@ function parseAssignmentExpression() {
     let leftIdentifiers = parseListExpression();
     let rightList = [];
     
+    // インデックス式を左辺として扱う
+    if (token.type === tk_type.TK_L_INDEX) {
+        parseIndexingExpression(); // Parse index expression
+        leftIdentifiers.push(token); // Push indexing expression to leftIdentifiers
+    }
+
     if (token.type === tk_type.TK_EQUAL) {
         token = getNextToken(); // Consume '='
         if(token.type === tk_type.TK_EQUAL){
@@ -315,7 +335,7 @@ function parseAssignmentExpression() {
             }else{
                 parseLogicalExpression();
             }
-        }if(token.type === tk_type.TK_INT){
+        }if(token.type === tk_type.TK_INT || token.type === tk_type.TK_FL){
             parseInt();    
         }else if(token.type === tk_type.TK_INPUT){
             parseInput();
@@ -342,14 +362,14 @@ function parseAssignmentExpression() {
             token = getNextToken(); // Consume 'in'
             parseExpression();
         }
-    }else if(token.type === tk_type.TK_INT){
+    }else if(token.type === tk_type.TK_INT || token.type === tk_type.TK_FL){
         parseInt();
-    }else{
+    }else {
         parseLogicalExpression();
     }
 }
 
-// int文の解析
+// int float文の解析 
 function parseInt(){
     token = getNextToken(); // Consume 'int'
     if(token.type !== tk_type.TK_L_PAR){
@@ -359,8 +379,8 @@ function parseInt(){
     if(token.type === tk_type.TK_INPUT){
         parseInput();     
     }
-    if(token.type === tk_type.TK_STRING || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT){
-        token = getNextToken(); // Consume 'string or integer or float'
+    if(token.type === tk_type.TK_STRING || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_IDENTIFIER){
+        parseExpression();
     }
     token = getNextToken(); // Consume ')'
 }
@@ -437,7 +457,7 @@ function parseList(){
 }
 
 function parseLists(){
-    if(token.type === tk_type.TK_INT){
+    if(token.type === tk_type.TK_INT || token.type === tk_type.TK_FL){
         parseInt();
     }else if(token.type === tk_type.TK_INPUT){
         parseInput();
@@ -597,6 +617,14 @@ function parseFactor() {
                 throw new Error("')' が必要です");
             }
         }
+    }else if(token.type === tk_type.TK_L_BRACE){
+        token = getNextToken(); // Consume '{'
+        parseExpression();
+        if(token.type === tk_type.TK_R_BRACE){
+            token = getNextToken(); // Consume '}'
+        }else{
+            throw new Error("'}' が必要です");
+        }
     }
 }
 // リストリテラルの解析
@@ -639,19 +667,24 @@ function parseIndentedStatements() {
         token = getNextToken();
     }   
 }
-// インデントされた文の解析
+// インデントされた2行目以降の文の解析
 function parseIndentedStatementsSecond() {
     for (let i = 0; i < nestedLevel; i++) {
         token = getNextToken();
     }
     nestedLevel = nestedLevel_t;
     nestedLevel_t = token.tabCount;
-    if (nestedLevel_t !== nestedLevel) {
+    if (token.type === tk_type.TK_ELIF){
+        parseElifStatement();
+    }else if (token.type === tk_type.TK_ELSE){
+        parseElseStatement();
+    }else if (nestedLevel_t !== nestedLevel) {
         throw new Error("インデントが間違っています");
-    }
-    parseStatement();
-    if(token.type !== tk_type.TK_ENTER){
-        token = getNextToken();
+    }else {
+        parseStatement();
+        if(token.type !== tk_type.TK_ENTER){
+            token = getNextToken();
+        }
     }   
 }
 
