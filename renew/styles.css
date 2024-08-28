@@ -1,0 +1,101 @@
+/* 全体をリセット */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* エディタ部分の配置 */
+#editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    border: 1px solid #ccc;
+}
+
+/* 実行結果の配置 */
+#run {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 0;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#run_step {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 8%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#reset {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 16%;
+    width: 10%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+/* 構文解析ログの配置 */
+#result {
+    position: absolute;
+    bottom: 15vh;
+    left: 0;
+    width: 50%;
+    height: 25%;
+    border: 3px solid #080cf1;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+
+#output {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 48%;
+    height: 50%;
+    border: 3px solid #08f02e;
+    overflow-y: auto;
+}
+
+#tokenTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#tokenTable th, #tokenTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#execute {
+    position: absolute;
+    bottom: 15vh;
+    right: 0;
+    width: 48%;
+    height: 30%;
+    border: 3px solid #f04a08;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+
+
