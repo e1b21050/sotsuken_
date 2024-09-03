@@ -42,13 +42,15 @@ function parseTokens(tokenList) {
     currentTokenIndex = 0;
     token = null; // トークンをリセット
      // 結果表示エリアをリセット
-    resultDiv.innerHTML = '＜構文解析ログ＞';
+    resultDiv.innerHTML = '<p>＜構文解析ログ＞</p>';
 
     try {
         parseProgram();
         appendToResult("正常に終了しました");
     } catch (error) {
-        console.log(token.type, token.word);
+        if (token) {
+            console.log(token.type, token.word);
+        }
         appendToResult(token.lineNumber + "行目  構文エラー: " + error.message, true);
     }
 }
@@ -144,6 +146,10 @@ function parseExpression() {
             if(token.type === tk_type.TK_EQUAL){
                 parseAssignmentStatement();
             }
+            if(token.type === tk_type.TK_COMMA){
+                token = getNextToken(); // Consume ','
+                parseExpression();
+            }
         }else if(token.type === tk_type.TK_DOT){
             token = getNextToken(); // Consume '.'
             if(token.type === tk_type.TK_IDENTIFIER){
@@ -218,7 +224,7 @@ function parseKetsugouStatement() {
 
 // リストの解析
 function parseListExpressionLiteral() {
-    while (ture) {
+    while (true) {
         parseExpression();
         if (token.type === tk_type.TK_COMMA) {
             token = getNextToken(); // ',' を消費
@@ -237,6 +243,14 @@ function parseIndexingExpression() {
     token = getNextToken(); // Consume '['
     if (token.type !== tk_type.TK_INT && token.type !== tk_type.TK_FL && token.type !== tk_type.TK_MAP && token.type !== tk_type.TK_LIST && token.type !== tk_type.TK_INPUT) {
         parseExpression();
+        if(token.type === tk_type.TK_COLON){
+            token = getNextToken(); // Consume ':'
+            parseExpression();
+            if(token.type === tk_type.TK_COLON){
+                token = getNextToken(); // Consume ':'
+                parseExpression();
+            }
+        }
     }else{
         parseLists();
     }

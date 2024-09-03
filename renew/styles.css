@@ -30,22 +30,11 @@ body {
     font-size: 18px;
 }
 
-#run_step {
+#reset {
     position: absolute;
     bottom: 44.5vh;
     left: 8%;
     width: 8%;
-    height: 5%;
-    border: 2px solid #0a0a0a;
-    overflow-y: auto;
-    font-size: 18px;
-}
-
-#reset {
-    position: absolute;
-    bottom: 44.5vh;
-    left: 16%;
-    width: 10%;
     height: 5%;
     border: 2px solid #0a0a0a;
     overflow-y: auto;
@@ -70,9 +59,43 @@ body {
     top: 0;
     right: 0;
     width: 48%;
-    height: 50%;
+    height: 44%;
     border: 3px solid #08f02e;
     overflow-y: auto;
+    font-size: 18px;
+}
+
+#run_step {
+    position: absolute;
+    bottom: 50%;
+    right: 41%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#prev_step {
+    position: absolute;
+    bottom: 50%;
+    right: 33%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#next_step {
+    position: absolute;
+    bottom: 50%;
+    right: 25%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
 }
 
 #tokenTable {
@@ -98,4 +121,7 @@ body {
 }
 
 
+.highlight-line {
+        background-color: rgb(255, 81, 0) !important;
+}
 
