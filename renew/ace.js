@@ -16,4 +16,8 @@ let pushReset = document.getElementById("reset");
 
 pushReset.addEventListener("click", function () {
     editor.setValue('');  // エディタの内容をリセット
+    document.getElementById("output").innerHTML = "<p>＜ステップ実行＞</p>"; // 出力をクリア
+    document.getElementById("execute").innerHTML = "<p>＜実行結果＞</p>"; // 実行結果をクリア 
+    document.getElementById("result").innerHTML = "<p>＜構文解析ログ＞</p>"; 
+    removeHighlight(currentStep); // 現在のハイライトを削除
 });
