@@ -5,10 +5,6 @@ let pushRun_next = document.getElementById("next_step");
 
 let currentStep = 0;
 let codeLines = [];
-let loopSteps = [];
-let currentStepIndex = 0;
-let steps = [];
-let flg = 0;
 
 async function loadPyodideAndPackages() {
     let pyodide = await loadPyodide();
@@ -53,26 +49,30 @@ from io import StringIO
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
+# 変数状態を保持
+global_vars = globals().copy()
+
 # 無限ループ防止のための制限
 MAX_ITERATIONS = 1000
 
-def safe_exec(code):
-    exec(code)
+def safe_exec(code, global_vars):
+    try:
+        exec(code, global_vars)
+    except Exception as e:
+        print(f"Error: {e}")
 
+# ステップごとのコードを実行
+safe_exec('''
 ${accumulatedCode}
+''', global_vars)
 
 sys.stdout = old_stdout
 mystdout.getvalue()
 `;
-
-            // 出力が存在する場合のみ表示
-            if (lines[index].trim().startsWith("print(") && flg == 0) {
-                let output = pyodide.runPython(captureOutputCode);
-                let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
-                document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre>" + formattedOutput + "</pre>";
-            }else {
-                document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre></pre>";
-            }
+            let output = pyodide.runPython(captureOutputCode);
+            let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
+            document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre>" + formattedOutput + "</pre>";
+            
         } catch (error) {
             console.error(error);
             document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre></pre>";
@@ -80,99 +80,164 @@ mystdout.getvalue()
     });
 }
 
+let flg = 0;
+let variable = null;
+let value = null;
 function getCodeBlock(lines, index) {
     let codeBlock = "";
     let currentIndentLevel = getIndentLevel(lines[index]);
-    let value;
-    let variable;
     
-
+    // `if` 文の変換
     if (lines[index].trim().startsWith("if ")) {
         let condition = lines[index].match(/if (.*):/)[1];
-        let variable = getVariableFromCondition(lines[index]);
-        codeBlock = lines[index] + "\n";
-        let i = index + 1;
-
-        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
-            i++;
-        }
-
-        // `elif` や `else` を条件に基づいて追加する
-        while (i < lines.length && (lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else:"))) {
-            let line = lines[i].trim();
-            let indentLevel = getIndentLevel(line);
-            if (line.startsWith("elif ")) {
-                let elifCondition = line.match(/elif (.*):/)[1];
-                codeBlock += line + "\n";
-                i++;
-                while (i < lines.length && getIndentLevel(lines[i]) > indentLevel) {
-                    codeBlock += "    " + lines[i].trim() + "\n";
-                    i++;
-                }
-            } else if (line.startsWith("else:")) {
-                codeBlock += line + "\n";
-                i++;
-                while (i < lines.length && getIndentLevel(lines[i]) > indentLevel) {
-                    codeBlock += "    " + lines[i].trim() + "\n";
-                    i++;
-                }
-                break; // `else` 文の後に追加の条件は無視
-            }
-        }
-    } 
-    // `for` 文の処理
-    else if (lines[index].trim().startsWith("for ") || lines[index].trim().endsWith(":")) {
-        let loopVariable = getLoopVariable(lines[index]);
-        let loopIterable = getLoopIterable(lines[index]);
-        codeBlock = `index = 0\nwhile index < len(${loopIterable}):\n` +
-            `    ${loopVariable} = ${loopIterable}[index]\n` +
-            `    index += 1\n`;
-
+        codeBlock = lines[index] + "\n";  // `if` 文の追加
+        //インデントが同じになるまでコードを追加
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
             codeBlock += "    " + lines[i].trim() + "\n";
             i++;
         }
-    } 
-    // `while` 文の処理 無限ループになる可能性があるため、`len` を使って制限を設ける
-    else if (lines[index].trim().startsWith("while ") || lines[index].trim().endsWith(":")) {
-        let condition = lines[index].match(/while (.*):/)[1];
-        let line = lines[index].trim();
-        codeBlock = lines[index] + "\n";
-        let loopVariable = getLoopVariableWhile(lines[index]);
-        let loopValue = getLoopValueWhile(lines[index]);
-        codeBlock = `index = 0\nwhile index < len(${loopValue}):\n` +
-            `    ${loopVariable} = ${loopValue}[index]\n` +
-            `    index += 1\n`;
-        let i = index + 1;
-        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
-            i++;
-        }
-    } 
-    // その他の行の処理
-    else {
-        codeBlock = lines.slice(0, index + 1).join('\n');
     }
+    // `elif` 文の変換
+    else if (lines[index].trim().startsWith("elif ")) {
+        let condition = lines[index].match(/elif (.*):/)[1];
+        codeBlock = lines[index] + "\n";  // `elif` 文の追加
+        //インデントが同じになるまでコードを追加
+        let i = index + 1;
+        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+            codeBlock += "    " + lines[i].trim() + "\n";
+            i++;
+        }
+    }
+    // `else` 文の変換
+    else if (lines[index].trim() === "else:") {
+        codeBlock = lines[index] + "\n";  // `else` 文の追加
+        //インデントが同じになるまでコードを追加
+        let i = index + 1;
+        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+            codeBlock += "    " + lines[i].trim() + "\n";
+            i++;
+        }
+    }
+    // `for` 文の変換
+    else if (lines[index].trim().startsWith("for ")) {
+        if(lines[index-1]){
+            codeBlock = lines[index-1]+ "\n" + "i=0\n";
+        }else{
+            codeBlock = "i=0\n";
+        }
+        let itelater = {
+            variable: null,
+            value: null
+        };
+        itelater.variable = getLoopIterable(lines[index]);
+        // itelaterがrangeの場合の処理
+        if(itelater.variable.startsWith('range(')) {
+            itelater.variable = null;
+        }
+        if(itelater.variable === variable) {
+            itelater.value = value;
+        }
+        // itelaterがrange(O)の場合の処理
+        let itelater2 = getLoopIterable_f(lines[index]);
+        // itelaterがrange(O, O)の場合の処理
+        let itelater3 = getLoopIterable_d1(lines[index]);
+        let itelater4 = getLoopIterable_d2(lines[index]);
+        // itelaterがrange(O, O, O)の場合の処理
+        let itelater5 = getLoopIterable_t1(lines[index]);
+        let itelater6 = getLoopIterable_t2(lines[index]);
+        let itelater7 = getLoopIterable_t3(lines[index]);
+        
+        let loopVariable = getLoopVariable(lines[index]);
+        console.log(itelater, itelater2, itelater3, itelater4, itelater5, itelater6, itelater7);
+        if (itelater.variable !== null && itelater.value !== null) {
+            const indentBlock = [];
+            let i = index + 1;
+            while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+                indentBlock.push(lines[i].replace(/^\s+/, '') + "\n");
+                i++;
+            }
+            let j = 0;
+            let loopcnt = 0; // ループ回数
+            // itelaterが文字列のとき文字列を配列に変換
+            if(isString(itelater.value) || isNumber(itelater.value)) {
+                itelater.value.split('');
+                loopcnt = itelater.value.length - 2; // 配列の長さ-'"'の数
+            }
+            // itelaterが配列のとき配列に変換
+            if(itelater.value.includes(',')) {
+                itelater.value = itelater.value.replace(/ /g, '').split(',');
+                //'['の数を数える
+                let cnt = 0;
+                for(let i = 0; i < itelater.value.length; i++) {
+                    if(itelater.value[i].includes('[')) {
+                        cnt++;
+                    }
+                }
+                if(cnt == 1) {
+                    loopcnt = itelater.value.length; // 配列の長さ
+                }else {
+                    loopcnt = cnt; 
+                }
+            }
+            console.log(itelater.value.length, itelater.value);
+            for (j = 0; j < loopcnt; j++) {
+                indentBlock.forEach(line => {
+                    codeBlock += line.replace('(' + loopVariable, '(' + itelater.variable + '[' + j + ']') + "\n";
+                });
+            }
+        } else if (itelater2 !== null) {
+        } else if (itelater3 !== null && itelater4 !== null) {
+        } else if (itelater5 !== null && itelater6 !== null && itelater7 !== null) {
+        }
+    }   
+    // `while` 文の変換
+    else if (lines[index].trim().startsWith("while ")) {
+        codeBlock = lines[index] + "\n";  // `while` 文の追加
+        //インデントが同じになるまでコードを追加
+        let i = index + 1;
+        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+            codeBlock += "    " + lines[i].trim() + "\n";
+            i++;
+        }
+        flg = 1;
+    } else {
+        if (flg == 1 && getIndentLevel(lines[index]) > currentIndentLevel){
+            flg = 0;
+        }else{
+            //代入文の時は変数名と値を取得して保存する
+            variable = getVariable(lines[index]);
+            value = getValue(lines[index]);
+            codeBlock = lines.slice(0, index + 1).join('\n');
+        }
+    }
+    console.log(codeBlock);
     
     return codeBlock;
 }
 
 function getVariable(line) {
-    // 変数を取得するロジックをここに実装
-    let match = match(/(\w+)\s*==/);
+    // x = 1 のような行から`x`を抽出
+    let match = line.match(/(\w+)\s*=/);
     return match ? match[1] : null;
 }
 
 function getValue(line) {
-    // 値を取得するロジックをここに実装
-    let match = line.match(/==\s*(.*)/);
+    // x = 1 のような行から`1`を抽出
+    let match = line.match(/=\s*(.*)/);
     return match ? match[1] : null;
 }
 
 function getIndentLevel(line) {
     return line.match(/^\s*/)[0].length;
+}
+
+function isString(value) {
+    return typeof value === 'string';
+}
+
+function isNumber(value) {
+    return typeof value === 'number';
 }
 
 function getLoopVariable(forLine) {
@@ -183,27 +248,44 @@ function getLoopVariable(forLine) {
 
 function getLoopIterable(forLine) {
     // `for i in x:`のような行から`x`を抽出
-    // `for i in range(5):`のような場合は`5`を返す
     let match = forLine.match(/for \w+ in (.+):/);
     return match ? match[1] : null;
 }
 
-function getLoopVariableWhile(whileline) {
-    // `while` の変数を取得する
-    let match = whileline.match(/while (\w+)(==|!=|>|<|>=|<=)\s*(.*)/);
+function getLoopIterable_f(forLine) {
+    // `for i in range(5):`のような場合は`5`を返す
+    let match = forLine.match(/for \w+ in range\((\d+)\):/);
     return match ? match[1] : null;
 }
 
-function getLoopValueWhile(whileline) {
-    // `while` の条件式から値を取得する
-    let match = whileline.match(/while (\w+)(==|!=|>|<|>=|<=)\s*(.*)/);
-    return match ? match[3] : null;
+function getLoopIterable_d1(forLine) {
+    // `for i in range(2, 5):`のような場合は`2`を返す
+    let match = forLine.match(/for \w+ in range\((\d+), (\d+)\):/);
+    return match ? match[1] : null;
 }
 
-function getVariableFromCondition(condition) {
-    // 条件式から変数を抽出するロジックを実装
-    let match = condition.match(/(\w+)\s*(==|!=|>|<|>=|<=)\s*(\w+)/);
-    return match ? match[1] : null;  // 演算子の左側の変数を取得
+function getLoopIterable_d2(forLine) {
+    // `for i in range(2, 5):`のような場合は`5`を返す
+    let match = forLine.match(/for \w+ in range\((\d+), (\d+)\):/);
+    return match ? match[2] : null;
+}
+
+function getLoopIterable_t1(forLine) {
+    // `for i in range(2, 5, 3):`のような場合は`2`を返す
+    let match = forLine.match(/for \w+ in range\((\d+), (\d+), (\d+)\):/);
+    return match ? match[1] : null;
+}
+
+function getLoopIterable_t2(forLine) {
+    // `for i in range(2, 5, 3):`のような場合は`5`を返す
+    let match = forLine.match(/for \w+ in range\((\d+), (\d+), (\d+)\):/);
+    return match ? match[2] : null;
+}
+
+function getLoopIterable_t3(forLine) {
+    // `for i in range(2, 5, 3):`のような場合は`3`を返す
+    let match = forLine.match(/for \w+ in range\((\d+), (\d+), (\d+)\):/);
+    return match ? match[3] : null;
 }
 
 function getIfCondition(line) {

@@ -1,4 +1,4 @@
-let pushRun_parser = document.getElementById("run");
+let push_parser = document.getElementById("compile");
 
 let currentTokenIndex = 0;
 let tokens = [];
@@ -31,10 +31,6 @@ function getNextToken() {
 
 function peekNextToken() {
     return tokens[currentTokenIndex];
-}
-
-function backToken() {
-    return tokens[currentTokenIndex--];
 }
 
 function parseTokens(tokenList) {
@@ -788,7 +784,7 @@ function parseIndentedStatementsSecond() {
 
 // 実行部分
 document.addEventListener("DOMContentLoaded", function () {
-    pushRun_parser.addEventListener("click", function () {
+    push_parser.addEventListener("click", function () {
         let code = editor.getSession().getValue();
         parsedTokens = []; 
         parsedTokens = processCode(code);
