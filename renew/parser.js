@@ -45,7 +45,7 @@ function parseTokens(tokenList) {
         appendToResult("正常に終了しました");
     } catch (error) {
         if (token) {
-            console.log(token.type, token.word);
+            console.log(token.type, token.word, token.lineNumber);
         }
         appendToResult(token.lineNumber + "行目  構文エラー: " + error.message, true);
     }
@@ -62,6 +62,7 @@ function parseProgram() {
 // 文の解析
 function parseStatement() {
     token = getNextToken();
+    console.log(token);
     switch (token.type) {
         case tk_type.TK_IMPORT:
             parseImportStatement();
@@ -156,6 +157,9 @@ function parseExpression() {
             if(token.type === tk_type.TK_L_PAR){
                 token = getNextToken(); // Consume '('
                 parseExpression();
+                if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
+                    parseArithmeticExpression();
+                }
                 if(token.type === tk_type.TK_R_PAR){
                     token = getNextToken(); // Consume ')'
                 }else{
@@ -268,7 +272,7 @@ function parseAssignmentStatement() {
     token = getNextToken(); // Consume '='
     if (token.type === tk_type.TK_INPUT){
         parseInput();
-    }else if (token.type === tk_type.TK_INT || token.type === tk_type.TK_FLOAT){
+    }else if (token.type === tk_type.TK_INT || token.type === tk_type.TK_FL){
         parseInt();
     }else if (token.type === tk_type.TK_MAP){
         parseMap();
@@ -359,6 +363,44 @@ function parseArithmeticFactor() {
                 throw new Error("')' が必要です");
             }
             token = getNextToken(); // Consume ')'
+        }else if(token.type === tk_type.TK_DOT){
+            token = getNextToken(); // Consume '.'
+            if(token.type === tk_type.TK_IDENTIFIER){
+                token = getNextToken(); // Consume identifier
+            }else{
+                throw new Error("識別子が必要です");
+            }
+            if(token.type === tk_type.TK_L_PAR){
+                token = getNextToken(); // Consume '('
+                parseExpression();
+                if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
+                    parseArithmeticExpression();
+                }
+                if(token.type === tk_type.TK_R_PAR){
+                    token = getNextToken(); // Consume ')'
+                }else{
+                    throw new Error("')' が必要です");
+                }
+            }
+        }
+    }if(token.type === tk_type.TK_DOT){
+        token = getNextToken(); // Consume '.'
+        if(token.type === tk_type.TK_IDENTIFIER){
+            token = getNextToken(); // Consume identifier
+        }else{
+            throw new Error("識別子が必要です");
+        }
+        if(token.type === tk_type.TK_L_PAR){
+            token = getNextToken(); // Consume '('
+            parseExpression();
+            if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
+                parseArithmeticExpression();
+            }
+            if(token.type === tk_type.TK_R_PAR){
+                token = getNextToken(); // Consume ')'
+            }else{
+                throw new Error("')' が必要です");
+            }
         }
     }
 }
@@ -376,6 +418,7 @@ function parseIfStatement() {
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("if文の後に改行が必要です");
     }
+    console.log(token);
     parseIndentedStatements();
     if(token.type !== tk_type.TK_ENTER){
         token = getNextToken();
@@ -652,6 +695,9 @@ function parseInput(){
         }else{
             parseSplit();
         }
+    }
+    if(token.type === tk_type.TK_L_INDEX){
+        parseIndexingExpression();
     }
 }
 // map文の解析
