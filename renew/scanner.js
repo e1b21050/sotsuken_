@@ -100,8 +100,8 @@ function getTokenType(word) {
     else if (word === '\n') return tk_type.TK_ENTER;
     else if (word === 'sep') return tk_type.TK_SEPARATOR;
     else if (word === 'end') return tk_type.TK_END;
-    else if (word === 'else if') return tk_type.TK_IF;
-    else if (word === 'elelse if') return tk_type.TK_ELIF;
+    else if (word === 'if') return tk_type.TK_IF;
+    else if (word === 'elif') return tk_type.TK_ELIF;
     else if (word === 'else') return tk_type.TK_ELSE;
     else if (word === 'while') return tk_type.TK_WHILE;
     else if (word === '{') return tk_type.TK_L_BRACE;
