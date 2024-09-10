@@ -18,12 +18,22 @@ body {
     border: 1px solid #ccc;
 }
 
-/* 実行結果の配置 */
-#run {
+#compile {
     position: absolute;
     bottom: 44.5vh;
     left: 0;
-    width: 8%;
+    width: 12%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#run {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 12%;
+    width: 12%;
     height: 5%;
     border: 2px solid #0a0a0a;
     overflow-y: auto;
@@ -33,18 +43,7 @@ body {
 #reset {
     position: absolute;
     bottom: 44.5vh;
-    left: 8%;
-    width: 12%;
-    height: 5%;
-    border: 2px solid #0a0a0a;
-    overflow-y: auto;
-    font-size: 18px;
-}
-
-#compile {
-    position: absolute;
-    bottom: 44.5vh;
-    left: 20%;
+    left: 24%;
     width: 12%;
     height: 5%;
     border: 2px solid #0a0a0a;
@@ -68,8 +67,8 @@ body {
 #output {
     position: absolute;
     top: 0;
-    right: 0;
-    width: 48%;
+    right: 24%;
+    width: 24%;
     height: 44%;
     border: 3px solid #08f02e;
     overflow-y: auto;
@@ -109,15 +108,26 @@ body {
     font-size: 18px;
 }
 
-#tokenTable {
-    width: 100%;
-    border-collapse: collapse;
+#loop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24%;
+    height: 44%;
+    border: 3px solid #08f02e;
+    overflow-y: auto;
+    font-size: 18px;
 }
 
-#tokenTable th, #tokenTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+#next_loop {
+    position: absolute;
+    bottom: 50%;
+    right: 16%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
 }
 
 #execute {
