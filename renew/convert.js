@@ -2,7 +2,9 @@ let pushRun_convert = document.getElementById("run");
 let pushRun_step = document.getElementById("run_step");
 let pushRun_prev = document.getElementById("prev_step");
 let pushRun_next = document.getElementById("next_step");
-let pushRun_loop = document.getElementById("next_loop");
+let pushRun_loop = document.getElementById("step_loop");
+let pushRun_loop_prev = document.getElementById("prev_loop");
+let pushRun_loop_next = document.getElementById("next_loop");
 
 let currentStep = 0;
 let codeLines = [];
@@ -170,8 +172,18 @@ function getCodeBlock(lines, index) {
     // `for` 文の変換
     else if (lines[index].trim().startsWith("for ")) {
         flg = 1;
-        if(lines[index-1]){
-            codeBlock = lines[index-1]+ "\n" + "i=0\n";
+        let l = 1;
+        if(lines[index-l]){
+            while(true){
+                if(lines[index-l]){
+                    l++;
+                }else{
+                    break;
+                }
+            }
+            for(let i = l; i > 0; i--){
+                codeBlock = lines[index-i]+ "\n";
+            }
         }else{
             codeBlock = "i=0\n";
         }
@@ -243,7 +255,11 @@ function getCodeBlock(lines, index) {
             itelater2 = Number(itelater2);
             for (j = 0; j < itelater2; j++) {
                 indentBlock.forEach(line => {
-                    codeBlock += line.replace('(' + loopVariable, '(' + j);
+                    if(!line.includes('[')) {
+                        codeBlock += line.replace('(' + loopVariable, '(' + j); // print(i)に対応
+                    }else {
+                        codeBlock += line.replace('[' + loopVariable, '[' + j); // print(x[i])に対応
+                    }
                     loop.push(codeBlock);
                 });
             }
@@ -286,14 +302,77 @@ function getCodeBlock(lines, index) {
     }   
     // `while` 文の変換
     else if (lines[index].trim().startsWith("while ")) {
-        codeBlock = lines[index] + "\n";  // `while` 文の追加
+        flg = 1;
+        let l = 1;
+        if(lines[index-l]){
+            while(true){
+                if(lines[index-l]){
+                    l++;
+                }else{
+                    break;
+                }
+            }
+            for(let i = l; i > 0; i--){
+                codeBlock = lines[index-i]+ "\n";
+            }
+        }
+        let loopVariable = getLoopWhileVariable(lines[index]);
+        let loopIterable = getLoopWhileIterable(lines[index]);
+        let loopCondition = getLoopWhileConditon(lines[index]);
+        console.log(loopVariable, loopIterable, loopCondition);
         //インデントが同じになるまでコードを追加
+        const indentBlock = [];
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
+            indentBlock.push(lines[i].replace(/^\s+/, '') + "\n");
             i++;
         }
-        flg = 1;
+        console.log(indentBlock);
+        if (loopCondition === '<') {
+            let j = 0;
+            // loopIterableを数字に変換
+            loopIterable = Number(loopIterable);
+            while (j < loopIterable) {
+                indentBlock.forEach(line => {
+                    codeBlock += line.replace('('+loopVariable, '('+j);
+                    loop.push(codeBlock);
+                });
+                j++;
+            }
+        }else if (loopCondition === '>') {
+            let j = 0;
+            // loopIterableを数字に変換
+            loopIterable = Number(loopIterable);
+            while (j > loopIterable) {
+                indentBlock.forEach(line => {
+                    codeBlock += line.replace('('+loopVariable, '('+j);
+                    loop.push(codeBlock);
+                });
+                j--;
+            }
+        }else if (loopCondition === '<=') {
+            let j = 0;
+            // loopIterableを数字に変換
+            loopIterable = Number(loopIterable);
+            while (j <= loopIterable) {
+                indentBlock.forEach(line => {
+                    codeBlock += line.replace('('+loopVariable, '('+j);
+                    loop.push(codeBlock);
+                });
+                j++;
+            }
+        }else if (loopCondition === '>=') {
+            let j = 0;
+            // loopIterableを数字に変換
+            loopIterable = Number(loopIterable);
+            while (j >= loopIterable) {
+                indentBlock.forEach(line => {
+                    codeBlock += line.replace('('+loopVariable, '('+j);
+                    loop.push(codeBlock);
+                });
+                j--;
+            }
+        }
     } else {
         if (flg == 1 && getIndentLevel(lines[index]) > currentIndentLevel){
             flg = 0;
@@ -381,6 +460,24 @@ function getLoopIterable_t3(forLine) {
     return match ? match[3] : null;
 }
 
+function getLoopWhileVariable(whileLine) {
+    // `while i < 5:`のような行から`i`を抽出
+    let match = whileLine.match(/while (\w+) /);
+    return match ? match[1] : null;
+}
+
+function getLoopWhileConditon(whileLine) {
+    // `while i < 5:`のような行から`<`を抽出
+    let match = whileLine.match(/while \w+ (<|>|<=|>=) (-?\d+):/);
+    return match ? match[1] : null;
+}
+
+function getLoopWhileIterable(whileLine) {
+    // `while i < 5:`のような行から`5`を抽出
+    let match = whileLine.match(/while \w+ (<|>|<=|>=) (-?\d+):/);
+    return match ? match[2] : null;
+}
+
 function getIfCondition(line) {
     // `if` の条件式での変数を取得するロジックを実装
     let match = line.match(/if\s+(.*)\s*(==|!=|>|<|>=|<=)\s*(.*)/);
@@ -419,6 +516,7 @@ function removeHighlight(lineNumber) {
     }
 }
 
+// ボタンがクリックされたときの処理
 document.addEventListener('DOMContentLoaded', (event) => {
     pushRun_convert.addEventListener("click", function () {
         let code = editor.getSession().getValue();
@@ -451,11 +549,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
     pushRun_loop.addEventListener("click", function () {
+        k = 0;
         if(flg == 1 && k < loop.length){
             exe_loop(loop[k]);
-            k++;
         }else if(flg == 0){
             document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理がありません</pre>";
+        }
+    });
+    pushRun_loop_prev.addEventListener("click", function () {
+        if(k > 0){
+            k--;
+            exe_loop(loop[k]);
+        }
+    });
+    pushRun_loop_next.addEventListener("click", function () {
+        if(k < loop.length - 1){
+            k++;
+            exe_loop(loop[k]);
         }else{
             document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理が終了しました</pre>";
         }

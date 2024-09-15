@@ -119,10 +119,32 @@ body {
     font-size: 18px;
 }
 
-#next_loop {
+#step_loop {
     position: absolute;
     bottom: 50%;
     right: 16%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#prev_loop {
+    position: absolute;
+    bottom: 50%;
+    right: 8%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#next_loop {
+    position: absolute;
+    bottom: 50%;
+    right: 0;
     width: 8%;
     height: 5%;
     border: 2px solid #0a0a0a;
