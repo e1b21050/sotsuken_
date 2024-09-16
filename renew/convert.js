@@ -17,6 +17,64 @@ async function loadPyodideAndPackages() {
     return pyodide;
 }
 
+// グローバル変数として、変数とその値を格納するオブジェクトを作成
+const variables = {};
+
+// 変数表を更新する関数
+function updateVariableTable(code) {
+    const tableBody = document.querySelector('#variables_table tbody');
+    tableBody.innerHTML = '<tr><td>変数名</td><td>値</td></tr><tbody></tbody>'; // テーブルをクリア
+    for (const [name, value] of Object.entries(variables)) {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const valueCell = document.createElement('td');
+        nameCell.textContent = name;
+        valueCell.textContent = value;
+        // codeにあたる部分のみ変数表に行を追加
+        if(code.includes(name)){
+            row.appendChild(nameCell);
+            row.appendChild(valueCell);
+            tableBody.appendChild(row);
+        }
+    }
+}
+
+function updateVariableTable_step(code){
+    const tableBody = document.querySelector('#variables_table_output tbody');
+    tableBody.innerHTML = '<tr><td>変数名</td><td>値</td></tr><tbody></tbody>'; // テーブルをクリア
+    for (const [name, value] of Object.entries(variables)) {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const valueCell = document.createElement('td');
+        nameCell.textContent = name;
+        valueCell.textContent = value;
+        // codeにあたる部分のみ変数表に行を追加
+        if(code.includes(name)){
+            row.appendChild(nameCell);
+            row.appendChild(valueCell);
+            tableBody.appendChild(row);
+        }
+    }
+}
+
+function updateVariableTable_loop(code){
+    const tableBody = document.querySelector('#variables_table_loop tbody');
+    tableBody.innerHTML = '<tr><td>変数名</td><td>値</td></tr><tbody></tbody>'; // テーブルをクリア
+    for (const [name, value] of Object.entries(variables)) {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const valueCell = document.createElement('td');
+        nameCell.textContent = name;
+        valueCell.textContent = value;
+        // codeにあたる部分のみ変数表に行を追加
+        if(code.includes(name)){
+            row.appendChild(nameCell);
+            row.appendChild(valueCell);
+            tableBody.appendChild(row);
+        }
+    }
+}
+
 let pyodideReadyPromise = loadPyodideAndPackages();
 
 function exe(code) {
@@ -29,6 +87,9 @@ from io import StringIO
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
+# 変数状態を保持
+global_vars = globals().copy()
+
 ${code}
 
 sys.stdout = old_stdout
@@ -37,6 +98,13 @@ mystdout.getvalue()
             let output = pyodide.runPython(captureOutputCode);
             let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
             document.getElementById("execute").innerHTML = "<p>＜実行結果＞</p><pre>" + formattedOutput + "</pre>";
+            // Pyodideから変数を取得
+            let variableNames = pyodide.globals.keys();
+            for (let name of variableNames) {
+                variables[name] = pyodide.globals.get(name);
+            }
+            // 変数表を更新
+            updateVariableTable(code);
         } catch (error) {
             console.error(error);
         }
@@ -60,17 +128,23 @@ global_vars = globals().copy()
 
 # 無限ループ防止のための制限
 MAX_ITERATIONS = 1000
+iteration_count = 0
 
 def safe_exec(code, global_vars):
+    global iteration_count
     try:
-        exec(code, global_vars)
+        # コード行ごとに実行して、カウンターを増加
+        for line in code.splitlines():
+            if iteration_count >= MAX_ITERATIONS:
+                print("Error: Too many iterations")
+                break
+            exec(line, global_vars)
+            iteration_count += 1
     except Exception as e:
         print(f"Error: {e}")
 
 # ステップごとのコードを実行
-safe_exec('''
-${accumulatedCode}
-''', global_vars)
+safe_exec('''${accumulatedCode}''', global_vars)
 
 sys.stdout = old_stdout
 mystdout.getvalue()
@@ -78,7 +152,13 @@ mystdout.getvalue()
             let output = pyodide.runPython(captureOutputCode);
             let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
             document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre>" + formattedOutput + "</pre>";
-            
+            // Pyodideから変数を取得
+            let variableNames = pyodide.globals.keys();
+            for (let name of variableNames) {
+                variables[name] = pyodide.globals.get(name);
+            }
+            // 変数表を更新
+            updateVariableTable_step(accumulatedCode);
         } catch (error) {
             console.error(error);
             document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre></pre>";
@@ -109,11 +189,14 @@ def safe_exec(code, global_vars):
     except Exception as e:
         print(f"Error: {e}")
 
+#無限ループ防止のための制限を超えると終了
+if MAX_ITERATIONS < 0:
+    print("Error: Too many iterations")
+    sys.exit()
+
 
 # ステップごとのコードを実行
-safe_exec('''
-${code}
-''', global_vars)
+safe_exec('''${code}''', global_vars)
 
 sys.stdout = old_stdout
 
@@ -124,6 +207,13 @@ mystdout.getvalue()
             let output = pyodide.runPython(captureOutputCode);
             let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
             document.getElementById("loop").innerHTML = "<p>＜ループ実行" + k + "＞</p><pre>" + formattedOutput + "</pre>";
+            // Pyodideから変数を取得
+            let variableNames = pyodide.globals.keys();
+            for (let name of variableNames) {
+                variables[name] = pyodide.globals.get(name);
+            }
+            // 変数表を更新
+            updateVariableTable_loop(loop[k]);
         } catch (error) {
             console.error(error);
         }
@@ -133,6 +223,7 @@ mystdout.getvalue()
 let flg = 0;
 let variable = null;
 let value = null;
+let codeBlock2 = "";
 function getCodeBlock(lines, index) {
     let codeBlock = "";
     let currentIndentLevel = getIndentLevel(lines[index]);
@@ -217,7 +308,7 @@ function getCodeBlock(lines, index) {
             i++;
         }
         //console.log(indentBlock);
-        console.log(itelater, itelater2, itelater3, itelater4, itelater5, itelater6, itelater7);
+        //console.log(itelater, itelater2, itelater3, itelater4, itelater5, itelater6, itelater7);
         if (itelater.variable !== null && itelater.value !== null) {
             loop.push(codeBlock);
             let j = 0;
@@ -249,6 +340,7 @@ function getCodeBlock(lines, index) {
                     loop.push(codeBlock);
                 });
             }
+            codeBlock2 = codeBlock;
         } else if (itelater2 !== null) {
             let j = 0;
             // itelater2を数字に変換
@@ -263,6 +355,7 @@ function getCodeBlock(lines, index) {
                     loop.push(codeBlock);
                 });
             }
+            codeBlock2 = codeBlock;
         } else if (itelater3 !== null && itelater4 !== null) {
             let j = 0;
             // itelater3~4を数字に変換
@@ -274,12 +367,13 @@ function getCodeBlock(lines, index) {
                     loop.push(codeBlock);
                 });
             }
+            codeBlock2 = codeBlock;
         } else if (itelater5 !== null && itelater6 !== null && itelater7 !== null) {
             // itelater5~7を数字に変換
             itelater5 = Number(itelater5);
             itelater6 = Number(itelater6);
             itelater7 = Number(itelater7);
-            console.log(itelater5, itelater6, itelater7);
+            //console.log(itelater5, itelater6, itelater7);
             let j;
             // itelater7が正のときはitelater5がitelater6より小さい間ループ
             // itelater7が負のときはitelater5がitelater6より大きい間ループ
@@ -298,6 +392,7 @@ function getCodeBlock(lines, index) {
                     });
                 }
             }
+            codeBlock2 = codeBlock;
         }
     }   
     // `while` 文の変換
@@ -319,7 +414,7 @@ function getCodeBlock(lines, index) {
         let loopVariable = getLoopWhileVariable(lines[index]);
         let loopIterable = getLoopWhileIterable(lines[index]);
         let loopCondition = getLoopWhileConditon(lines[index]);
-        console.log(loopVariable, loopIterable, loopCondition);
+        //console.log(loopVariable, loopIterable, loopCondition);
         //インデントが同じになるまでコードを追加
         const indentBlock = [];
         let i = index + 1;
@@ -327,7 +422,7 @@ function getCodeBlock(lines, index) {
             indentBlock.push(lines[i].replace(/^\s+/, '') + "\n");
             i++;
         }
-        console.log(indentBlock);
+        //console.log(indentBlock);
         if (loopCondition === '<') {
             let j = 0;
             // loopIterableを数字に変換
@@ -339,6 +434,7 @@ function getCodeBlock(lines, index) {
                 });
                 j++;
             }
+            codeBlock2 = codeBlock;
         }else if (loopCondition === '>') {
             let j = 0;
             // loopIterableを数字に変換
@@ -350,6 +446,7 @@ function getCodeBlock(lines, index) {
                 });
                 j--;
             }
+            codeBlock2 = codeBlock;
         }else if (loopCondition === '<=') {
             let j = 0;
             // loopIterableを数字に変換
@@ -361,6 +458,7 @@ function getCodeBlock(lines, index) {
                 });
                 j++;
             }
+            codeBlock2 = codeBlock;
         }else if (loopCondition === '>=') {
             let j = 0;
             // loopIterableを数字に変換
@@ -372,18 +470,19 @@ function getCodeBlock(lines, index) {
                 });
                 j--;
             }
+            codeBlock2 = codeBlock;
         }
     } else {
-        if (flg == 1 && getIndentLevel(lines[index]) > currentIndentLevel){
-            flg = 0;
+        //代入文の時は変数名と値を取得して保存する
+        variable = getVariable(lines[index]);
+        value = getValue(lines[index]);
+        if(flg === 1){
+            codeBlock = codeBlock2;
         }else{
-            //代入文の時は変数名と値を取得して保存する
-            variable = getVariable(lines[index]);
-            value = getValue(lines[index]);
             codeBlock = lines.slice(0, index + 1).join('\n');
         }
+        console.log(codeBlock);
     }
-    console.log(codeBlock);
     
     return codeBlock;
 }
@@ -553,7 +652,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if(flg == 1 && k < loop.length){
             exe_loop(loop[k]);
         }else if(flg == 0){
-            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理がありません</pre>";
+            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nがありません</pre>";
         }
     });
     pushRun_loop_prev.addEventListener("click", function () {
@@ -567,7 +666,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             k++;
             exe_loop(loop[k]);
         }else{
-            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理が終了しました</pre>";
+            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nが終了しました</pre>";
         }
     });
 });
