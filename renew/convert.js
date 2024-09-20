@@ -18,7 +18,7 @@ async function loadPyodideAndPackages() {
 }
 
 // グローバル変数として、変数とその値を格納するオブジェクトを作成
-const variables = {};
+let variables = {};
 
 // 変数表を更新する関数
 function updateVariableTable(code) {
@@ -39,10 +39,13 @@ function updateVariableTable(code) {
     }
 }
 
+// ステップごとの変数状態を保持するオブジェクト
+let variables_step = {};
+
 function updateVariableTable_step(code){
     const tableBody = document.querySelector('#variables_table_output tbody');
     tableBody.innerHTML = '<tr><td>変数名</td><td>値</td></tr><tbody></tbody>'; // テーブルをクリア
-    for (const [name, value] of Object.entries(variables)) {
+    for (const [name, value] of Object.entries(variables_step)) {
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
         const valueCell = document.createElement('td');
@@ -57,10 +60,13 @@ function updateVariableTable_step(code){
     }
 }
 
+// ループごとの変数状態を保持するオブジェクト
+let variables_loop = {};
+
 function updateVariableTable_loop(code){
     const tableBody = document.querySelector('#variables_table_loop tbody');
     tableBody.innerHTML = '<tr><td>変数名</td><td>値</td></tr><tbody></tbody>'; // テーブルをクリア
-    for (const [name, value] of Object.entries(variables)) {
+    for (const [name, value] of Object.entries(variables_loop)) {
         const row = document.createElement('tr');
         const nameCell = document.createElement('td');
         const valueCell = document.createElement('td');
@@ -115,6 +121,7 @@ function exe_step(lines, index) {
     pyodideReadyPromise.then(pyodide => {
         let accumulatedCode = getCodeBlock(lines, index);
         highlightLine(index); // 現在の行をハイライト
+        //console.log(accumulatedCode); // デバッグ: 生成されたコードを確認
         try {
             let captureOutputCode = `
 import sys
@@ -123,9 +130,6 @@ from io import StringIO
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
-# 変数状態を保持
-global_vars = globals().copy()
-
 # 無限ループ防止のための制限
 MAX_ITERATIONS = 1000
 iteration_count = 0
@@ -133,18 +137,16 @@ iteration_count = 0
 def safe_exec(code, global_vars):
     global iteration_count
     try:
-        # コード行ごとに実行して、カウンターを増加
-        for line in code.splitlines():
-            if iteration_count >= MAX_ITERATIONS:
-                print("Error: Too many iterations")
-                break
-            exec(line, global_vars)
+        if iteration_count >= MAX_ITERATIONS:
+            print("Error: Too many iterations")
+        else:
+            exec(code, global_vars)
             iteration_count += 1
     except Exception as e:
         print(f"Error: {e}")
 
-# ステップごとのコードを実行
-safe_exec('''${accumulatedCode}''', global_vars)
+# コードブロック全体を実行
+safe_exec('''${accumulatedCode}''', globals())
 
 sys.stdout = old_stdout
 mystdout.getvalue()
@@ -155,7 +157,7 @@ mystdout.getvalue()
             // Pyodideから変数を取得
             let variableNames = pyodide.globals.keys();
             for (let name of variableNames) {
-                variables[name] = pyodide.globals.get(name);
+                variables_step[name] = pyodide.globals.get(name);
             }
             // 変数表を更新
             updateVariableTable_step(accumulatedCode);
@@ -168,6 +170,7 @@ mystdout.getvalue()
 
 function exe_loop(code){
     pyodideReadyPromise.then(pyodide => {
+        console.log(code);
         try {
             //　読み取ったコードを１行ずつ実行
             let captureOutputCode = `
@@ -177,26 +180,23 @@ from io import StringIO
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
-# 変数状態を保持
-global_vars = globals().copy()
-
 # 無限ループ防止のための制限
 MAX_ITERATIONS = 1000
+iteration_count = 0
 
 def safe_exec(code, global_vars):
+    global iteration_count
     try:
-        exec(code, global_vars)
+        if iteration_count >= MAX_ITERATIONS:
+            print("Error: Too many iterations")
+        else:
+            exec(code, global_vars)
+            iteration_count += 1
     except Exception as e:
         print(f"Error: {e}")
 
-#無限ループ防止のための制限を超えると終了
-if MAX_ITERATIONS < 0:
-    print("Error: Too many iterations")
-    sys.exit()
-
-
 # ステップごとのコードを実行
-safe_exec('''${code}''', global_vars)
+safe_exec('''${code}''', globals())
 
 sys.stdout = old_stdout
 
@@ -206,11 +206,11 @@ mystdout.getvalue()
 
             let output = pyodide.runPython(captureOutputCode);
             let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
-            document.getElementById("loop").innerHTML = "<p>＜ループ実行" + k + "＞</p><pre>" + formattedOutput + "</pre>";
+            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>" + formattedOutput + "</pre>";
             // Pyodideから変数を取得
             let variableNames = pyodide.globals.keys();
             for (let name of variableNames) {
-                variables[name] = pyodide.globals.get(name);
+                variables_loop[name] = pyodide.globals.get(name);
             }
             // 変数表を更新
             updateVariableTable_loop(loop[k]);
@@ -230,23 +230,26 @@ function getCodeBlock(lines, index) {
     
     // `if` 文の変換
     if (lines[index].trim().startsWith("if ")) {
-        let condition = lines[index].match(/if (.*):/)[1];
-        codeBlock = lines[index] + "\n";  // `if` 文の追加
+        codeBlock = lines[index].replace(/^\s+/, '') + "\n";  // `if` 文の追加
         //インデントが同じになるまでコードを追加
         let i = index + 1;
+        let cnt_indent = 0;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
+            let code = lines[i];
+            if(i < lines.length && getIndentLevel(lines[i]) < getIndentLevel(lines[i-1])){
+                cnt_indent=0;
+            }
+            codeBlock += code.replace(/^\s+/, '') + "\n";
             i++;
         }
     }
     // `elif` 文の変換
     else if (lines[index].trim().startsWith("elif ")) {
-        let condition = lines[index].match(/elif (.*):/)[1];
         codeBlock = lines[index] + "\n";  // `elif` 文の追加
         //インデントが同じになるまでコードを追加
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
+            codeBlock += lines[i] + "\n";
             i++;
         }
     }
@@ -256,7 +259,7 @@ function getCodeBlock(lines, index) {
         //インデントが同じになるまでコードを追加
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += "    " + lines[i].trim() + "\n";
+            codeBlock += lines[i] + "\n";
             i++;
         }
     }
@@ -272,9 +275,10 @@ function getCodeBlock(lines, index) {
                     break;
                 }
             }
-            for(let i = l; i > 0; i--){
-                codeBlock = lines[index-i]+ "\n";
+            for(let i = l; i > 1; i--){
+                codeBlock += lines[index-i+1]+ "\n";
             }
+            codeBlock += "i=0\n";
         }else{
             codeBlock = "i=0\n";
         }
@@ -302,12 +306,25 @@ function getCodeBlock(lines, index) {
         
         let loopVariable = getLoopVariable(lines[index]);
         const indentBlock = [];
+        let codeBlock_else = "";
         let i = index + 1;
+        let cnt_indent = 0;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            indentBlock.push(lines[i].replace(/^\s+/, '') + "\n");
+            let code = lines[i];
+            if(i < lines.length && getIndentLevel(lines[i]) < getIndentLevel(lines[i-1])){
+                cnt_indent=0;
+            }
+            if(lines[i].trim().startsWith("for ") || lines[i].trim().startsWith("while ") || lines[i].trim().startsWith("if ") || lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else ")){
+                // インデントの削除
+                codeBlock_else = code.replace(/^\s+/, '');
+                cnt_indent++;
+            }else{
+                indentBlock.push(codeBlock_else + code.replace(/^\s+/, '') + "\n");
+            }
             i++;
         }
-        //console.log(indentBlock);
+        indentBlock.push("i+=1\n");
+        console.log(indentBlock);
         //console.log(itelater, itelater2, itelater3, itelater4, itelater5, itelater6, itelater7);
         if (itelater.variable !== null && itelater.value !== null) {
             loop.push(codeBlock);
@@ -347,10 +364,14 @@ function getCodeBlock(lines, index) {
             itelater2 = Number(itelater2);
             for (j = 0; j < itelater2; j++) {
                 indentBlock.forEach(line => {
-                    if(!line.includes('[')) {
-                        codeBlock += line.replace('(' + loopVariable, '(' + j); // print(i)に対応
-                    }else {
+                    if(line.includes('[')) {
                         codeBlock += line.replace('[' + loopVariable, '[' + j); // print(x[i])に対応
+                    }else if(line.includes('(')) {
+                        codeBlock += line.replace('(' + loopVariable, '(' + j); // print(i)に対応
+                    }else if(j == itelater2 - 1) {
+                        codeBlock += line.replace('i+=1', '');
+                    }else {
+                        codeBlock += line;
                     }
                     loop.push(codeBlock);
                 });
@@ -363,7 +384,13 @@ function getCodeBlock(lines, index) {
             itelater4 = Number(itelater4);
             for (j = itelater3; j < itelater4; j++) {
                 indentBlock.forEach(line => {
-                    codeBlock += line.replace('(' + loopVariable, '(' + j);
+                    if(line.includes('(')) {
+                        codeBlock += line.replace('(' + loopVariable, '(' + j);
+                    }else if(j == itelater4 - 1) {
+                        codeBlock += line.replace('i+=1', '');
+                    }else {
+                        codeBlock += line;
+                    }
                     loop.push(codeBlock);
                 });
             }
@@ -380,14 +407,27 @@ function getCodeBlock(lines, index) {
             if(itelater7 > 0) {
                 for (j = itelater5; j < itelater6; j += itelater7) {
                     indentBlock.forEach(line => {
-                        codeBlock += line.replace('(' + loopVariable, '(' + j);
+                        if(line.includes('(')) {
+                            codeBlock += line.replace('(' + loopVariable, '(' + j);
+                        }else if(j == itelater6 - 1) {
+                            codeBlock += line.replace('i+=1', '');
+                        }else {
+                            codeBlock += line;
+                        }
                         loop.push(codeBlock);
                     });
                 }
             }else {
                 for (j = itelater5; j > itelater6; j += itelater7) {
+                    codeBlock = codeBlock.replace('i=0', 'i=' + itelater5);
                     indentBlock.forEach(line => {
-                        codeBlock += line.replace('(' + loopVariable, '(' + j);
+                        if(line.includes('(')) {
+                            codeBlock += line.replace('(' + loopVariable, '(' + j);
+                        }else if(j == itelater4 + 1) {
+                            codeBlock += line.replace('i+=1', '');
+                        }else {
+                            codeBlock += line.replace('i+=1', 'i-=1');
+                        }
                         loop.push(codeBlock);
                     });
                 }
@@ -649,24 +689,30 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
     pushRun_loop.addEventListener("click", function () {
         k = 0;
-        if(flg == 1 && k < loop.length){
+        if(flg == 1 && k < loop.length && loop[k].includes("print(")){
             exe_loop(loop[k]);
         }else if(flg == 0){
             document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nがありません</pre>";
         }
     });
     pushRun_loop_prev.addEventListener("click", function () {
-        if(k > 0){
+        if(k > 0 ){
             k--;
-            exe_loop(loop[k]);
+            if(k < loop.length && loop[k].includes("print(")){
+                exe_loop(loop[k]);
+            }
         }
     });
     pushRun_loop_next.addEventListener("click", function () {
         if(k < loop.length - 1){
             k++;
-            exe_loop(loop[k]);
+            if(k < loop.length && loop[k].includes("print(")){
+                exe_loop(loop[k]);
+            }
         }else{
-            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nが終了しました</pre>";
+            if(flg === 1){
+                document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nが終了しました</pre>";
+            }
         }
     });
 });

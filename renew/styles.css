@@ -58,7 +58,7 @@ body {
     left: 0;
     width: 50%;
     height: 25%;
-    border: 3px solid #080cf1;
+    border: 1px solid #080cf1;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -70,7 +70,7 @@ body {
     right: 24%;
     width: 24%;
     height: 24%;
-    border: 3px solid #08f02e;
+    border: 1px solid #08f02e;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -81,7 +81,7 @@ body {
     right: 24%;
     width: 24%;
     height: 24%;
-    border: 3px solid #08f02e;
+    border: 1px solid #08f02e;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -125,7 +125,7 @@ body {
     right: 0;
     width: 24%;
     height: 24%;
-    border: 3px solid #08f02e;
+    border: 1px solid #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -136,7 +136,7 @@ body {
     right: 0;
     width: 24%;
     height: 24%;
-    border: 3px solid #08f02e;
+    border: 1px solid #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -180,7 +180,7 @@ body {
     right: 24%;
     width: 24%;
     height: 30%;
-    border: 3px solid #f04a08;
+    border: 1px solid #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -191,7 +191,7 @@ body {
     right: 0%;
     width: 24%;
     height: 30%;
-    border: 3px solid #f04a08;
+    border: 1px solid #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }

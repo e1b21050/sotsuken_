@@ -197,7 +197,7 @@ function processCode(code) {
                 for (let j = 0; j < tabCount; j++) {
                     let newToken = createToken(/\t/, tk_type.TK_TAB, lineNumber, tokenNumber('\t'), tabCount);
                     parsedTokens.push(newToken);
-                    console.log(newToken);
+                    //console.log(newToken);
                 }
             } else {
                 if (word === '"' || word === "'") {
@@ -205,7 +205,7 @@ function processCode(code) {
                         combinedString += word;
                         let newToken = createToken(combinedString, tk_type.TK_STRING, lineNumber, tokenNumber(combinedString), tabCount);
                         parsedTokens.push(newToken);
-                        console.log(newToken);
+                        //console.log(newToken);
                         combinedString = '';
                         isString = false;
                     } else {
@@ -224,7 +224,7 @@ function processCode(code) {
                         }
                         let newToken = createToken(floatValue, tk_type.TK_FLOAT, lineNumber, tokenNumber(floatValue), tabCount);
                         parsedTokens.push(newToken);
-                        console.log(newToken);
+                        //console.log(newToken);
                     } else if (word === '.' && i + 1 < words.length && isInteger(words[i + 1])) {
                         let floatValue = word;
                         if (i + 1 < words.length && isInteger(words[i + 1])) {
@@ -233,17 +233,17 @@ function processCode(code) {
                         }
                         let newToken = createToken(floatValue, tk_type.TK_FLOAT, lineNumber, tokenNumber(floatValue), tabCount);
                         parsedTokens.push(newToken);
-                        console.log(newToken);
+                        //console.log(newToken);
                     } else if (isInteger(word)) {
                         let newToken = createToken(word, tk_type.TK_INTEGER, lineNumber, tokenNumber(word), tabCount);
 
                         parsedTokens.push(newToken);
-                        console.log(newToken);
+                        //console.log(newToken);
                     } else {
                         let type = getTokenType(word);
                         let newToken = createToken(word, type, lineNumber, tokenNumber(word), tabCount);
                         parsedTokens.push(newToken);
-                        console.log(newToken);
+                        //console.log(newToken);
                     }
                 }
             }
@@ -251,7 +251,7 @@ function processCode(code) {
 
         let newToken = createToken(/\n/, tk_type.TK_ENTER, lineNumber, tokenNumber('\n'), tabCount);
         parsedTokens.push(newToken);
-        console.log(newToken);
+        //console.log(newToken);
         lineNumber++;
     });
     return parsedTokens;

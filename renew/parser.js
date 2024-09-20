@@ -62,7 +62,7 @@ function parseProgram() {
 // 文の解析
 function parseStatement() {
     token = getNextToken();
-    console.log(token);
+    //console.log(token);
     switch (token.type) {
         case tk_type.TK_IMPORT:
             parseImportStatement();
@@ -418,7 +418,7 @@ function parseIfStatement() {
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("if文の後に改行が必要です");
     }
-    console.log(token);
+    //console.log(token);
     parseIndentedStatements();
     if(token.type !== tk_type.TK_ENTER){
         token = getNextToken();
