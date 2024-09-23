@@ -221,8 +221,9 @@ mystdout.getvalue()
 }
 
 let flg = 0;
-let variable = null;
-let value = null;
+let variable = [];
+let value = [];
+let number = 0;
 let codeBlock2 = "";
 function getCodeBlock(lines, index) {
     let codeBlock = "";
@@ -230,36 +231,49 @@ function getCodeBlock(lines, index) {
     
     // `if` 文の変換
     if (lines[index].trim().startsWith("if ")) {
-        codeBlock = lines[index].replace(/^\s+/, '') + "\n";  // `if` 文の追加
         //インデントが同じになるまでコードを追加
         let i = index + 1;
-        let cnt_indent = 0;
+        let codeBlock_else = "";
+        codeBlock_else = lines[index].replace(/^\s+/, '');  // `if` 文の追加
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
             let code = lines[i];
-            if(i < lines.length && getIndentLevel(lines[i]) < getIndentLevel(lines[i-1])){
-                cnt_indent=0;
+            if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
+                    codeBlock = codeBlock_else + code.replace(/^\s+/, '') + "\n";
+            }else{
+                codeBlock = code.replace(/^\s+/, '') + "\n";
             }
-            codeBlock += code.replace(/^\s+/, '') + "\n";
             i++;
         }
     }
     // `elif` 文の変換
     else if (lines[index].trim().startsWith("elif ")) {
-        codeBlock = lines[index] + "\n";  // `elif` 文の追加
         //インデントが同じになるまでコードを追加
         let i = index + 1;
+        let codeBlock_else = "";
+        codeBlock_else = lines[index].replace(/^\s+/, '');  // `elif` 文の追加
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += lines[i] + "\n";
+            let code = lines[i];
+            if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
+                    codeBlock = codeBlock_else + code.replace(/^\s+/, '') + "\n";
+            }else{
+                codeBlock = code.replace(/^\s+/, '') + "\n";
+            }
             i++;
         }
     }
     // `else` 文の変換
     else if (lines[index].trim() === "else:") {
-        codeBlock = lines[index] + "\n";  // `else` 文の追加
         //インデントが同じになるまでコードを追加
         let i = index + 1;
+        let codeBlock_else = "";
+        codeBlock_else = lines[index].replace(/^\s+/, '');  // `else` 文の追加
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            codeBlock += lines[i] + "\n";
+            let code = lines[i];
+            if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
+                    codeBlock = codeBlock_else + code.replace(/^\s+/, '') + "\n";
+            }else{
+                codeBlock = code.replace(/^\s+/, '') + "\n";
+            }
             i++;
         }
     }
@@ -282,93 +296,90 @@ function getCodeBlock(lines, index) {
         }else{
             codeBlock = "i=0\n";
         }
-        let itelater = {
+        let iterator = {
             variable: null,
             value: null
         };
-        itelater.variable = getLoopIterable(lines[index]);
-        // itelaterがrangeの場合の処理
-        if(itelater.variable.startsWith('range(')) {
-            itelater.variable = null;
+        iterator.variable = getLoopIterable(lines[index]);
+        // iteratorがrangeの場合の処理
+        if(iterator.variable.startsWith('range(')) {
+            iterator.variable = null;
         }
-        if(itelater.variable === variable) {
-            itelater.value = value;
+        if(iterator.variable === variable) {
+            iterator.value = value;
         }
-        // itelaterがrange(O)の場合の処理
-        let itelater2 = getLoopIterable_f(lines[index]);
-        // itelaterがrange(O, O)の場合の処理
-        let itelater3 = getLoopIterable_d1(lines[index]);
-        let itelater4 = getLoopIterable_d2(lines[index]);
-        // itelaterがrange(O, O, O)の場合の処理
-        let itelater5 = getLoopIterable_t1(lines[index]);
-        let itelater6 = getLoopIterable_t2(lines[index]);
-        let itelater7 = getLoopIterable_t3(lines[index]);
+        // iteratorがrange(O)の場合の処理
+        let iterator_f = getLoopIterable_f(lines[index]);
+        // iteratorがrange(O, O)の場合の処理
+        let iterator_d1 = getLoopIterable_d1(lines[index]);
+        let iterator_d2 = getLoopIterable_d2(lines[index]);
+        // iteratorがrange(O, O, O)の場合の処理
+        let iterator_t1 = getLoopIterable_t1(lines[index]);
+        let iterator_t2 = getLoopIterable_t2(lines[index]);
+        let iterator_t3 = getLoopIterable_t3(lines[index]);
         
         let loopVariable = getLoopVariable(lines[index]);
         const indentBlock = [];
         let codeBlock_else = "";
         let i = index + 1;
-        let cnt_indent = 0;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
             let code = lines[i];
-            if(i < lines.length && getIndentLevel(lines[i]) < getIndentLevel(lines[i-1])){
-                cnt_indent=0;
-            }
-            if(lines[i].trim().startsWith("for ") || lines[i].trim().startsWith("while ") || lines[i].trim().startsWith("if ") || lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else ")){
+            if(lines[i].trim().startsWith("if ") || lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else ")){
                 // インデントの削除
                 codeBlock_else = code.replace(/^\s+/, '');
-                cnt_indent++;
+            }else if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
+                    indentBlock.push(codeBlock_else + code.replace(/^\s+/, '') + "\n");
             }else{
-                indentBlock.push(codeBlock_else + code.replace(/^\s+/, '') + "\n");
+                indentBlock.push(code.replace(/^\s+/, '') + "\n");
             }
             i++;
         }
         indentBlock.push("i+=1\n");
         console.log(indentBlock);
-        //console.log(itelater, itelater2, itelater3, itelater4, itelater5, itelater6, itelater7);
-        if (itelater.variable !== null && itelater.value !== null) {
+        //console.log(iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3);
+        if (iterator.variable !== null && iterator.value !== null) {
             loop.push(codeBlock);
             let j = 0;
             let loopcnt = 0; // ループ回数
-            // itelaterが文字列のとき文字列を配列に変換
-            if(isString(itelater.value) || isNumber(itelater.value)) {
-                itelater.value.split('');
-                loopcnt = itelater.value.length - 2; // 配列の長さ-'"'の数
+            // iteratorが文字列のとき文字列を配列に変換
+            if(isString(iterator.value) || isNumber(iterator.value)) {
+                iterator.value.split('');
+                loopcnt = iterator.value.length - 2; // 配列の長さ-'"'の数
             }
-            // itelaterが配列のとき配列に変換
-            if(itelater.value.includes(',')) {
-                itelater.value = itelater.value.replace(/ /g, '').split(',');
+            // iteratorが配列のとき配列に変換
+            if(iterator.value.includes(',')) {
+                iterator.value = iterator.value.replace(/ /g, '').split(',');
                 //'['の数を数える
                 let cnt = 0;
-                for(let i = 0; i < itelater.value.length; i++) {
-                    if(itelater.value[i].includes('[')) {
+                for(let i = 0; i < iterator.value.length; i++) {
+                    if(iterator.value[i].includes('[')) {
                         cnt++;
                     }
                 }
                 if(cnt == 1) {
-                    loopcnt = itelater.value.length; // 配列の長さ
+                    loopcnt = iterator.value.length; // 配列の長さ
                 }else {
                     loopcnt = cnt; 
                 }
             }
             for (j = 0; j < loopcnt; j++) {
                 indentBlock.forEach(line => {
-                    codeBlock += line.replace('(' + loopVariable, '(' + itelater.variable + '[' + j + ']');
+                    codeBlock += line.replace('(' + loopVariable, '(' + iterator.variable + '[' + j + ']');
                     loop.push(codeBlock);
                 });
             }
             codeBlock2 = codeBlock;
-        } else if (itelater2 !== null) {
+        } else if (iterator_f !== null) {
             let j = 0;
-            // itelater2を数字に変換
-            itelater2 = Number(itelater2);
-            for (j = 0; j < itelater2; j++) {
+            // iterator_fを数字に変換
+            iterator_f = Number(iterator_f);
+            for (j = 0; j < iterator_f; j++) {
                 indentBlock.forEach(line => {
                     if(line.includes('[')) {
                         codeBlock += line.replace('[' + loopVariable, '[' + j); // print(x[i])に対応
                     }else if(line.includes('(')) {
                         codeBlock += line.replace('(' + loopVariable, '(' + j); // print(i)に対応
-                    }else if(j == itelater2 - 1) {
+                    }else if(j == iterator_f - 1) {
                         codeBlock += line.replace('i+=1', '');
                     }else {
                         codeBlock += line;
@@ -377,16 +388,16 @@ function getCodeBlock(lines, index) {
                 });
             }
             codeBlock2 = codeBlock;
-        } else if (itelater3 !== null && itelater4 !== null) {
+        } else if (iterator_d1 !== null && iterator_d2 !== null) {
             let j = 0;
-            // itelater3~4を数字に変換
-            itelater3 = Number(itelater3);
-            itelater4 = Number(itelater4);
-            for (j = itelater3; j < itelater4; j++) {
+            // iterator_d1~4を数字に変換
+            iterator_d1 = Number(iterator_d1);
+            iterator_d2 = Number(iterator_d2);
+            for (j = iterator_d1; j < iterator_d2; j++) {
                 indentBlock.forEach(line => {
                     if(line.includes('(')) {
                         codeBlock += line.replace('(' + loopVariable, '(' + j);
-                    }else if(j == itelater4 - 1) {
+                    }else if(j == iterator_d2 - 1) {
                         codeBlock += line.replace('i+=1', '');
                     }else {
                         codeBlock += line;
@@ -395,21 +406,21 @@ function getCodeBlock(lines, index) {
                 });
             }
             codeBlock2 = codeBlock;
-        } else if (itelater5 !== null && itelater6 !== null && itelater7 !== null) {
-            // itelater5~7を数字に変換
-            itelater5 = Number(itelater5);
-            itelater6 = Number(itelater6);
-            itelater7 = Number(itelater7);
-            //console.log(itelater5, itelater6, itelater7);
+        } else if (iterator_t1 !== null && iterator_t2 !== null && iterator_t3 !== null) {
+            // iterator_t1~7を数字に変換
+            iterator_t1 = Number(iterator_t1);
+            iterator_t2 = Number(iterator_t2);
+            iterator_t3 = Number(iterator_t3);
+            //console.log(iterator_t1, iterator_t2, iterator_t3);
             let j;
-            // itelater7が正のときはitelater5がitelater6より小さい間ループ
-            // itelater7が負のときはitelater5がitelater6より大きい間ループ
-            if(itelater7 > 0) {
-                for (j = itelater5; j < itelater6; j += itelater7) {
+            // iterator_t3が正のときはiterator_t1がiterator_t2より小さい間ループ
+            // iterator_t3が負のときはiterator_t1がiterator_t2より大きい間ループ
+            if(iterator_t3 > 0) {
+                for (j = iterator_t1; j < iterator_t2; j += iterator_t3) {
                     indentBlock.forEach(line => {
                         if(line.includes('(')) {
                             codeBlock += line.replace('(' + loopVariable, '(' + j);
-                        }else if(j == itelater6 - 1) {
+                        }else if(j == iterator_t2 - 1) {
                             codeBlock += line.replace('i+=1', '');
                         }else {
                             codeBlock += line;
@@ -418,12 +429,12 @@ function getCodeBlock(lines, index) {
                     });
                 }
             }else {
-                for (j = itelater5; j > itelater6; j += itelater7) {
-                    codeBlock = codeBlock.replace('i=0', 'i=' + itelater5);
+                for (j = iterator_t1; j > iterator_t2; j += iterator_t3) {
+                    codeBlock = codeBlock.replace('i=0', 'i=' + iterator_t1);
                     indentBlock.forEach(line => {
                         if(line.includes('(')) {
                             codeBlock += line.replace('(' + loopVariable, '(' + j);
-                        }else if(j == itelater4 + 1) {
+                        }else if(j == iterator_d2 + 1) {
                             codeBlock += line.replace('i+=1', '');
                         }else {
                             codeBlock += line.replace('i+=1', 'i-=1');
@@ -454,68 +465,92 @@ function getCodeBlock(lines, index) {
         let loopVariable = getLoopWhileVariable(lines[index]);
         let loopIterable = getLoopWhileIterable(lines[index]);
         let loopCondition = getLoopWhileConditon(lines[index]);
-        //console.log(loopVariable, loopIterable, loopCondition);
+        let loopVariable_s = getLoopWhileVariable_s(lines[index]);
+        let loopCondition_s = getLoopWhileConditon_s(lines[index]);
+        let loopIterable_s = getLoopWhileIterable_s(lines[index]);
         //インデントが同じになるまでコードを追加
         const indentBlock = [];
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            indentBlock.push(lines[i].replace(/^\s+/, '') + "\n");
+            indentBlock.push(lines[i].replace(/^\s+/, ''));
             i++;
         }
-        //console.log(indentBlock);
-        if (loopCondition === '<') {
-            let j = 0;
-            // loopIterableを数字に変換
-            loopIterable = Number(loopIterable);
-            while (j < loopIterable) {
-                indentBlock.forEach(line => {
-                    codeBlock += line.replace('('+loopVariable, '('+j);
-                    loop.push(codeBlock);
-                });
-                j++;
+        if(loopVariable !== null && loopCondition !== null && loopIterable !== null){
+            console.log(codeBlock);
+            if (loopCondition === '<') {
+                let j = 0;
+                // loopIterableを数字に変換
+                loopIterable = Number(loopIterable);
+                while (j < loopIterable) {
+                    indentBlock.forEach(line => {
+                        codeBlock += line.replace('('+loopVariable, '('+j) + "\n";
+                        loop.push(codeBlock);
+                    });
+                    j++;
+                }
+                codeBlock2 = codeBlock;
+            }else if (loopCondition === '>') {
+                let j;
+                for(let m = 0; m < variable.length; m++){
+                    if(variable[m] === loopVariable){
+                        j = value[m];
+                    }
+                }
+                // loopIterableを数字に変換
+                loopIterable = Number(loopIterable);
+                while (j > loopIterable) {
+                    indentBlock.forEach(line => {
+                        codeBlock += line.replace('('+loopVariable, '('+j) + "\n";
+                        loop.push(codeBlock);
+                    });
+                    j--;
+                }
+                codeBlock2 = codeBlock;
+            }else if (loopCondition === '<=') {
+                let j = 0;
+                // loopIterableを数字に変換
+                loopIterable = Number(loopIterable);
+                while (j <= loopIterable) {
+                    indentBlock.forEach(line => {
+                        codeBlock += line.replace('('+loopVariable, '('+j) + "\n"; 
+                        loop.push(codeBlock);
+                    });
+                    j++;
+                }
+                codeBlock2 = codeBlock;
+            }else if (loopCondition === '>=') {
+                let j;
+                for(let m = 0; m < variable.length; m++){
+                    if(variable[m] === loopVariable){
+                        j = value[m];
+                    }
+                }
+                // loopIterableを数字に変換
+                loopIterable = Number(loopIterable);
+                while (j >= loopIterable) {
+                    indentBlock.forEach(line => {
+                        codeBlock += line.replace('('+loopVariable, '('+j) + "\n";
+                        loop.push(codeBlock);
+                    });
+                    j--;
+                }
+                codeBlock2 = codeBlock;
             }
-            codeBlock2 = codeBlock;
-        }else if (loopCondition === '>') {
-            let j = 0;
-            // loopIterableを数字に変換
-            loopIterable = Number(loopIterable);
-            while (j > loopIterable) {
-                indentBlock.forEach(line => {
-                    codeBlock += line.replace('('+loopVariable, '('+j);
-                    loop.push(codeBlock);
-                });
-                j--;
-            }
-            codeBlock2 = codeBlock;
-        }else if (loopCondition === '<=') {
-            let j = 0;
-            // loopIterableを数字に変換
-            loopIterable = Number(loopIterable);
-            while (j <= loopIterable) {
-                indentBlock.forEach(line => {
-                    codeBlock += line.replace('('+loopVariable, '('+j);
-                    loop.push(codeBlock);
-                });
-                j++;
-            }
-            codeBlock2 = codeBlock;
-        }else if (loopCondition === '>=') {
-            let j = 0;
-            // loopIterableを数字に変換
-            loopIterable = Number(loopIterable);
-            while (j >= loopIterable) {
-                indentBlock.forEach(line => {
-                    codeBlock += line.replace('('+loopVariable, '('+j);
-                    loop.push(codeBlock);
-                });
-                j--;
-            }
+        }else if(loopVariable_s !== null && loopCondition_s !== null && loopIterable_s !== null){
+            evaluted = loopVariable_s + ' ' + loopCondition_s + ' ' +loopIterable_s;
+            codeBlock = codeBlock + "if " + evaluted + ": ";    
+            indentBlock.forEach(line => {
+                codeBlock += line + "\n";
+                loop.push(codeBlock);
+            });
             codeBlock2 = codeBlock;
         }
     } else {
         //代入文の時は変数名と値を取得して保存する
-        variable = getVariable(lines[index]);
-        value = getValue(lines[index]);
+        variable[number] = getVariable(lines[index]);
+        value[number] = getValue(lines[index]);
+        number++;
+        console.log(variable, value);
         if(flg === 1){
             codeBlock = codeBlock2;
         }else{
@@ -607,14 +642,32 @@ function getLoopWhileVariable(whileLine) {
 
 function getLoopWhileConditon(whileLine) {
     // `while i < 5:`のような行から`<`を抽出
-    let match = whileLine.match(/while \w+ (<|>|<=|>=) (-?\d+):/);
+    let match = whileLine.match(/while \w+ (<|>|<=|>=|==|!=) (-?\d+):/);
     return match ? match[1] : null;
 }
 
 function getLoopWhileIterable(whileLine) {
     // `while i < 5:`のような行から`5`を抽出
-    let match = whileLine.match(/while \w+ (<|>|<=|>=) (-?\d+):/);
+    let match = whileLine.match(/while \w+ (<|>|<=|>=|==|!=) (-?\d+):/);
     return match ? match[2] : null;
+}
+
+function getLoopWhileVariable_s(whileLine) {
+    // while n % a != 0 or n % b != 0: のような行から`n % a != 0`を抽出
+    let match = whileLine.match(/while (.+) (or|and) (.+):/);
+    return match ? match[1] : null;
+}
+
+function getLoopWhileConditon_s(whileLine) {
+    // while n % a != 0 or n % b != 0: のような行から`or`を抽出
+    let match = whileLine.match(/while (.+) (or|and) (.+):/);
+    return match ? match[2] : null;
+}
+
+function getLoopWhileIterable_s(whileLine) {
+    // while n % a != 0 or n % b != 0: のような行から`n % b != 0`を抽出
+    let match = whileLine.match(/while (.+) (or|and) (.+):/);
+    return match ? match[3] : null;
 }
 
 function getIfCondition(line) {
@@ -639,6 +692,15 @@ function getElifConditionValue(line) {
     // `elif` の条件式での値を取得するロジックを実装
     let match = line.match(/elif\s+(.*)\s*(==|!=|>|<|>=|<=)\s*(.*)/);
     return match ? match[3] : null;  // 演算子の右側の値を取得
+}
+
+function getEvaluate(line1, line2, line3) {
+    // 条件式を評価するロジックを実装
+    let line = line1 + ' ' + line2 + ' ' +line3;
+    if(line){
+        return true;
+    }
+    return false;
 }
 
 function highlightLine(lineNumber) {

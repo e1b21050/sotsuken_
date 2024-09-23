@@ -15,6 +15,11 @@ let code_t = "";
 let code_result = "";
 let i;
 let resultDiv = document.getElementById('result');
+let if_flag = false;
+let elif_flag = false;
+let else_flag = false;
+let for_flag = false;
+let while_flag = false;
 
 function appendToResult(message, isError = false) {
     let resultElement = document.createElement('p');
@@ -62,7 +67,13 @@ function parseProgram() {
 // 文の解析
 function parseStatement() {
     token = getNextToken();
-    //console.log(token);
+    if(token.tabCount === 0){
+        if_flag = false;
+        elif_flag = false;
+        else_flag = false;
+        for_flag = false;
+        while_flag = false;
+    }
     switch (token.type) {
         case tk_type.TK_IMPORT:
             parseImportStatement();
@@ -100,18 +111,17 @@ function parseStatement() {
         case tk_type.TK_ENTER:
             break;
         default:
-            appendToResult(token.word);
             throw new Error("不明な文です: " + token.tokenNumber);
     }
 }
 
 // import文の解析
 function parseImportStatement() {
-    token = getNextToken(); // Consume 'import'
+    token = getNextToken(); // 'import' を消費
     if (token.type !== tk_type.TK_IDENTIFIER) {
         throw new Error("importの後に識別子が必要です");
     }
-    token = getNextToken(); // Consume identifier
+    token = getNextToken(); // identifierを消費 
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("import文の後に改行が必要です");
     }
@@ -144,33 +154,33 @@ function parseExpression() {
                 parseAssignmentStatement();
             }
             if(token.type === tk_type.TK_COMMA){
-                token = getNextToken(); // Consume ','
+                token = getNextToken(); // ',' を消費
                 parseExpression();
             }
         }else if(token.type === tk_type.TK_DOT){
-            token = getNextToken(); // Consume '.'
+            token = getNextToken(); // '.' を消費
             if(token.type === tk_type.TK_IDENTIFIER){
-                token = getNextToken(); // Consume identifier
+                token = getNextToken(); // identifier を消費
             }else{
                 throw new Error("識別子が必要です");
             }
             if(token.type === tk_type.TK_L_PAR){
-                token = getNextToken(); // Consume '('
+                token = getNextToken(); // '(' を消費
                 parseExpression();
                 if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
                     parseArithmeticExpression();
                 }
                 if(token.type === tk_type.TK_R_PAR){
-                    token = getNextToken(); // Consume ')'
+                    token = getNextToken(); // ')' を消費
                 }else{
                     throw new Error("')' が必要です");
                 }
             }
         }else if(token.type === tk_type.TK_L_PAR){
-            token = getNextToken(); // Consume '('
+            token = getNextToken(); // '(' を消費
             parseExpression();
             if(token.type === tk_type.TK_R_PAR){
-                token = getNextToken(); // Consume ')'
+                token = getNextToken(); // ')' を消費
             }else{
                 throw new Error("')' が必要です");
             }
@@ -190,7 +200,7 @@ function parseExpression() {
 // 集合文の解析
 function parseShugoStatement() {
     cnt_shugo += 1;
-    token = getNextToken(); // Consume '{'
+    token = getNextToken(); // '{' を消費
     while (true) {
         parseExpression();   
         if (token.type === tk_type.TK_COMMA) {
@@ -202,12 +212,12 @@ function parseShugoStatement() {
     if (token.type !== tk_type.TK_R_BRACE) {
         throw new Error("'}' が必要です");
     }
-    token = getNextToken(); // Consume '}'
+    token = getNextToken(); // '}' を消費
 }
 
 // 結合文の解析
 function parseKetsugouStatement() {
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     while (true) {
         parseExpression();
         if (token.type === tk_type.TK_COMMA) {
@@ -219,7 +229,7 @@ function parseKetsugouStatement() {
     if (token.type !== tk_type.TK_R_PAR) {
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 }
 
 // リストの解析
@@ -235,19 +245,19 @@ function parseListExpressionLiteral() {
     if (token.type !== tk_type.TK_R_INDEX) {
         throw new Error("']' が必要です");
     }
-    token = getNextToken(); // Consume ']'
+    token = getNextToken(); // ']' を消費
 }
 
 // インデックス式の解析
 function parseIndexingExpression() {
-    token = getNextToken(); // Consume '['
+    token = getNextToken(); // '[' を消費
     if (token.type !== tk_type.TK_INT && token.type !== tk_type.TK_FL && token.type !== tk_type.TK_MAP && token.type !== tk_type.TK_LIST && token.type !== tk_type.TK_INPUT) {
         parseExpression();
         if(token.type === tk_type.TK_COLON){
-            token = getNextToken(); // Consume ':'
+            token = getNextToken(); // ':' を消費
             parseExpression();
             if(token.type === tk_type.TK_COLON){
-                token = getNextToken(); // Consume ':'
+                token = getNextToken(); // ':' を消費
                 parseExpression();
             }
         }
@@ -255,13 +265,13 @@ function parseIndexingExpression() {
         parseLists();
     }
     while (token.type === tk_type.TK_COMMA) {
-        token = getNextToken(); // Consume ','
+        token = getNextToken(); // ','  を消費
         parseExpression();
     }
     if (token.type !== tk_type.TK_R_INDEX) {
         throw new Error("']' が必要です");
     }
-    token = getNextToken(); // Consume ']'
+    token = getNextToken(); // ']' を消費
 }
 
 // 代入文の解析
@@ -269,7 +279,7 @@ function parseAssignmentStatement() {
     if (token.type !== tk_type.TK_EQUAL) {
         throw new Error("代入文には'='が必要です");
     }
-    token = getNextToken(); // Consume '='
+    token = getNextToken(); // '=' を消費
     if (token.type === tk_type.TK_INPUT){
         parseInput();
     }else if (token.type === tk_type.TK_INT || token.type === tk_type.TK_FL){
@@ -287,7 +297,7 @@ function parseAssignmentStatement() {
 function parseArithmeticExpression() {
     parseArithmeticTerm1();
     while (token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_EQUAL) {
-        token = getNextToken(); // Consume '+', '-' or '='
+        token = getNextToken(); // '+', '-' or '=' を消費
         parseArithmeticTerm1();
     }
 }
@@ -296,24 +306,24 @@ function parseArithmeticExpression() {
 function parseArithmeticTerm1() {
     parseArithmeticTerm2();
     if (token.type === tk_type.TK_MULTIPLY) {
-        token = getNextToken(); // Consume '*'
+        token = getNextToken(); // '*' を消費
         if(token.type === tk_type.TK_EQUAL){
-            token = getNextToken(); // Consume '='
+            token = getNextToken(); // '=' を消費
         }
         parseArithmeticTerm2();
     }else if(token.type === tk_type.TK_DIVIDE){
-        token = getNextToken(); // Consume '/'
+        token = getNextToken(); // '/' を消費
         if(token.type === tk_type.TK_DIVIDE){
-            token = getNextToken(); // Consume '/'
+            token = getNextToken(); // '/' を消費
         }
         if(token.type === tk_type.TK_EQUAL){
-            token = getNextToken(); // Consume '='
+            token = getNextToken(); // '='  を消費
         }
         parseArithmeticTerm2();
     }else if(token.type === tk_type.TK_PERCENT){
-        token = getNextToken(); // Consume '%'
+        token = getNextToken(); // '%' を消費
         if(token.type === tk_type.TK_EQUAL){
-            token = getNextToken(); // Consume '='
+            token = getNextToken(); // '=' を消費
         }
         parseArithmeticTerm2();
     }
@@ -323,12 +333,12 @@ function parseArithmeticTerm1() {
 function parseArithmeticTerm2() {
     parseArithmeticFactor();
     if (token.type === tk_type.TK_MULTIPLY) {
-        token = getNextToken(); // Consume '*'
+        token = getNextToken(); // '*'  を消費
         if (token.type === tk_type.TK_MULTIPLY) {
-            token = getNextToken(); // Consume '*'
+            token = getNextToken(); // '*' を消費 
         }
         if(token.type === tk_type.TK_EQUAL){
-            token = getNextToken(); // Consume '='
+            token = getNextToken(); // '=' を消費
         }
         parseArithmeticFactor();
     }
@@ -337,67 +347,67 @@ function parseArithmeticTerm2() {
 // 算術因子の解析
 function parseArithmeticFactor() {
     if (token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS) {
-        token = getNextToken(); // Consume '+' or '-'
+        token = getNextToken(); // '+' or '-' を消費
     }
     if (token.type === tk_type.TK_L_PAR) {
-        token = getNextToken(); // Consume '('
+        token = getNextToken(); // '(' を消費
         parseArithmeticExpression();
         if (token.type !== tk_type.TK_R_PAR) {
             throw new Error("')' が必要です");
         }
-        token = getNextToken(); // Consume ')'
+        token = getNextToken(); // ')' を消費
     } else if (token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_STRING || token.type === tk_type.TK_IDENTIFIER) {
-        token = getNextToken(); // Consume literal or identifier
+        token = getNextToken(); // literal or identifier を消費
         if (token.type === tk_type.TK_L_INDEX) {
             parseIndexingExpression();
             if(token.type === tk_type.TK_L_INDEX) {
                 parseIndexingExpression();
             }
         }else if(token.type === tk_type.TK_COMMA){
-            token = getNextToken(); // Consume ','
+            token = getNextToken(); // ','
             parseExpression();
         }else if(token.type === tk_type.TK_L_PAR){
-            token = getNextToken(); // Consume '('
+            token = getNextToken(); // '('
             parseExpression();
             if(token.type !== tk_type.TK_R_PAR){
                 throw new Error("')' が必要です");
             }
-            token = getNextToken(); // Consume ')'
+            token = getNextToken(); // ')' を消費
         }else if(token.type === tk_type.TK_DOT){
-            token = getNextToken(); // Consume '.'
+            token = getNextToken(); // '.' を消費
             if(token.type === tk_type.TK_IDENTIFIER){
-                token = getNextToken(); // Consume identifier
+                token = getNextToken(); // identifier を消費
             }else{
                 throw new Error("識別子が必要です");
             }
             if(token.type === tk_type.TK_L_PAR){
-                token = getNextToken(); // Consume '('
+                token = getNextToken(); // '(' を消費
                 parseExpression();
                 if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
                     parseArithmeticExpression();
                 }
                 if(token.type === tk_type.TK_R_PAR){
-                    token = getNextToken(); // Consume ')'
+                    token = getNextToken(); // ')' を消費
                 }else{
                     throw new Error("')' が必要です");
                 }
             }
         }
     }if(token.type === tk_type.TK_DOT){
-        token = getNextToken(); // Consume '.'
+        token = getNextToken(); // '.'
         if(token.type === tk_type.TK_IDENTIFIER){
-            token = getNextToken(); // Consume identifier
+            token = getNextToken(); // identifier を消費
         }else{
             throw new Error("識別子が必要です");
         }
         if(token.type === tk_type.TK_L_PAR){
-            token = getNextToken(); // Consume '('
+            token = getNextToken(); // '(' を消費
             parseExpression();
             if(token.type === tk_type.TK_PLUS || token.type === tk_type.TK_MINUS || token.type === tk_type.TK_MULTIPLY || token.type === tk_type.TK_DIVIDE){
                 parseArithmeticExpression();
             }
             if(token.type === tk_type.TK_R_PAR){
-                token = getNextToken(); // Consume ')'
+                token = getNextToken(); // ')' を消費
             }else{
                 throw new Error("')' が必要です");
             }
@@ -409,12 +419,13 @@ function parseArithmeticFactor() {
 function parseIfStatement() {
     nestedlevel_if = token.tabCount;
     cnt_else[nestedLevel] = 0;
-    token = getNextToken(); // Consume 'if'
+    if_flag = true;
+    token = getNextToken(); // 'if' を消費
     parseConditionExpression();
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
     }
-    token = getNextToken(); // Consume ':'
+    token = getNextToken(); // ':' を消費
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("if文の後に改行が必要です");
     }
@@ -430,12 +441,13 @@ function parseElifStatement() {
     if(isNaN(nestedlevel_if)){
         throw new Error("if文が必要です");
     }
-    token = getNextToken(); // Consume 'elif'
+    elif_flag = true;
+    token = getNextToken(); // 'elif' を消費
     parseConditionExpression();
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
     }
-    token = getNextToken(); // Consume ':'
+    token = getNextToken(); // ':' を消費
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("elif文の後に改行が必要です");
     }
@@ -447,15 +459,16 @@ function parseElseStatement() {
     if(isNaN(nestedlevel_if)){
         throw new Error("if文が必要です");
     }
+    else_flag = true;
     cnt_else[nestedLevel] += 1;
     if(cnt_else[nestedLevel] > 1){
         throw new Error("else文は連続してはいけません");
     }
-    token = getNextToken(); // Consume 'else'
+    token = getNextToken(); // 'else' を消費
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
     }
-    token = getNextToken(); // Consume ':'
+    token = getNextToken(); // ':' を消費
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("else文の後に改行が必要です");
     }
@@ -466,7 +479,7 @@ function parseElseStatement() {
 function parseConditionExpression() {
     parseConditionTerm();
     if (token.type === tk_type.TK_OR) {
-        token = getNextToken(); // Consume 'or'
+        token = getNextToken(); // 'or' を消費
         parseConditionTerm();
     }
 }
@@ -475,7 +488,7 @@ function parseConditionExpression() {
 function parseConditionTerm() {
     parseConditionFactor();
     if (token.type === tk_type.TK_AND) {
-        token = getNextToken(); // Consume 'and'
+        token = getNextToken(); // 'and' を消費
         parseConditionFactor();
     }
 }
@@ -483,12 +496,12 @@ function parseConditionTerm() {
 // 条件因子の解析
 function parseConditionFactor() {
     if (token.type === tk_type.TK_L_PAR && cnt_shugo === 0) {
-        token = getNextToken(); // Consume '('
+        token = getNextToken(); // '(' を消費
         parseConditionExpression();
         if (token.type !== tk_type.TK_R_PAR) {
             throw new Error("')' が必要です");
         }
-        token = getNextToken(); // Consume ')'
+        token = getNextToken(); // ')' を消費
     } else {
         parseCompareExpression();
     }
@@ -504,9 +517,9 @@ function parseCompareExpression() {
         parseArithmeticExpression();
     }
     if (token.type === tk_type.TK_EQUAL || token.type === tk_type.TK_EXCLAMATION || token.type === tk_type.TK_GREATER || token.type === tk_type.TK_LESS) {
-        token = getNextToken(); // Consume '=', '!', '<', '<'
+        token = getNextToken(); // '=', '!', '<', '<' を消費
         if (token.type === tk_type.TK_EQUAL) {
-            token = getNextToken(); // Consume '='
+            token = getNextToken(); // '=' を消費
         }
         parseArithmeticExpression();
         if (token.type === tk_type.TK_EQUAL || token.type === tk_type.TK_EXCLAMATION || token.type === tk_type.TK_GREATER || token.type === tk_type.TK_LESS) {
@@ -514,39 +527,40 @@ function parseCompareExpression() {
         }
     }
     if(token.type === tk_type.TK_IN){
-        token = getNextToken(); // Consume 'in'
+        token = getNextToken(); // 'in' を消費
         parseExpression();
     }
     if (token.type === tk_type.TK_NOT) {
-        token = getNextToken(); // Consume 'not'
+        token = getNextToken(); // 'not' を消費
         if (token.type === tk_type.TK_IN) {
-            token = getNextToken(); // Consume 'in'
+            token = getNextToken(); // 'in' を消費
         }
         if(token.type !== tk_type.TK_L_PAR){
             parseExpression();
         }else{
-            token = getNextToken(); // Consume '('
+            token = getNextToken(); // '(' を消費
             parseConditionExpression();
             if(token.type !== tk_type.TK_R_PAR){
                 throw new Error("')' が必要です");
             }
-            token = getNextToken(); // Consume ')'
+            token = getNextToken(); // ')' を消費
         }
     }
 }
 
 // for文の解析
 function parseForStatement() {
-    token = getNextToken();
+    for_flag = true;
+    token = getNextToken(); // 'for' を消費
     if (token.type !== tk_type.TK_IDENTIFIER) {
         throw new Error("forの後に識別子が必要です");
     }
-    token = getNextToken(); // Consume identifier
+    token = getNextToken(); // identifier を消費
     
     if (token.type !== tk_type.TK_IN) {
         throw new Error("識別子の後に 'in' が必要です");
     }
-    token = getNextToken(); // Consume 'in'
+    token = getNextToken(); // 'in' を消費
     
     if (token.type !== tk_type.TK_RANGE) {
         parseExpression();
@@ -557,7 +571,7 @@ function parseForStatement() {
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
     }
-    token = getNextToken(); // Consume ':'
+    token = getNextToken(); // ':' を消費
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("for文の後に改行が必要です");
     }
@@ -566,27 +580,28 @@ function parseForStatement() {
 
 // range式の解析
 function parseRangeExpression() {
-    token = getNextToken(); // Consume 'range'
+    token = getNextToken(); // 'range' を消費
     if (token.type !== tk_type.TK_L_PAR) {
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     parseExpression();
     
     if (token.type !== tk_type.TK_R_PAR) {
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 }
 
 // while文の解析
 function parseWhileStatement() {
-    token = getNextToken(); // Consume 'while'
+    while_flag = true;
+    token = getNextToken(); // 'while' を消費
     parseConditionExpression();
     if (token.type !== tk_type.TK_COLON) {
         throw new Error("':' が必要です");
     }
-    token = getNextToken(); // Consume ':'
+    token = getNextToken(); // ':' を消費
     if (token.type !== tk_type.TK_ENTER) {
         throw new Error("while文の後に改行が必要です");
     }
@@ -664,32 +679,32 @@ function parseEndExpression() {
 
 // int float文の解析 
 function parseInt(){
-    token = getNextToken(); // Consume 'int'
+    token = getNextToken(); // 'int' or 'float' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     if(token.type === tk_type.TK_INPUT){
         parseInput();     
     }
     if(token.type === tk_type.TK_STRING || token.type === tk_type.TK_INTEGER || token.type === tk_type.TK_FLOAT || token.type === tk_type.TK_IDENTIFIER){
         parseExpression();
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 }
 // input文の解析
 function parseInput(){
-    token = getNextToken(); // Consume 'input'
+    token = getNextToken(); // 'input' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '('  を消費
     if(token.type !== tk_type.TK_R_PAR){
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
     if(token.type === tk_type.TK_DOT){
-        token = getNextToken(); // Consume '.'
+        token = getNextToken(); // '.' を消費
         if(token.type !== tk_type.TK_SPLIT){
             throw new Error("splitが必要です");
         }else{
@@ -702,55 +717,55 @@ function parseInput(){
 }
 // map文の解析
 function parseMap(){
-    token = getNextToken(); // Consume 'map'
+    token = getNextToken(); // 'map' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     if(token.type !== tk_type.TK_INT && token.type !== tk_type.TK_FLOAT){
         throw new Error("intまたはfloatが必要です");
     }
-    token = getNextToken(); // Consume 'int' or 'float'
+    token = getNextToken(); // 'int' or 'float' を消費
     if(token.type !== tk_type.TK_COMMA){
         throw new Error("',' が必要です");
     }
-    token = getNextToken(); // Consume ','
+    token = getNextToken(); // ',' を消費
     if(token.type === tk_type.TK_INPUT){
         parseInput();
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 
 }
 // split文の解析
 function parseSplit(){
-    token = getNextToken(); // Consume 'split'
+    token = getNextToken(); // 'split' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '('
     if(token.type === tk_type.TK_STRING){
-        token = getNextToken(); // Consume 'string'
+        token = getNextToken(); // 'string' を消費
     }
     if(token.type !== tk_type.TK_R_PAR){
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')'  を消費
 }
 
 // list文の解析
 function parseList(){
-    token = getNextToken(); // Consume 'list'
+    token = getNextToken(); // 'list' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     if(token.type === tk_type.TK_MAP){
         parseMap();
     }
     if(token.type !== tk_type.TK_R_PAR){
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 }
 
 // リスト式の解析
@@ -767,28 +782,28 @@ function parseLists(){
     if(token.type !== tk_type.TK_FOR){
         throw new Error("'for' が必要です");
     }
-    token = getNextToken(); // Consume 'for'
+    token = getNextToken(); // 'for' を消費
     if(token.type !== tk_type.TK_IDENTIFIER){
         throw new Error("識別子が必要です");
     }
-    token = getNextToken(); // Consume identifier
+    token = getNextToken(); // identifier を消費
     if(token.type !== tk_type.TK_IN){
         throw new Error("'in' が必要です");
     }
-    token = getNextToken(); // Consume 'in'
+    token = getNextToken(); // 'in' を消費
     if(token.type !== tk_type.TK_RANGE){
         throw new Error("'range' が必要です");
     }
-    token = getNextToken(); // Consume 'range'
+    token = getNextToken(); // 'range' を消費
     if(token.type !== tk_type.TK_L_PAR){
         throw new Error("'(' が必要です");
     }
-    token = getNextToken(); // Consume '('
+    token = getNextToken(); // '(' を消費
     parseExpression();
     if(token.type !== tk_type.TK_R_PAR){
         throw new Error("')' が必要です");
     }
-    token = getNextToken(); // Consume ')'
+    token = getNextToken(); // ')' を消費
 }
 
 // インデントされた文の解析
@@ -809,8 +824,8 @@ function parseIndentedStatements() {
 }
 // インデントされた2行目以降の文の解析
 function parseIndentedStatementsSecond() {
-    for (let i = 0; i < nestedLevel; i++) {
-        token = getNextToken();
+    if(if_flag === false && elif_flag === false && else_flag === false && for_flag === false && while_flag === false){
+        throw new Error("インデントが間違っています");
     }
     nestedLevel = nestedLevel_t;
     nestedLevel_t = token.tabCount;
@@ -818,7 +833,7 @@ function parseIndentedStatementsSecond() {
         parseElifStatement();
     }else if (token.type === tk_type.TK_ELSE){
         parseElseStatement();
-    }else if (nestedLevel_t !== nestedLevel) {
+    }else if (if_flag === false && elif_flag === false && else_flag === false && for_flag === false && while_flag === false){
         throw new Error("インデントが間違っています");
     }else {
         parseStatement();
