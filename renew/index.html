@@ -6,53 +6,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div id="mondai"><ここに問題を貼る予定></div>
     <div id="editor"></div>
     <button id="run">run</button>
     <button id="compile">compile</button>
-    <button id="run_step">step</button>
     <button id="reset">reset</button>
     
     <div id="result">
         <p>＜構文解析ログ＞</p>
     </div>
-    
-    <div id="output">
-        <p>＜ステップ実行＞</p>
-    </div>
-    
-    <div id="variable_table_output">
-        <p>＜変数表-ステップ＞</p>
-        <table id="variables_table_output">
-            <tr>
-                <td>変数名</td>
-                <td>値</td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
 
-    <div id="loop">
-        <p>＜ループ実行＞</p>
+    <div id="controls">
+        <button id="show_execute">実行結果</button>
+        <button id="show_step">ステップ実行</button>
+        <button id="show_loop">ループ実行</button>
     </div>
-
-    <div id="variable_table_loop">
-        <p>＜変数表-ループ＞</p>
-        <table id="variables_table_loop">
-            <tr>
-                <td>変数名</td>
-                <td>値</td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-    
-    <button id="prev_step">&lt;</button>
-    <button id="next_step">&gt;</button>
-    <button id="step_loop">loop</button>
-    <button id="prev_loop">&lt;</button>
-    <button id="next_loop">&gt;</button>
     
     <div id="execute">
         <p>＜実行結果＞</p>
@@ -69,12 +37,58 @@
             </tbody>
         </table>
     </div>
+
+    <div id="output" class="hidden">
+        <p>＜ステップ実行＞</p>
+    </div>
+    
+    <div id="variable_table_output" class="hidden">
+        <p>＜変数表-ステップ＞</p>
+        <table id="variables_table_output">
+            <tr>
+                <td>変数名</td>
+                <td>値</td>
+            </tr>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="loop" class="hidden">
+        <p>＜ループ実行＞</p>
+    </div>
+
+    <div id="variable_table_loop" class="hidden">
+        <p>＜変数表-ループ＞</p>
+        <table id="variables_table_loop">
+            <tr>
+                <td>変数名</td>
+                <td>値</td>
+            </tr>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <button id="run_step" class="hidden">step</button>
+    <button id="prev_step" class="hidden">&lt;</button>
+    <button id="next_step" class="hidden">&gt;</button>
+    <button id="step_loop" class="hidden">loop</button>
+    <button id="prev_loop" class="hidden">&lt;</button>
+    <button id="next_loop" class="hidden">&gt;</button>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
     <script src="ace.js"></script>
     <script src="scanner.js"></script>
     <script src="parser.js"></script>
-    <script src="convert.js"></script>
+    <script src="main.js"></script>
+    <script src="execute.js"></script>
+    <script src="step.js"></script>
+    <script src="loop.js"></script>
+    <script src="variables.js"></script>
+    <script src="hilight.js"></script>
+    <script src="block.js"></script>
+    <script src="get.js"></script>
 </body>
 </html>
