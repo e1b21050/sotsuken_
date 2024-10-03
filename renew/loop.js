@@ -1,9 +1,8 @@
-function exe_step(lines, index) {
+function exe_loop(code){
     pyodideReadyPromise.then(pyodide => {
-        let accumulatedCode = getCodeBlock(lines, index);
-        highlightLine(index); // 現在の行をハイライト
-        console.log(accumulatedCode); // デバッグ: 生成されたコードを確認
+        console.log(code);
         try {
+            //　読み取ったコードを１行ずつ実行
             let captureOutputCode = `
 import sys
 from io import StringIO
@@ -26,25 +25,27 @@ def safe_exec(code, global_vars):
     except Exception as e:
         print(f"Error: {e}")
 
-# コードブロック全体を実行
-safe_exec('''${accumulatedCode}''', globals())
+# ステップごとのコードを実行
+safe_exec('''${code}''', globals())
 
 sys.stdout = old_stdout
+
 mystdout.getvalue()
+
 `;
+
             let output = pyodide.runPython(captureOutputCode);
             let formattedOutput = output.split('\n').map(line => ' ' + line).join('\n');
-            document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre>" + formattedOutput + "</pre>";
+            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>" + formattedOutput + "</pre>";
             // Pyodideから変数を取得
             let variableNames = pyodide.globals.keys();
             for (let name of variableNames) {
-                variables_step[name] = pyodide.globals.get(name);
+                variables_loop[name] = pyodide.globals.get(name);
             }
             // 変数表を更新
-            updateVariableTable_step(accumulatedCode);
+            updateVariableTable_loop(loop[k]);
         } catch (error) {
             console.error(error);
-            document.getElementById("output").innerHTML += "<p>＜ステップ " + (index + 1) + "＞</p><pre></pre>";
         }
     });
 }

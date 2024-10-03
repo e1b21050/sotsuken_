@@ -18,12 +18,33 @@ body {
     border: 1px solid #ccc;
 }
 
-/* 実行結果の配置 */
-#run {
+#compile {
     position: absolute;
     bottom: 44.5vh;
     left: 0;
-    width: 8%;
+    width: 12%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#run {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 12%;
+    width: 12%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#reset {
+    position: absolute;
+    bottom: 44.5vh;
+    left: 24%;
+    width: 12%;
     height: 5%;
     border: 2px solid #0a0a0a;
     overflow-y: auto;
@@ -37,43 +58,177 @@ body {
     left: 0;
     width: 50%;
     height: 25%;
-    border: 3px solid #080cf1;
+    border: 1px solid #080cf1;
     overflow-y: auto;
     font-size: 18px;
 }
 
-/* 字句解析の配置 */
+
 #output {
     position: absolute;
     top: 0;
-    right: 0;
-    width: 48%;
-    height: 50%;
-    border: 3px solid #08f02e;
+    right: 24%;
+    width: 24%;
+    height: 24%;
+    border: 1px solid #08f02e;
     overflow-y: auto;
+    font-size: 18px;
 }
 
-#tokenTable {
-    width: 100%;
-    border-collapse: collapse;
+#variable_table_output {
+    position: absolute;
+    top: 24%;
+    right: 24%;
+    width: 24%;
+    height: 24%;
+    border: 1px solid #08f02e;
+    overflow-y: auto;
+    font-size: 18px;
 }
 
-#tokenTable th, #tokenTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+#run_step {
+    position: absolute;
+    bottom: 46%;
+    right: 41%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#prev_step {
+    position: absolute;
+    bottom: 46%;
+    right: 33%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#next_step {
+    position: absolute;
+    bottom: 46%;
+    right: 25%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#loop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 24%;
+    height: 24%;
+    border: 1px solid #ecf008;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#variable_table_loop {
+    position: absolute;
+    top: 24%;
+    right: 0;
+    width: 24%;
+    height: 24%;
+    border: 1px solid #ecf008;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#step_loop {
+    position: absolute;
+    bottom: 46%;
+    right: 16%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#prev_loop {
+    position: absolute;
+    bottom: 46%;
+    right: 8%;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#next_loop {
+    position: absolute;
+    bottom: 46%;
+    right: 0;
+    width: 8%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
 }
 
 #execute {
     position: absolute;
     bottom: 15vh;
-    right: 0;
-    width: 48%;
+    right: 24%;
+    width: 24%;
     height: 30%;
-    border: 3px solid #f04a08;
+    border: 1px solid #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
 
+#variable_table {
+    position: absolute;
+    bottom: 15vh;
+    right: 0%;
+    width: 24%;
+    height: 30%;
+    border: 1px solid #f04a08;
+    overflow-y: auto;
+    font-size: 18px;
+}
 
+#variables_table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
+#variables_table th, #variables_table td, #variables_table tbody th, #variables_table tbody td {
+    padding: 6px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#variables_table_output {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#variables_table_output th, #variables_table_output td, #variables_table_output tbody th, #variables_table_output tbody td {
+    padding: 6px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#variables_table_loop {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#variables_table_loop th, #variables_table_loop td, #variables_table_loop tbody th, #variables_table_loop tbody td {
+    padding: 6px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.highlight-line {
+    background-color: rgb(255, 81, 0) !important;
+}
