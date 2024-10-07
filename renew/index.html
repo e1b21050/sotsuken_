@@ -76,6 +76,39 @@
     <button id="step_loop" class="hidden">loop</button>
     <button id="prev_loop" class="hidden">&lt;</button>
     <button id="next_loop" class="hidden">&gt;</button>
+
+    <button id="help_button">？</button>
+    <p id="help_text" style="display:none;">
+        <b>使い方</b><br>
+        「×」ボタンを押すと、ヘルプが閉じます<br>
+        ●：自作プログラムでの実行 ★:Pyodideでの実行<br>
+        「compile」ボタン<br>
+        → 押すと、プログラムが構文解析されます●<br>
+        「reset」ボタン<br>
+        → 押すと、プログラムなどすべての表示がリセットされます<br>
+        「実行結果」ボタン<br>
+        → 押すと、実行結果が表示されます<br>
+        「run」ボタン<br>
+        → 押すと、プログラムが実行されます★<br>
+        「ステップ実行」ボタン<br>
+        → 押すと、ステップ実行が表示されます<br>
+        「step」ボタン<br>
+        → 押すと、ステップ実行が1ステップ実行されます★<br>
+        「&lt;」ボタン<br>
+        → 押すと、ステップ実行が1ステップ戻ります<br>
+        「&gt;」ボタン<br>
+        → 押すと、ステップ実行が1ステップ進みます<br>
+        「ループ実行」ボタン<br>
+        → 押すと、ループ実行が表示されます<br>
+        「loop」ボタン<br>
+        → 押すと、ループ実行が1ステップ実行されます★<br>
+        「&lt;」ボタン<br>
+        → 押すと、ループ実行が1ステップ戻ります<br>
+        「&gt;」ボタン<br>
+        → 押すと、ループ実行が1ステップ進みます<br>
+    </p>
+
+    <button id="convert_button" class="hidden">convert</button>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>

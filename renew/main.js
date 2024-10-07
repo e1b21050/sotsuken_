@@ -8,12 +8,15 @@ let pushRun_loop_next = document.getElementById("next_loop");
 let pushShow_execute = document.getElementById("show_execute");
 let pushShow_step = document.getElementById("show_step");
 let pushShow_loop = document.getElementById("show_loop");
+let pushHelp = document.getElementById("help_button");
+let pushConvert = document.getElementById("convert_button");
 
 let currentStep = 0;
 let codeLines = [];
 
 let k = 0;
 let loop = [];
+let loopcnt_s = 0;
 
 async function loadPyodideAndPackages() {
     let pyodide = await loadPyodide();
@@ -27,6 +30,11 @@ document.addEventListener('DOMContentLoaded', (event) => {
     pushRun_convert.addEventListener("click", function () {
         let code = editor.getSession().getValue();
         exe(code);
+        countLoop(code)
+            .then(result => {
+                loopcnt_s = result;
+                console.log(loopcnt_s);
+        });
     });
 
     pushRun_step.addEventListener("click", function () {
@@ -59,7 +67,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if(flg == 1 && k < loop.length && loop[k].includes("print(")){
             exe_loop(loop[k]);
         }else if(flg == 0){
-            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nがありません</pre>";
+            document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理がありません</pre>";
         }
     });
     pushRun_loop_prev.addEventListener("click", function () {
@@ -78,7 +86,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
         }else{
             if(flg === 1){
-                document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nが終了しました</pre>";
+                document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理が終了しました</pre>";
             }
         }
     });
@@ -125,4 +133,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
         document.getElementById("prev_loop").classList.remove("hidden");
         document.getElementById("next_loop").classList.remove("hidden");
     });
+
+    document.getElementById('help_button').addEventListener('click', function() {
+        var helpText = document.getElementById('help_text');
+        if (helpText.style.display === 'none') {
+            helpText.style.display = 'block';  // 表示
+            pushHelp.textContent = '×';      // ボタンの表記を「×」に変更
+        } else {
+            helpText.style.display = 'none';   // 非表示
+            pushHelp.textContent = '？';     // ボタンの表記を「？」に戻す
+        }
+    });
+
+    document.getElementById('convert_button').addEventListener('click', function() {
+        var convertText = document.getElementById('new_editor');
+        if (convertText.style.display === 'none') {
+            convertText.style.display = 'block';  // 表示
+            pushConvert.textContent = '戻る';      // ボタンの表記を「×」に変更
+        } else {
+            convertText.style.display = 'none';   // 非表示
+            pushConvert.textContent = 'convert';     // ボタンの表記を「？」に戻す
+        }
+    });
+    
 });
