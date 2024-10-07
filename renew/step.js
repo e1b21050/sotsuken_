@@ -2,7 +2,6 @@ function exe_step(lines, index) {
     pyodideReadyPromise.then(pyodide => {
         let accumulatedCode = getCodeBlock(lines, index);
         highlightLine(index); // 現在の行をハイライト
-        console.log(accumulatedCode); // デバッグ: 生成されたコードを確認
         try {
             let captureOutputCode = `
 import sys

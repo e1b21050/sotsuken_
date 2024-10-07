@@ -31,3 +31,54 @@ mystdout.getvalue()
         }
     });
 }
+
+// 繰り返し回数を数える
+function countLoop(code) {
+    return new Promise((resolve) => { // Promiseを返すようにする
+        let loopcnt = 0;
+        let flgPromise = 0;
+        code = "loopcnt = 0\n" + code;
+        
+        // while文にカウントを追加
+        code = code.replace(/while\s+.*?:/, (match) => match + "\n    loopcnt += 1");
+        // for文にカウントを追加
+        // 2重for文にも対応
+        if(code.match(/for\s+.*?:\s*\n\s*for\s+.*?:/)){
+            flgPromise = 1;
+        }
+        if(flgPromise === 1){
+            code = code.replace(/for\s+.*?:\s*\n\s*for\s+.*?:/, (match) => match+ "\n        loopcnt += 1"); // 内部のループのカウント
+        }else{
+            code = code.replace(/for\s+.*?:/, (match) => match + "\n    loopcnt += 1");
+        }
+        
+        console.log(code);
+        
+        pyodideReadyPromise.then(pyodide => {
+            let captureOutputCode = `
+import sys
+from io import StringIO
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+# 変数状態を保持
+global_vars = globals().copy()
+
+# ループ回数を数える
+
+${code}
+
+sys.stdout = old_stdout
+mystdout.getvalue()
+`;
+
+            // コードを実行
+            pyodide.runPython(captureOutputCode);
+            
+            // ループ回数を取得
+            loopcnt = pyodide.globals.get('loopcnt');
+            resolve(loopcnt); // 取得したloopcntをresolveする
+        });
+    });
+}

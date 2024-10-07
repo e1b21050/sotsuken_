@@ -10,6 +10,13 @@ function getValue(line) {
     return match ? match[1] : null;
 }
 
+function getVariables(line) {
+    // x, y = 1, 2 のような行から`x, y`を抽出
+    // x, y, z = 1, 2, 3 にも対応
+    let match = line.match(/(\w+(?:,\s*\w+)*)\s*=/);
+    return match ? match[1] : null;
+}
+
 function getIndentLevel(line) {
     return line.match(/^\s*/)[0].length;
 }
@@ -88,22 +95,10 @@ function getLoopWhileIterable(whileLine) {
     return match ? match[2] : null;
 }
 
-function getLoopWhileVariable_s(whileLine) {
-    // while n % a != 0 or n % b != 0: のような行から`n % a != 0`を抽出
-    let match = whileLine.match(/while (.+) (or|and) (.+):/);
+function getLoopWhileCondition_s(whileLine) {
+    // while n % a != 0 or n % b != 0: のような行から`n % a != 0 or n % b != 0`を抽出
+    let match = whileLine.match(/while (.+):/);
     return match ? match[1] : null;
-}
-
-function getLoopWhileConditon_s(whileLine) {
-    // while n % a != 0 or n % b != 0: のような行から`or`を抽出
-    let match = whileLine.match(/while (.+) (or|and) (.+):/);
-    return match ? match[2] : null;
-}
-
-function getLoopWhileIterable_s(whileLine) {
-    // while n % a != 0 or n % b != 0: のような行から`n % b != 0`を抽出
-    let match = whileLine.match(/while (.+) (or|and) (.+):/);
-    return match ? match[3] : null;
 }
 
 function getIfCondition(line) {
@@ -118,6 +113,12 @@ function getIfConditionValue(line) {
     return match ? match[3] : null;  // 演算子の右側の値を取得
 }
 
+function getIfVariable(line) {
+    // `if` の条件式での変数を取得するロジックを実装
+    let match = line.match(/if\s+(.*)\s*(==|!=|>|<|>=|<=)\s*(.*)/);
+    return match ? match[1] : null;  // 演算子の左側の変数を取得
+}
+
 function getElifCondition(line) {
     // `elif` の条件式での変数を取得するロジックを実装
     let match = line.match(/elif\s+(.*)\s*(==|!=|>|<|>=|<=)\s*(.*)/);
@@ -128,13 +129,4 @@ function getElifConditionValue(line) {
     // `elif` の条件式での値を取得するロジックを実装
     let match = line.match(/elif\s+(.*)\s*(==|!=|>|<|>=|<=)\s*(.*)/);
     return match ? match[3] : null;  // 演算子の右側の値を取得
-}
-
-function getEvaluate(line1, line2, line3) {
-    // 条件式を評価するロジックを実装
-    let line = line1 + ' ' + line2 + ' ' +line3;
-    if(line){
-        return true;
-    }
-    return false;
 }

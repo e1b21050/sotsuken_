@@ -5,6 +5,9 @@ let pushRun_next = document.getElementById("next_step");
 let pushRun_loop = document.getElementById("step_loop");
 let pushRun_loop_prev = document.getElementById("prev_loop");
 let pushRun_loop_next = document.getElementById("next_loop");
+let pushShow_execute = document.getElementById("show_execute");
+let pushShow_step = document.getElementById("show_step");
+let pushShow_loop = document.getElementById("show_loop");
 
 let currentStep = 0;
 let codeLines = [];
@@ -305,8 +308,8 @@ function getCodeBlock(lines, index) {
         if(iterator.variable.startsWith('range(')) {
             iterator.variable = null;
         }
-        if(iterator.variable === variable) {
-            iterator.value = value;
+        if(iterator.variable === variable[number - 1]) {
+            iterator.value = value[number - 1];
         }
         // iteratorがrange(O)の場合の処理
         let iterator_f = getLoopIterable_f(lines[index]);
@@ -336,7 +339,7 @@ function getCodeBlock(lines, index) {
         }
         indentBlock.push("i+=1\n");
         console.log(indentBlock);
-        //console.log(iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3);
+        console.log(variable, value, iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3);
         if (iterator.variable !== null && iterator.value !== null) {
             loop.push(codeBlock);
             let j = 0;
@@ -776,5 +779,48 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理\nが終了しました</pre>";
             }
         }
+    });
+    // 表示切り替えボタンがクリックされたときの処理
+    pushShow_execute.addEventListener("click", function () {
+        document.getElementById("execute").classList.remove("hidden");
+        document.getElementById("variable_table").classList.remove("hidden");
+        document.getElementById("output").classList.add("hidden");
+        document.getElementById("variable_table_output").classList.add("hidden");
+        document.getElementById("loop").classList.add("hidden");
+        document.getElementById("variable_table_loop").classList.add("hidden");
+        document.getElementById("run_step").classList.add("hidden");
+        document.getElementById("prev_step").classList.add("hidden");
+        document.getElementById("next_step").classList.add("hidden");
+        document.getElementById("step_loop").classList.add("hidden");
+        document.getElementById("prev_loop").classList.add("hidden");
+        document.getElementById("next_loop").classList.add("hidden");
+    });
+    pushShow_step.addEventListener("click", function () {
+        document.getElementById("execute").classList.add("hidden");
+        document.getElementById("variable_table").classList.add("hidden");
+        document.getElementById("output").classList.remove("hidden");
+        document.getElementById("variable_table_output").classList.remove("hidden");
+        document.getElementById("loop").classList.add("hidden");
+        document.getElementById("variable_table_loop").classList.add("hidden");
+        document.getElementById("run_step").classList.remove("hidden");
+        document.getElementById("prev_step").classList.remove("hidden");
+        document.getElementById("next_step").classList.remove("hidden");
+        document.getElementById("step_loop").classList.add("hidden");
+        document.getElementById("prev_loop").classList.add("hidden");
+        document.getElementById("next_loop").classList.add("hidden");
+    });
+    pushShow_loop.addEventListener("click", function () {
+        document.getElementById("execute").classList.add("hidden");
+        document.getElementById("variable_table").classList.add("hidden");
+        document.getElementById("output").classList.add("hidden");
+        document.getElementById("variable_table_output").classList.add("hidden");
+        document.getElementById("loop").classList.remove("hidden");
+        document.getElementById("variable_table_loop").classList.remove("hidden");
+        document.getElementById("run_step").classList.add("hidden");
+        document.getElementById("prev_step").classList.add("hidden");
+        document.getElementById("next_step").classList.add("hidden");
+        document.getElementById("step_loop").classList.remove("hidden");
+        document.getElementById("prev_loop").classList.remove("hidden");
+        document.getElementById("next_loop").classList.remove("hidden");
     });
 });
