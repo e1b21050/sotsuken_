@@ -301,7 +301,7 @@ body {
     top: 0;
     left: 0;
     width: 98%;
-    height: 25%;
+    height: 28%;
     border: 4px solid #0e0d0e;
     overflow-y: auto;
     font-size: 18px;
@@ -343,4 +343,25 @@ body {
     border: 2px solid #0a0a0a;
     overflow-y: auto;
     font-size: 18px;
+}
+
+.toggle-btn {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.problem-text {
+    margin-left: 10px;
+}
+
+.toggle-btn_s{
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.answer-text {
+    margin-left: 10px;
+    padding-left: 20px;
 }
