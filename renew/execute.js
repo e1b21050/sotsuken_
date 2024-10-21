@@ -36,23 +36,12 @@ mystdout.getvalue()
 function countLoop(code) {
     return new Promise((resolve) => { // Promiseを返すようにする
         let loopcnt = 0;
-        let flgPromise = 0;
         code = "loopcnt = 0\n" + code;
         
         // while文にカウントを追加
         code = code.replace(/while\s+.*?:/, (match) => match + "\n    loopcnt += 1");
-        // for文にカウントを追加
-        // 2重for文にも対応
-        if(code.match(/for\s+.*?:\s*\n\s*for\s+.*?:/)){
-            flgPromise = 1;
-        }
-        if(flgPromise === 1){
-            code = code.replace(/for\s+.*?:\s*\n\s*for\s+.*?:/, (match) => match+ "\n        loopcnt += 1"); // 内部のループのカウント
-        }else{
-            code = code.replace(/for\s+.*?:/, (match) => match + "\n    loopcnt += 1");
-        }
         
-        console.log(code);
+        console.log("組み込み後コード\n"+code);
         
         pyodideReadyPromise.then(pyodide => {
             let captureOutputCode = `

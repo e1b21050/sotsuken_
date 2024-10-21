@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         countLoop(code)
             .then(result => {
                 loopcnt_s = result;
-                console.log(loopcnt_s);
+                console.log("繰り返し回数:"+loopcnt_s);
         });
     });
 
