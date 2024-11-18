@@ -9,6 +9,7 @@ let pushShow_execute = document.getElementById("show_execute");
 let pushShow_step = document.getElementById("show_step");
 let pushShow_loop = document.getElementById("show_loop");
 let pushHelp = document.getElementById("help_button");
+let pushConvert = document.getElementById("convert_button");
 
 let currentStep = 0;
 let codeLines = [];
@@ -144,5 +145,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
+    document.getElementById('convert_button').addEventListener('click', function() {
+        var convertText = document.getElementById('new_editor');
+        if (convertText.style.display === 'none') {
+            convertText.style.display = 'block';  // 表示
+            pushConvert.textContent = '戻る';      // ボタンの表記を「×」に変更
+        } else {
+            convertText.style.display = 'none';   // 非表示
+            pushConvert.textContent = 'convert';     // ボタンの表記を「？」に戻す
+        }
+    });
     
 });

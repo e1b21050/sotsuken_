@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>scoring</title>
+    <link rel="stylesheet" href="style-mondai.css">
+</head>
+<body>
+    <button id="goEditor" onclick="location.href='editor.html'">エディターへ</button>
+    <button id="title" onclick="location.href='index.html'">タイトルへ</button>
+    <div id="editor"></div>
+    <div id="mondai"></div>
+    <div id="answer"></div>
+    <button id="selectProblem">問題を選択</button>
+    <button id="submit">採点する</button>
+    <div id="result">＜結果＞</div>
+
+    <div id="problemSelector" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>採点する問題を選択してください</h2>
+            <ul id="problemList"></ul>
+            <button id="closeModal">閉じる</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
+    <script src="ace.js"></script>
+    <script src="mondai.js"></script>
+    <script src="scoring.js"></script>
+</body>
+</html>

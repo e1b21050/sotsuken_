@@ -19,28 +19,33 @@ body {
 }
 
 #compile {
+    border-radius: 100% 100% 0 0;
     position: absolute;
     bottom: 15.3%;
     left: 0;
     width: 12%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #080cf1;
+    background-color: #080cf1;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #run {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 41%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #08f070;
+    background-color: #08f070;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #reset {
+    border-radius: 0 0 100% 100%;
     position: absolute;
     bottom: 15.3%;
     left: 12%;
@@ -71,6 +76,7 @@ body {
     width: 48%;
     height: 30%;
     border: 4px solid #f04a08;
+    border-bottom: none;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -87,34 +93,40 @@ body {
 }
 
 #run_step {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 41%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #f04a08;
+    background-color: #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #prev_step {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 33%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #f04a08;
+    background-color: #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #next_step {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 25%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #f04a08;
+    background-color: #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -126,6 +138,7 @@ body {
     width: 48%;
     height: 30%;
     border: 4px solid #ecf008;
+    border-bottom: none;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -142,34 +155,40 @@ body {
 }
 
 #step_loop {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 41%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #ecf008;
+    background-color: #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #prev_loop {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 33%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #ecf008;
+    background-color: #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #next_loop {
+    border-radius: 100% 100% 0 0;
     position: absolute;
-    top : 29%;
+    top: 30%;
     right: 25%;
     width: 8%;
     height: 5%;
-    border: 2px solid #0a0a0a;
+    border: 2px solid #ecf008;
+    background-color: #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -181,6 +200,7 @@ body {
     width: 48%;
     height: 30%;
     border: 4px solid #08f070;
+    border-bottom: none;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -238,34 +258,40 @@ body {
 }
 
 #show_execute {
+    border-radius: 0 0 100% 100%;
     position: absolute;
     bottom: 0;
     right: 32%;
     width: 16%;
     height: 5%;
     border: 4px solid #08f070;
+    background-color: #08f070;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #show_step {
+    border-radius: 0 0 100% 100%;
     position: absolute;
     bottom: 0;
     right: 16%;
     width: 16%;
     height: 5%;
     border: 4px solid #f04a08;
+    background-color: #f04a08;
     overflow-y: auto;
     font-size: 18px;
 }
 
 #show_loop {
+    border-radius: 0 0 100% 100%;
     position: absolute;
     bottom: 0;
     right: 0;
     width: 16%;
     height: 5%;
     border: 4px solid #ecf008;
+    background-color: #ecf008;
     overflow-y: auto;
     font-size: 18px;
 }
@@ -275,8 +301,67 @@ body {
     top: 0;
     left: 0;
     width: 98%;
-    height: 25%;
+    height: 28%;
     border: 4px solid #0e0d0e;
     overflow-y: auto;
     font-size: 18px;
+}
+
+#help_button {
+    /*丸くしたい場合*/
+    border-radius: 50%;
+    position: absolute;
+    top: 29.5%;
+    right: 0;
+    width: 5%;
+    height: 5%;
+    border: 4px solid #0e0d0e;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#help_text {
+    position: absolute;
+    top: 0;
+    right: 5%;
+    width: 60%;
+    height: 75%;
+    border: 4px solid #0e0d0e;
+    overflow-y: auto;
+    font-size: 18px;
+    display: none;
+    background-color: #ddd;
+}
+
+#convert_button {
+    border-radius: 0 0 100% 100%;
+    position: absolute;
+    bottom: 15.3%;
+    left: 38%;
+    width: 12%;
+    height: 5%;
+    border: 2px solid #0a0a0a;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+.toggle-btn {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.problem-text {
+    margin-left: 10px;
+}
+
+.toggle-btn_s{
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.answer-text {
+    margin-left: 10px;
+    padding-left: 20px;
 }
