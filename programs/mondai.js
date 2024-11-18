@@ -1,8 +1,6 @@
 window.onload = function() {
     const mondai = document.getElementById("mondai");
-    const answer = document.getElementById("answer");
     let problems = "";
-    let answers = "";
 
     // 1-1 から 1-10 の問題を生成
     for (let i = 1; i <= 10; i++) {
@@ -17,8 +15,6 @@ window.onload = function() {
                     ${problemText}
                 </span>
             </p>
-        `;
-        answers += `
             <p>
                 <span class="toggle-btn_s" id="toggle-${i}_s">1-${i}: 解答を表示</span>
                 <span class="answer-text" id="answer-${i}" style="display:none;">
@@ -30,8 +26,6 @@ window.onload = function() {
 
     // 問題を挿入
     mondai.innerHTML += problems;
-    // 解答を挿入
-    answer.innerHTML += answers;
 
     // クリックイベントを追加
     for (let i = 1; i <= 10; i++) {
@@ -267,26 +261,35 @@ function createQuestion(problemText, i){
             break;
         case 10:
             problemText += 
-            "高橋君のケーキが誰かに食べられてしまいました。ケーキを食べた犯人の候補として、人 1、人 2、人 3 の三人が挙げられています。犯人の目撃者はりんごさんとすぬけくんの二人がいます。りんごさんは人 A が犯人でないことを覚えており、すぬけくんは人 B が犯人でないことを覚えています。二人の記憶から犯人を一人に特定できるかどうか判定し、特定できるならばその人の番号を出力してください。" +
-            "<br>[制約]<br>" +
-            "1≤A,B≤3(A,B:整数)" +
+            "青木君は整数 a で割り切れる数が好きです。 高橋君は整数 b で割り切れる数が好きです。n 以上の整数で、青木君と高橋君の両方が好きな最小の数を答えてください。" +
             "<br>[入力]<br>" +
             "入力は以下の形式で標準入力から与えられる。" +
-            "<br> A B" +
+            "<br> a" +
+            "<br> b" +
+            "<br> n" +
+            "・1 行目には、整数 a(1≦a≦100) が与えられる。" +
+            "・2 行目には、整数 b(1≦b≦100) が与えられる。" +
+            "・3 行目には、整数 n(1≦n≦20,000) が与えられる。" +
             "<br>[出力]<br>" +
-            "二人の記憶から犯人を一人に特定できるならばその人の番号を出力し、特定できないならば -1 を出力せよ。" +
+            "出力は以下の形式で標準出力に行うこと。1行目に、n 以上の整数で、青木君と高橋君の両方が好きな最小の数を出力してください。末尾の改行を忘れないこと。" +
             "<br>入力例1<br>" +
-            "1 2" +
-            "<br>出力例1<br>" +
+            "2" +
             "3" +
+            "8" +
+            "<br>出力例1<br>" +
+            "12" +
             "<br>入力例2<br>" +
-            "1 1" +
+            "2" +
+            "2" +
+            "2" +
             "<br>出力例2<br>" +
-            "-1" +
+            "2" +
             "<br>入力例3<br>" +
-            "3 1" +
+            "12" +
+            "8" +
+            "25" +
             "<br>出力例3<br>" +
-            "2";
+            "48";
             break;
     }
     return problemText;
@@ -324,7 +327,7 @@ function createAnswer(answerText, i){
             break;
         case 6:
             answerText += 
-            "a, b, c = map(int, input().split())<br>" +
+            "a, b, c = map(int, input().split())>br>" +
             "if a == b:<br>" +
             "&nbsp;&nbsp;&nbsp;&nbsp;print(c)<br>" +
             "elif a == c:<br>" +
@@ -374,21 +377,15 @@ function createAnswer(answerText, i){
             break;
         case 10:
             answerText += 
-            "A, B = map(int, input().split())<br>" +
-            "if A == B:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(-1)<br>" +
-            "if A == 1 and B == 2:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(3)<br>" +
-            "if A == 1 and B == 3:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(2)<br>" +
-            "if A == 2 and B == 1:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(3)<br>" +
-            "if A == 2 and B == 3:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(1)<br>" +
-            "if A == 3 and B == 1:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(2)<br>" +
-            "if A == 3 and B == 2:<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;print(1)";
+            "a, b, n = [int(input()) for i in range(3)]<br>" +
+            "while n % a != 0 or n % b != 0:<br>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;n += 1<br>" +
+            "print(n)<br>" +
+            "もしくは<br>" +
+            "a, b, n = [int(input()) for i in range(3)]<br>" +
+            "while not (n % a == 0 and n % b == 0):<br>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;n += 1<br>" +
+            "print(n)";
             break;
     }
     return answerText;

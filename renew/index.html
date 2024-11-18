@@ -2,127 +2,26 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>shira</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>title</title>
+    <link rel="stylesheet" href="style-title.css">
 </head>
 <body>
-    <div id="mondai"></div>
-    <div id="editor"></div>
-    <button id="run">run</button>
-    <button id="compile">compile</button>
-    <button id="reset">reset</button>
-    
-    <div id="result">
-        <p>＜構文解析ログ＞</p>
-    </div>
-
-    <div id="controls">
-        <button id="show_execute">実行結果</button>
-        <button id="show_step">ステップ実行</button>
-        <button id="show_loop">ループ実行</button>
-    </div>
-    
-    <div id="execute">
-        <p>＜実行結果＞</p>
-    </div>
-
-    <div id="variable_table">
-        <p>＜変数表＞</p>
-        <table id="variables_table">
-            <tr>
-                <td>変数名</td>
-                <td>値</td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-
-    <div id="output" class="hidden">
-        <p>＜ステップ実行＞</p>
-    </div>
-    
-    <div id="variable_table_output" class="hidden">
-        <p>＜変数表-ステップ＞</p>
-        <table id="variables_table_output">
-            <tr>
-                <td>変数名</td>
-                <td>値</td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-
-    <div id="loop" class="hidden">
-        <p>＜ループ実行＞</p>
-    </div>
-
-    <div id="variable_table_loop" class="hidden">
-        <p>＜変数表-ループ＞</p>
-        <table id="variables_table_loop">
-            <tr>
-                <td>変数名</td>
-                <td>値</td>
-            </tr>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-
-    <button id="run_step" class="hidden">step</button>
-    <button id="prev_step" class="hidden">&lt;</button>
-    <button id="next_step" class="hidden">&gt;</button>
-    <button id="step_loop" class="hidden">loop</button>
-    <button id="prev_loop" class="hidden">&lt;</button>
-    <button id="next_loop" class="hidden">&gt;</button>
-
-    <button id="help_button">？</button>
-    <p id="help_text" style="display:none;">
-        <b>使い方</b><br>
+    <h1 id="title">title</h1>
+    <button id="moveEditor" onclick="location.href='editor.html'">エディターへ</button>
+    <button id="moveMondai" onclick="location.href='mondai.html'">問題へ</button>
+    <button id="helpTitle">？</button>
+    <p id="helpTextTitle" style="display:none;">
+        <b>説明</b><br>
+        「×」ボタンを押すと、ヘルプが閉じます<br><br>
+        本ツールは、pythonの学習するための初学者向けのツールです<br><br>
+        「エディターへ」ボタンを押すと、エディター画面に移動します<br>
+        エディターでは、任意のプログラムを入力し、<br>
+        コンパイルや一括実行、ステップ実行、ループ実行ができます<br><br>
+        「問題へ」ボタンを押すと、問題画面に移動します<br>
+        問題では、AtCoder ABC-Aの問題を解き、<br>
+        プログラムが合っているかどうかを採点することができます<br><br>
         「×」ボタンを押すと、ヘルプが閉じます<br>
-        ●：自作プログラムでの実行 ★:Pyodideでの実行<br>
-        「compile」ボタン<br>
-        → 押すと、プログラムが構文解析されます●<br>
-        「reset」ボタン<br>
-        → 押すと、プログラムなどすべての表示がリセットされます<br>
-        「実行結果」ボタン<br>
-        → 押すと、実行結果が表示されます<br>
-        「run」ボタン<br>
-        → 押すと、プログラムが実行されます★<br>
-        「ステップ実行」ボタン<br>
-        → 押すと、ステップ実行が表示されます<br>
-        「step」ボタン<br>
-        → 押すと、ステップ実行が1ステップ実行されます★<br>
-        「&lt;」ボタン<br>
-        → 押すと、ステップ実行が1ステップ戻ります<br>
-        「&gt;」ボタン<br>
-        → 押すと、ステップ実行が1ステップ進みます<br>
-        「ループ実行」ボタン<br>
-        → 押すと、ループ実行が表示されます<br>
-        「loop」ボタン<br>
-        → 押すと、ループ実行が1ステップ実行されます★<br>
-        「&lt;」ボタン<br>
-        → 押すと、ループ実行が1ステップ戻ります<br>
-        「&gt;」ボタン<br>
-        → 押すと、ループ実行が1ステップ進みます<br>
     </p>
-
-    <button id="convert_button" class="hidden">convert</button>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
-    <script src="ace.js"></script>
-    <script src="scanner.js"></script>
-    <script src="parser.js"></script>
-    <script src="main.js"></script>
-    <script src="execute.js"></script>
-    <script src="step.js"></script>
-    <script src="loop.js"></script>
-    <script src="variables.js"></script>
-    <script src="hilight.js"></script>
-    <script src="block.js"></script>
-    <script src="get.js"></script>
-    <script src="mondai.js"></script>
 </body>
+    <script src="title.js"></script>
 </html>
