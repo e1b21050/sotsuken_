@@ -2,23 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>scoring</title>
+    <title>question&scoring</title>
     <link rel="stylesheet" href="style-mondai.css">
 </head>
 <body>
     <button id="goEditor" onclick="location.href='editor.html'">エディターへ</button>
     <button id="title" onclick="location.href='index.html'">タイトルへ</button>
     <div id="editor"></div>
-    <div id="mondai"></div>
-    <div id="answer"></div>
-    <button id="selectProblem">問題を選択</button>
+    <div id="mondai">＜問題一覧＞</div>
+    <div id="answer">＜解答例一覧＞</div>
+    <button id="selectQuestion">問題を選択</button>
     <button id="submit">採点する</button>
+    <button id="reset">リセット</button>
     <div id="result">＜結果＞</div>
 
-    <div id="problemSelector" class="modal" style="display:none;">
+    <div id="questionSelector" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>採点する問題を選択してください</h2>
-            <ul id="problemList"></ul>
+            <ul id="questionList"></ul>
             <button id="closeModal">閉じる</button>
         </div>
     </div>

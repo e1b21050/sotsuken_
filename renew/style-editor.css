@@ -10,7 +10,7 @@ body {
 
 /* エディタ部分の配置 */
 #editor {
-    position: absolute;
+    position: fixed;
     bottom: 20%;
     left: 0;
     width: 50%;
@@ -20,7 +20,7 @@ body {
 
 #compile {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     bottom: 15.3%;
     left: 0;
@@ -34,7 +34,7 @@ body {
 
 #run {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 41%;
@@ -48,7 +48,7 @@ body {
 
 #reset {
     border-radius: 0 0 100% 100%;
-    position: absolute;
+    position: fixed;
     color: rgb(153, 152, 152);
     bottom: 15.3%;
     left: 12%;
@@ -61,7 +61,7 @@ body {
 
 /* 構文解析ログの配置 */
 #result {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 50%;
@@ -73,7 +73,7 @@ body {
 
 
 #output {
-    position: absolute;
+    position: fixed;
     bottom: 49.6%;
     right: 0;
     width: 48%;
@@ -85,7 +85,7 @@ body {
 }
 
 #variable_table_output {
-    position: absolute;
+    position: fixed;
     bottom: 5%;
     right: 0%;
     width: 48%;
@@ -97,7 +97,7 @@ body {
 
 #run_step {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 41%;
@@ -111,7 +111,7 @@ body {
 
 #prev_step {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 33%;
@@ -125,7 +125,7 @@ body {
 
 #next_step {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 25%;
@@ -138,7 +138,7 @@ body {
 }
 
 #loop {
-    position: absolute;
+    position: fixed;
     bottom: 49.6%;
     right: 0;
     width: 48%;
@@ -150,7 +150,7 @@ body {
 }
 
 #variable_table_loop {
-    position: absolute;
+    position: fixed;
     bottom: 5%;
     right: 0%;
     width: 48%;
@@ -162,7 +162,7 @@ body {
 
 #step_loop {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 41%;
@@ -176,7 +176,7 @@ body {
 
 #prev_loop {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 33%;
@@ -190,7 +190,7 @@ body {
 
 #next_loop {
     border-radius: 100% 100% 0 0;
-    position: absolute;
+    position: fixed;
     color: white;
     top: 10%;
     right: 25%;
@@ -203,7 +203,7 @@ body {
 }
 
 #execute {
-    position: absolute;
+    position: fixed;
     bottom : 49.6%;
     right: 0;
     width: 48%;
@@ -215,7 +215,7 @@ body {
 }
 
 #variable_table {
-    position: absolute;
+    position: fixed;
     bottom : 5%;
     right: 0%;
     width: 48%;
@@ -268,7 +268,7 @@ body {
 
 #show_execute {
     border-radius: 0 0 100% 100%;
-    position: absolute;
+    position: fixed;
     color: white;
     bottom: 0;
     right: 32%;
@@ -282,7 +282,7 @@ body {
 
 #show_step {
     border-radius: 0 0 100% 100%;
-    position: absolute;
+    position: fixed;
     color: white;
     bottom: 0;
     right: 16%;
@@ -296,7 +296,7 @@ body {
 
 #show_loop {
     border-radius: 0 0 100% 100%;
-    position: absolute;
+    position: fixed;
     color: white;
     bottom: 0;
     right: 0;
@@ -311,7 +311,7 @@ body {
 #help_button {
     /*丸くしたい場合*/
     border-radius: 50%;
-    position: absolute;
+    position: fixed;
     top: 10%;
     right: 0;
     width: 5%;
@@ -322,7 +322,7 @@ body {
 }
 
 #help_text {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 5%;
     width: 60%;
@@ -347,7 +347,7 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     left: 0;
     box-shadow: 5px 5px 0px #1567C3;
 }
@@ -371,7 +371,7 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     left: 12%;
     box-shadow: 5px 5px 0px #1567C3;
 }

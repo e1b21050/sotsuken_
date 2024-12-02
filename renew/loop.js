@@ -1,3 +1,4 @@
+// loop実行する関数
 function exe_loop(code){
     pyodideReadyPromise.then(pyodide => {
         console.log(code);
