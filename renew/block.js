@@ -1,10 +1,12 @@
-let flg = 0;
-let flgDoubleFor = 0;
-let variable = [];
-let value = [];
-let number = 0;
-let codeBlockTmp = "";
-let variablesSecond = [];
+let flg = 0; // for文のフラグ
+let flgDoubleFor = 0; // 2重for文のフラグ
+let variable = []; // 変数名
+let value = []; // 値
+let number = 0; // 変数の数
+let codeBlockTmp = ""; // コードブロックの一時保存
+let variablesSecond = []; // 2重for文の変数名
+
+//コードブロックとして変換する関数
 function getCodeBlock(lines, index) {
     let codeBlock = "";
     let currentIndentLevel = getIndentLevel(lines[index]);

@@ -1,3 +1,4 @@
+// 一括に実行する関数
 function exe(code) {
     pyodideReadyPromise.then(pyodide => {
         try {
@@ -32,7 +33,7 @@ mystdout.getvalue()
     });
 }
 
-// 繰り返し回数を数える
+// 繰り返し回数を数える関数
 function countLoop(code) {
     return new Promise((resolve) => { // Promiseを返すようにする
         let loopcnt = 0;
@@ -54,14 +55,12 @@ sys.stdout = mystdout = StringIO()
 # 変数状態を保持
 global_vars = globals().copy()
 
-# ループ回数を数える
-
 ${code}
 
 sys.stdout = old_stdout
 mystdout.getvalue()
 `;
-
+            
             // コードを実行
             pyodide.runPython(captureOutputCode);
             

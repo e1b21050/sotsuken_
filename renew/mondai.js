@@ -1,20 +1,20 @@
 window.onload = function() {
     const mondai = document.getElementById("mondai");
     const answer = document.getElementById("answer");
-    let problems = "";
+    let questions = "";
     let answers = "";
 
     // 1-1 から 1-10 の問題を生成
     for (let i = 1; i <= 10; i++) {
-        let problemText = "<br>[問題]<br>";
+        let questionText = "<br>[問題]<br>";
         let answerText = "<br>[解答]<br>";         
-        problemText = createQuestion(problemText, i);
+        questionText = createQuestion(questionText, i);
         answerText = createAnswer(answerText, i);
-        problems += `
+        questions += `
             <p>
                 <span class="toggle-btn" id="toggle-${i}">1-${i}: 問題を表示</span>
-                <span class="problem-text" id="problem-${i}" style="display:none;">
-                    ${problemText}
+                <span class="question-text" id="question-${i}" style="display:none;">
+                    ${questionText}
                 </span>
             </p>
         `;
@@ -29,23 +29,23 @@ window.onload = function() {
     }
 
     // 問題を挿入
-    mondai.innerHTML += problems;
+    mondai.innerHTML += questions;
     // 解答を挿入
     answer.innerHTML += answers;
 
     // クリックイベントを追加
     for (let i = 1; i <= 10; i++) {
         const toggleBtn = document.getElementById(`toggle-${i}`);
-        const problemText = document.getElementById(`problem-${i}`);
+        const questionText = document.getElementById(`question-${i}`);
         const toggleBtn_s = document.getElementById(`toggle-${i}_s`);
         const answerText = document.getElementById(`answer-${i}`);
 
         toggleBtn.addEventListener("click", function() {
-            if (problemText.style.display === "none") {
-                problemText.style.display = "inline";
+            if (questionText.style.display === "none") {
+                questionText.style.display = "inline";
                 toggleBtn.textContent = `1-${i}: 問題を隠す`;
             } else {
-                problemText.style.display = "none";
+                questionText.style.display = "none";
                 toggleBtn.textContent = `1-${i}: 問題を表示`;
             }
         });
@@ -61,10 +61,10 @@ window.onload = function() {
     }
 };
 
-function createQuestion(problemText, i){
+function createQuestion(questionText, i){
     switch (i) {
         case 1:
-            problemText += 
+            questionText += 
             " A, B の 2 つの整数が与えられます。A と B の数値を入れ替えた後、A, B を出力しなさい。" +
             "<br>[入力]<br>" +
             " 入力は以下の形式で標準入力から与えられる。" +
@@ -82,7 +82,7 @@ function createQuestion(problemText, i){
             "5 5";
             break;
         case 2:
-            problemText += 
+            questionText += 
             "3 つの箱 A,B,C があります。それぞれの箱には、整数が 1 つ入っています。現在、箱 A,B,C に入っている整数はそれぞれ X,Y,Z です。これらの箱に対して以下の操作を順に行った後の、それぞれの箱に入っている整数を求めてください。<br>" +
             "・箱 A と箱 B の中身を入れ替える<br>・箱 A と箱 C の中身を入れ替える<br>" +
             "<br>[制約]<br>" +
@@ -106,7 +106,7 @@ function createQuestion(problemText, i){
             "31 41 59";
             break;
         case 3:
-            problemText += 
+            questionText += 
             "N 個のボールが入っていた箱から A 個のボールを取り出し、新たに B 個のボールを入れました。今、箱にはボールが何個入っていますか?" +
             "<br>[制約]<br>" +
             "・入力はすべて整数" +
@@ -132,7 +132,7 @@ function createQuestion(problemText, i){
             ;
             break;
         case 4:
-            problemText += 
+            questionText += 
             "高橋君は子供の頃の写真を整理している。整理している最中に、写真を入れている木箱が出てきたので、木箱内にある写真をアルバムに貼って整理することにした。どの位の大きさのアルバムが必要なのか確認するために、木箱の中にある写真の枚数が知りたくなった。高橋君はすべての写真に正整数の通し番号を付けており、木箱内には通し番号が S 以上 T 以下であるすべての写真が入っている。高橋君は、木箱にある写真の枚数が知りたいが、写真を 1 枚ずつ数えるのは大変である。あなたは高橋くんの代わりに、S と T の値からアルバムに貼られている写真の枚数を計算するプログラムを作成せよ。"+
             "<br>[入力]<br>" +
             "入力は以下の形式で標準入力から与えられる。" +
@@ -150,7 +150,7 @@ function createQuestion(problemText, i){
             "1";
             break;
         case 5:
-            problemText += 
+            questionText += 
             "クイズです。<br>" +
             "・第 1 問： あなたが今参加しているこのコンテストの略称は何でしょう？ アルファベット大文字 3 文字で答えてください。<br>" +
             "・第 2 問： あなたが今参加しているこのコンテストなどを運営しているAtCoder株式会社の代表取締役社長は誰でしょう？ アルファベット小文字 8 文字のハンドルネームで答えてください。<br>" +
@@ -171,7 +171,7 @@ function createQuestion(problemText, i){
             "chokudai";
             break;
         case 6:
-            problemText += 
+            questionText += 
             "高橋君が 3 つのサイコロを振ったところそれぞれ a,b,c の目が出ました。a,b,c のうちある 2 つが同じときは残りの 1 つのサイコロの目を、同じものがないときは 0 を出力してください。" +
             "<br>[制約]<br>" +
             "・1≦a,b,c≦6(a,b,c:整数)" +
@@ -194,7 +194,7 @@ function createQuestion(problemText, i){
             "3";
             break;
         case 7:
-            problemText += 
+            questionText += 
             "v と w のみからなる文字列 S が与えられます。S の中に、下に尖っている部分が何箇所あるかを出力してください（入出力例にある図もご参照ください）。" +
             "<br>[制約]<br>" +
             "・S は v と w のみからなる文字列<br>" +
@@ -218,7 +218,7 @@ function createQuestion(problemText, i){
             "12";
             break;
         case 8:
-            problemText += 
+            questionText += 
             "N 以下の非負整数を大きい方から順にすべて出力してください。" +
             "<br>[制約]<br>" +
             "・1≦N≦100(N:整数)" +
@@ -241,7 +241,7 @@ function createQuestion(problemText, i){
             "0";
             break;
         case 9:
-            problemText += 
+            questionText += 
             "高橋くんは満月が好きです。今日を 1 日目とすると、今日以降で満月を見られる最初の日は M 日目です。以後は P 日ごと、つまり M+P 日目、M+2P 日目、… に満月を見られます。1 日目から N 日目まで（両端を含む）の中で、高橋くんが満月を見られる日の数を求めてください。" +
             "<br>[制約]<br>" +
             "・1≦N≦2*10^5" +
@@ -266,7 +266,7 @@ function createQuestion(problemText, i){
             "628";
             break;
         case 10:
-            problemText += 
+            questionText += 
             "高橋君のケーキが誰かに食べられてしまいました。ケーキを食べた犯人の候補として、人 1、人 2、人 3 の三人が挙げられています。犯人の目撃者はりんごさんとすぬけくんの二人がいます。りんごさんは人 A が犯人でないことを覚えており、すぬけくんは人 B が犯人でないことを覚えています。二人の記憶から犯人を一人に特定できるかどうか判定し、特定できるならばその人の番号を出力してください。" +
             "<br>[制約]<br>" +
             "1≤A,B≤3(A,B:整数)" +
@@ -289,7 +289,7 @@ function createQuestion(problemText, i){
             "2";
             break;
     }
-    return problemText;
+    return questionText;
 }
 
 function createAnswer(answerText, i){

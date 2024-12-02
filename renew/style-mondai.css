@@ -10,7 +10,7 @@ body {
 
 /* エディタ部分の配置 */
 #editor {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     width: 48%;
@@ -19,7 +19,7 @@ body {
 }
 
 #mondai {
-    position: absolute;
+    position: fixed;
     top: 6%;
     left: 0;
     width: 50%;
@@ -30,7 +30,7 @@ body {
 }
 
 #answer {
-    position: absolute;
+    position: fixed;
     top: 66.5%;
     left: 0;
     width: 50%;
@@ -43,7 +43,7 @@ body {
 #help_button {
     /*丸くしたい場合*/
     border-radius: 50%;
-    position: absolute;
+    position: fixed;
     top: 29.5%;
     right: 0;
     width: 5%;
@@ -54,7 +54,7 @@ body {
 }
 
 #help_text {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 5%;
     width: 60%;
@@ -100,7 +100,7 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     left: 17%;
     box-shadow: 5px 5px 0px #1567C3;
 }
@@ -124,7 +124,7 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     left: 0;
     box-shadow: 5px 5px 0px #1567C3;
 }
@@ -135,7 +135,7 @@ body {
     transform: translate(4px,4px);
 }
 
-#selectProblem{
+#selectQuestion{
     background-color: #f44336; /* Red */
     border: none;
     color: white;
@@ -148,13 +148,13 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     top: 50%;
     right: 33.6%;
     box-shadow: 5px 5px 0px #1567C3;
 }
 
-#selectProblem:hover {
+#selectQuestion:hover {
     background-color: #da190b;
     box-shadow: unset;
     transform: translate(4px,4px);
@@ -173,7 +173,7 @@ body {
     cursor: pointer;
     border-radius: 12px;
     transition: background-color 0.3s ease;
-    position: absolute;
+    position: fixed;
     top: 50%;
     right: 20%;
     box-shadow: 5px 5px 0px #1566c3;
@@ -185,8 +185,33 @@ body {
     transform: translate(4px,4px);
 }
 
+#reset{
+    background-color: #f44336; /* Red */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+    position: fixed;
+    top: 50%;
+    right: 6.4%;
+    box-shadow: 5px 5px 0px #1566c3;
+}
+
+#reset:hover {
+    background-color: #da190b;
+    box-shadow: unset;
+    transform: translate(4px,4px);
+}
+
 #result{
-    position: absolute;
+    position: fixed;
     bottom: 3.2%;
     right: 0;
     width: 48%;
@@ -216,12 +241,12 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
-#problemList li {
+#questionList li {
     margin: 10px 0;
     cursor: pointer;
     list-style: none;
 }
-#problemList li:hover {
+#questionList li:hover {
     color: blue;
     text-decoration: underline;
 }
