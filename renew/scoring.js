@@ -95,7 +95,12 @@ function getVariables(code) {
     // 変数名を取得
     let codeLines = code.split('\n');
     for (let line of codeLines) {
-        if (line.includes('=')) { // 変数→'='が含まれている行として処理
+        // 変数→'='が含まれている行として処理
+        if (line.includes('=') && !line.includes('==') && 
+        !line.includes('!=') && !line.includes('<=') && 
+        !line.includes('>=') && !line.includes('+=') &&
+        !line.includes('-=') && !line.includes('*=') &&
+        !line.includes('/=')) { 
             let variableName = line.split('=')[0].trim();
             let ValueOrName = line.split('=')[1].trim();
             // ,が含まれている場合は分割
