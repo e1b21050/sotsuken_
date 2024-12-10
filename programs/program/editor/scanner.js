@@ -1,6 +1,6 @@
 let parsedTokens = []; // グローバル変数を追加
 
-let pushRun = document.getElementById("run");
+const pushRun = document.getElementById("run");
 
 const tk_type = {
     TK_IDENTIFIER: 'TK_IDENTIFIER',
