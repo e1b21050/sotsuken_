@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>shira</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>editor</title>
+    <link rel="stylesheet" href="../css/style-editor.css">
 </head>
 <body>
-    <div id="mondai"></div>
+    <button id="mondai" onclick="location.href='mondai.html'">問題へ</button>
+    <button id="title" onclick="location.href='index.html'">タイトルへ</button>
     <div id="editor"></div>
     <button id="run">run</button>
     <button id="compile">compile</button>
@@ -17,7 +18,7 @@
     </div>
 
     <div id="controls">
-        <button id="show_execute">実行結果</button>
+        <button id="show_execute">一括実行</button>
         <button id="show_step">ステップ実行</button>
         <button id="show_loop">ループ実行</button>
     </div>
@@ -107,22 +108,20 @@
         「&gt;」ボタン<br>
         → 押すと、ループ実行が1ステップ進みます<br>
     </p>
-
-    <button id="convert_button" class="hidden">convert</button>
-    
+   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>
-    <script src="ace.js"></script>
-    <script src="scanner.js"></script>
-    <script src="parser.js"></script>
-    <script src="main.js"></script>
-    <script src="execute.js"></script>
-    <script src="step.js"></script>
-    <script src="loop.js"></script>
-    <script src="variables.js"></script>
-    <script src="hilight.js"></script>
-    <script src="block.js"></script>
-    <script src="get.js"></script>
-    <script src="mondai.js"></script>
+    <script src="../program/base/ace.js"></script>
+    <script src="../program/editor/scanner.js"></script>
+    <script src="../program/editor/parser.js"></script>
+    <script src="../program/editor/main.js"></script>
+    <script src="../program/editor/execute.js"></script>
+    <script src="../program/editor/step.js"></script>
+    <script src="../program/editor/loop.js"></script>
+    <script src="../program/editor/variables.js"></script>
+    <script src="../program/editor/hilight.js"></script>
+    <script src="../program/editor/block.js"></script>
+    <script src="../program/editor/get.js"></script>
+    <script src="../program/editor/reset.js"></script>
 </body>
 </html>

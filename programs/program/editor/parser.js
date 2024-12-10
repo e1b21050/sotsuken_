@@ -1,25 +1,25 @@
-let push_parser = document.getElementById("compile");
-
-let currentTokenIndex = 0;
-let tokens = [];
-let token;
-let token_tmp;
-let nestedLevel;
-let nestedLevel_t;
-let nestedlevel_if;
-let identifierImport;
-let cnt_else = new Number(nestedLevel);
-let cnt_shugo = 0;
-let code_ts = [];
-let code_t = "";
-let code_result = "";
-let i;
+const push_parser = document.getElementById("compile");
 let resultDiv = document.getElementById('result');
-let if_flag = false;
-let elif_flag = false;
-let else_flag = false;
-let for_flag = false;
-let while_flag = false;
+
+let currentTokenIndex = 0; // 現在のトークンのインデックス
+let tokens = []; // トークンの配列
+let token; // 現在のトークン
+let token_tmp; // 一時的なトークン
+let nestedLevel; // ネストレベル
+let nestedLevel_t; // 一時的なネストレベル
+let nestedlevel_if; // if文(ネスト構造となる場合)のネストレベル
+let identifierImport; // import文の識別子 
+let cnt_else = new Number(nestedLevel); // else文のカウント
+let cnt_shugo = 0; // 集合文のカウント
+let code_ts = []; // コードの配列
+let code_t = ""; // 一時的なコード
+let code_result = ""; // コードの結果
+let i;
+let if_flag = false; // if文のフラグ
+let elif_flag = false; // elif文のフラグ
+let else_flag = false; // else文のフラグ
+let for_flag = false; // for文のフラグ
+let while_flag = false; // while文のフラグ
 
 function appendToResult(message, isError = false) {
     let resultElement = document.createElement('p');

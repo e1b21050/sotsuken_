@@ -1,3 +1,4 @@
+// タイトル画面の説明文を表示する
 document.addEventListener('DOMContentLoaded', (event) => {
     let pushHelpTitle = document.getElementById("helpTitle");
     pushHelpTitle.addEventListener('click', function() {
