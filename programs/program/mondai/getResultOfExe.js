@@ -1,9 +1,18 @@
 async function runPythonWithInput(code) {
-    // Pyodideが初期化されているかを確認
     const pyodideScoring = await pyodideScoringReadyPromise;
 
     code = convertToPython(code);
     //console.log(code);
+
+    let loopcnt = 0; // ループ回数
+    let codeLoop = "loopcnt = 0\n" + code;
+        
+    // while文にカウントを追加
+    // 無限ループを防止するために100回で打ち切る
+    codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
+        "\n    loopcnt += 1\n" +
+        "    if loopcnt > 100:\n" +
+        "        break");
 
     const pythonCode = `
 import sys
@@ -16,7 +25,7 @@ sys.stdout = mystdout = StringIO()
 # 変数状態を保持
 global_vars = globals().copy()
 
-${code}
+${codeLoop}
 
 # キャプチャした出力を取得
 sys.stdout = old_stdout
@@ -52,21 +61,16 @@ builtins.input = input
         pyodideScoring.runPython("builtins.input = builtins.input.__globals__['__builtins__'].input");
     }
 
-    getVariables(code);
+    getVariables(code, variableNamesInput);
 
-    /*必要に応じて結果を表示
-    results.forEach(({ input, output }) => {
+    //必要に応じて結果を表示
+    /*results.forEach(({ input, output }) => {
         console.log(`入力: ${input}\n出力:\n${output}`);
     });*/
 }
 
 async function runPythonWithInputOfAnswer(code) {
-    // Pyodideが初期化されているかを確認
     const pyodideAnswer = await pyodideAnswerReadyPromise;
-    if (!pyodideAnswer) {
-        console.error("Pyodideがロードされていません。");
-        return;
-    }
 
     const pythonCodeAnswer = `
 import sys
@@ -115,8 +119,8 @@ builtins.input = input
         pyodideAnswer.runPython("builtins.input = builtins.input.__globals__['__builtins__'].input");
     }
 
-    /*必要に応じて結果を表示
-    resultsAnswer.forEach(({ input, output }) => {
+    //必要に応じて結果を表示
+    /*resultsAnswer.forEach(({ input, output }) => {
         console.log(`入力: ${input}\n出力:\n${output}`);
     });*/
     runScoringResult(results, resultsAnswer);

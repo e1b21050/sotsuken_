@@ -1,5 +1,6 @@
-function selectInputExample(questionNumber) {
-    switch(questionNumber){
+// 解答例などを作成する関数（コード側で用意する必要あり）
+function selectInputExample(mondaiNumber) {
+    switch(mondaiNumber){
         case 1:
             inputExamples = ['1 2', '5 5', '3 5', '10 20', '23 12', '11 11'];
             answerCode = `

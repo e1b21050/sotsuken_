@@ -1,5 +1,4 @@
-function getVariables(code) {
-    let variableNamesInsert = [];
+function getVariables(code, variableNamesInput) {
     // 変数名を取得
     let codeLines = code.split('\n');
     for (let line of codeLines) {
@@ -50,6 +49,7 @@ function getVariables(code) {
     console.log(variableNamesInput);
 }
 
+// swapでのパターン対応
 function checkTmp(variableNamesInsert, variableNamesInput){
     if(variableNamesInsert.length === 6){
         if( variableNamesInsert[0] === variableNamesInput[2] && 
@@ -156,6 +156,7 @@ function checkTmp(variableNamesInsert, variableNamesInput){
     }
 }
 
+// 単一入力を複数文を一文にまとめる
 function convertToPython(code) {
     let codeLines = code.split('\n');
     let convertedCode = '';

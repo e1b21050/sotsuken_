@@ -8,18 +8,39 @@
 <body>
     <button id="goEditor" onclick="location.href='editor.html'">エディターへ</button>
     <button id="title" onclick="location.href='index.html'">タイトルへ</button>
+    <button id="helpMondai">？</button>
+    <p id="helpMondaiText" style="display:none;">
+        問題を解いて採点するページです。<br>
+        「x」ボタンを押すとヘルプが閉じます。<br>
+        1. エディターにプログラムを書いてください。<br>
+        2. 「問題を選択」ボタンを押して問題を選択してください。<br>
+        3. 「採点する」ボタンを押すと採点が行われます。<br>
+        4. 2つの観点で採点された結果が表示されます。<br>
+        いくつかの入力例に対して正しい出力が出力されるかどうか<br>
+        入力されたコードがコーディング規約に適しているか<br>
+        5. 「リセット」ボタンで採点結果をリセットすることができます。<br>
+        
+        ※コーディング規約について<br>
+        コーディング規約はPEP8を参考にしています。<br>
+        ※問題について<br>
+        各問題にAtCoderでの問題番号を表示しています。<br>
+        問題は「問題一覧」下のボタンを押すことで表示されます。<br>
+        各問題には解答例が用意されています。<br>
+        解答例は「解答例一覧」下のボタンを押すことで表示されます。<br>
+        あくまでも解答例は一例であり、他にも正解がありえます。<br>
+    </p>
     <div id="editor"></div>
     <div id="mondai">＜問題一覧＞</div>
     <div id="answer">＜解答例一覧＞</div>
-    <button id="selectQuestion">問題を選択</button>
+    <button id="selectMondai">問題を選択</button>
     <button id="submit">採点する</button>
     <button id="reset">リセット</button>
     <div id="result">＜結果＞</div>
 
-    <div id="questionSelector" class="modal" style="display:none;">
+    <div id="mondaiSelector" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>採点する問題を選択してください</h2>
-            <ul id="questionList"></ul>
+            <ul id="mondaiList"></ul>
             <button id="closeModal">閉じる</button>
         </div>
     </div>

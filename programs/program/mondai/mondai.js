@@ -1,20 +1,20 @@
 window.onload = function() {
     const mondai = document.getElementById("mondai");
     const answer = document.getElementById("answer");
-    let questions = "";
+    let mondais = "";
     let answers = "";
 
     // 1-1 から 1-10 の問題を生成
     for (let i = 1; i <= 10; i++) {
-        let questionText = "<br>[問題]<br>";
+        let mondaiText = "<br>[問題]<br>";
         let answerText = "<br>[解答]<br>";         
-        questionText = createQuestion(questionText, i);
+        mondaiText = createMondai(mondaiText, i);
         answerText = createAnswer(answerText, i);
-        questions += `
+        mondais += `
             <p>
                 <span class="toggle-btn" id="toggle-${i}">1-${i}: 問題を表示</span>
-                <span class="question-text" id="question-${i}" style="display:none;">
-                    ${questionText}
+                <span class="mondai-text" id="mondai-${i}" style="display:none;">
+                    ${mondaiText}
                 </span>
             </p>
         `;
@@ -29,23 +29,23 @@ window.onload = function() {
     }
 
     // 問題を挿入
-    mondai.innerHTML += questions;
+    mondai.innerHTML += mondais;
     // 解答を挿入
     answer.innerHTML += answers;
 
     // クリックイベントを追加
     for (let i = 1; i <= 10; i++) {
         const toggleBtn = document.getElementById(`toggle-${i}`);
-        const questionText = document.getElementById(`question-${i}`);
+        const mondaiText = document.getElementById(`mondai-${i}`);
         const toggleBtn_s = document.getElementById(`toggle-${i}_s`);
         const answerText = document.getElementById(`answer-${i}`);
 
         toggleBtn.addEventListener("click", function() {
-            if (questionText.style.display === "none") {
-                questionText.style.display = "inline";
+            if (mondaiText.style.display === "none") {
+                mondaiText.style.display = "inline";
                 toggleBtn.textContent = `1-${i}: 問題を隠す`;
             } else {
-                questionText.style.display = "none";
+                mondaiText.style.display = "none";
                 toggleBtn.textContent = `1-${i}: 問題を表示`;
             }
         });
