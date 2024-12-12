@@ -2,6 +2,16 @@
 function exe(code) {
     pyodideReadyPromise.then(pyodide => {
         try {
+            let loopcnt = 0; // ループ回数
+            let codeLoop = "loopcnt = 0\n" + code;
+        
+            // while文にカウントを追加
+            // 無限ループを防止するために100回で打ち切る
+            codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
+            "\n    loopcnt += 1\n" +
+            "    if loopcnt > 100:\n" +
+            "        print('無限ループを防止しました')\n" +
+            "        break");
             let captureOutputCode = `
 import sys
 from io import StringIO
@@ -12,7 +22,7 @@ sys.stdout = mystdout = StringIO()
 # 変数状態を保持
 global_vars = globals().copy()
 
-${code}
+${codeLoop}
 
 sys.stdout = old_stdout
 mystdout.getvalue()
@@ -36,13 +46,17 @@ mystdout.getvalue()
 // 繰り返し回数を数える関数
 function countLoop(code) {
     return new Promise((resolve) => { // Promiseを返すようにする
-        let loopcnt = 0;
-        code = "loopcnt = 0\n" + code;
+        let loopcnt = 0; // ループ回数
+        let codeLoop = "loopcnt = 0\n" + code;
         
         // while文にカウントを追加
-        code = code.replace(/while\s+.*?:/, (match) => match + "\n    loopcnt += 1");
+        // 無限ループを防止するために100回で打ち切る
+        codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
+            "\n    loopcnt += 1\n" +
+            "    if loopcnt > 100:\n" +
+            "        break");
         
-        console.log("組み込み後コード\n"+code);
+        //console.log("組み込み後コード\n"+code);
         
         pyodideReadyPromise.then(pyodide => {
             let captureOutputCode = `
@@ -55,7 +69,7 @@ sys.stdout = mystdout = StringIO()
 # 変数状態を保持
 global_vars = globals().copy()
 
-${code}
+${codeLoop}
 
 sys.stdout = old_stdout
 mystdout.getvalue()

@@ -1,16 +1,18 @@
-const push_select = document.getElementById("selectQuestion");
+const push_select = document.getElementById("selectMondai");
 const push_scoring = document.getElementById("submit");
 const scoring_reset = document.getElementById("reset");
-const modal = document.getElementById('questionSelector');
-const questionList = document.getElementById('questionList');
+const modal = document.getElementById('mondaiSelector');
+const mondaiList = document.getElementById('mondaiList');
 const closeModal = document.getElementById('closeModal');
-let questionNumber = 0; // 問題番号を保存
+const pushHelpMondai = document.getElementById('helpMondai');
+let mondaiNumber = 0; // 問題番号を保存
 let inputExamples = []; // 入力例を保存
 let answerCode = ''; // 正解のコードを保存
 let results = []; // 入力例ごとの実行結果を保存
 let resultsAnswer = []; // 入力例ごとの正解の実行結果を保存
 let variableNamesInput = []; // 変数名を保存 
 let variableNamesAnswer = []; // 正解の変数名を保存
+let variableNamesInsert = []; // 変数名を保存
 let cntEmptyLine = 0; // 空行のカウント
 let deductionPointOfEmptyLine = 0; // 空行の減点
 let deductionPointOfEmpties = 0; // 空白の減点
@@ -33,11 +35,9 @@ function runScoringResult(results, resultsAnswer) {
         const resultAnswer = resultsAnswer[i];
         if (result.output === resultAnswer.output) {
             correctCount++;
-            //console.log(`入力: ${result.input} => 正解`);
             document.getElementById('result').innerHTML += `<br>入力: ${result.input} => 正解`;
         } else {
             incorrectCount++;
-            //console.log(`入力: ${result.input} => 不正解`);
             document.getElementById('result').innerHTML += `<br>入力: ${result.input} => 不正解`;
         }
     }
@@ -68,13 +68,13 @@ function runScoringCode(variableNamesInput, variableNamesAnswer){
 document.addEventListener('DOMContentLoaded', (event) => {
     let cntPushScoring = 0; // 採点ボタンが押された回数
     push_select.addEventListener("click", function () {
-        selectquestion();
+        selectMondai();
     });
     push_scoring.addEventListener("click", function () {
         cntPushScoring++;
         if(cntPushScoring > 1){
             document.getElementById('result').innerHTML += `<br>もう採点済みです。`;
-        }else if(questionNumber === 0){
+        }else if(mondaiNumber === 0){
             document.getElementById('result').innerHTML += `<br>問題を選択してください。`;
             cntPushScoring = 0;
         }else{
@@ -85,10 +85,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
     scoring_reset.addEventListener("click", function () {
         document.getElementById('result').innerHTML = '＜結果＞';
-        cntPushScoring = 0;
-        questionNumber = 0;
-        deductionPointOfEmpties = 0;
-        results = [];
-        flgTmp = false;
+        editor.setValue(''); // エディタの中身をリセット
+        cntPushScoring = 0; // 採点ボタンが押された回数をリセット
+        mondaiNumber = 0; // 問題番号をリセット
+        deductionPointOfEmpties = 0; // 空白の減点をリセット
+        results = []; // 入力例ごとの実行結果をリセット
+        resultsAnswer = []; // 入力例ごとの正解の実行結果をリセット
+        variableNamesInput = []; // 変数名をリセット
+        flgTmp = false; // tmpが含まれているかのフラグをリセット
+    });
+    pushHelpMondai.addEventListener("click", function () {
+        var modal = document.getElementById('helpMondaiText');
+        if(modal.style.display === "block"){
+            modal.style.display = "none";
+            pushHelpMondai.textContent = "？";
+        }
+        else{
+            modal.style.display = "block";
+            pushHelpMondai.textContent = "×";
+        }
     });
 });

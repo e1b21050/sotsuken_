@@ -44,3 +44,6 @@
 | 40 | map |
 | 41 | list |
 | 42 | split |
+| 43 | import |
+| 44 | and |
+| 45 | or |

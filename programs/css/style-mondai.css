@@ -135,7 +135,33 @@ body {
     transform: translate(4px,4px);
 }
 
-#selectQuestion{
+#helpMondai{
+    border-radius: 50%;
+    position: absolute;
+    top: 1%;
+    left: 35%;
+    width: 5%;
+    height: 5%;
+    border: 4px solid #0e0d0e;
+    overflow-y: auto;
+    font-size: 18px;
+}
+
+#helpMondaiText{
+    position: absolute;
+    top: 5%;
+    right: 5%;
+    width: 60%;
+    height: 50%;
+    border: 4px solid #0e0d0e;
+    overflow-y: auto;
+    font-size: 18px;
+    display: none;
+    background-color: #ddd;
+    z-index: 1;/*最前に表示したいため指定（基準値が0のため）*/
+}
+
+#selectMondai{
     background-color: #f44336; /* Red */
     border: none;
     color: white;
@@ -154,7 +180,7 @@ body {
     box-shadow: 5px 5px 0px #1567C3;
 }
 
-#selectQuestion:hover {
+#selectMondai:hover {
     background-color: #da190b;
     box-shadow: unset;
     transform: translate(4px,4px);
@@ -241,12 +267,12 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
 }
-#questionList li {
+#mondaiList li {
     margin: 10px 0;
     cursor: pointer;
     list-style: none;
 }
-#questionList li:hover {
+#mondaiList li:hover {
     color: blue;
     text-decoration: underline;
 }
