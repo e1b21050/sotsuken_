@@ -1,6 +1,7 @@
 function getVariables(code, variableNamesInput) {
     // 変数名を取得
     let codeLines = code.split('\n');
+    let emptiesDouble = [];
     for (let line of codeLines) {
         // 変数→'='が含まれている行として処理
         if (line.includes('=') && !line.includes('==') && 
@@ -41,12 +42,42 @@ function getVariables(code, variableNamesInput) {
         }
         // 空白が2つ以上含まれている行として処理
         if(line.includes('  ')){
+            // 行の中で空白が2つ以上含まれている箇所をカウント
+            emptiesDouble = line.match(/  /g);
+            if(emptiesDouble.length > 0){
+                deductionPointOfEmpties += emptiesDouble.length;
+            }
+        }
+        // 括弧やコロンなどの後に空白が含まれている行として処理
+        // ダメとするパターン(_を不要な空白とする)
+        // ex.) print_(_b_, a_)
+        if(line.includes(' (')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes(' )')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes('( ')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes(' [')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes(' ]')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes('[ ')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes(' ,')){
+            deductionPointOfEmpties++;
+        }
+        if(line.includes(' :')){
             deductionPointOfEmpties++;
         }
     }
     checkTmp(variableNamesInsert, variableNamesInput);
-    console.log(variableNamesInsert);
-    console.log(variableNamesInput);
+    //console.log(emptiesDouble);
 }
 
 // swapでのパターン対応

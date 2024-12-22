@@ -10,6 +10,13 @@
     <button id="title" onclick="location.href='index.html'">タイトルへ</button>
     <div id="editor"></div>
     <button id="run">run</button>
+    <p id="selectLoopCnt">繰り返し回数を選択</p>
+    <select id="loopCnt">
+        <option value="50">50</option>
+        <option value="100" selected>100</option>
+        <option value="150">150</option>
+        <option value="200">200</option>
+    </select>
     <button id="compile">compile</button>
     <button id="reset">reset</button>
     
@@ -79,7 +86,7 @@
     <button id="next_loop" class="hidden">&gt;</button>
 
     <button id="help_button">？</button>
-    <p id="help_text" style="display:none;">
+    <div id="help_text" class="modal" style="display:none;">
         <b>使い方</b><br>
         「×」ボタンを押すと、ヘルプが閉じます<br>
         ●：自作プログラムでの実行 ★:Pyodideでの実行<br>
@@ -87,7 +94,7 @@
         → 押すと、プログラムが構文解析されます●<br>
         「reset」ボタン<br>
         → 押すと、プログラムなどすべての表示がリセットされます<br>
-        「実行結果」ボタン<br>
+        「一括実行」ボタン<br>
         → 押すと、実行結果が表示されます<br>
         「run」ボタン<br>
         → 押すと、プログラムが実行されます★<br>
@@ -101,13 +108,18 @@
         → 押すと、ステップ実行が1ステップ進みます<br>
         「ループ実行」ボタン<br>
         → 押すと、ループ実行が表示されます<br>
+        ※次の機能は、ステップ実行で繰り返し処理があったときのみ使用可能<br>
         「loop」ボタン<br>
         → 押すと、ループ実行が1ステップ実行されます★<br>
         「&lt;」ボタン<br>
         → 押すと、ループ実行が1ステップ戻ります<br>
         「&gt;」ボタン<br>
         → 押すと、ループ実行が1ステップ進みます<br>
-    </p>
+        「問題へ」ボタン<br>
+        → 押すと、問題ページに遷移します<br>
+        「タイトルへ」ボタン<br>
+        → 押すと、タイトルページに遷移します<br>
+    </div>
    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.21.3/full/pyodide.js"></script>

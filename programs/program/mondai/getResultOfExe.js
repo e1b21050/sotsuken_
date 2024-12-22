@@ -9,6 +9,7 @@ async function runPythonWithInput(code) {
         
     // while文にカウントを追加
     // 無限ループを防止するために100回で打ち切る
+    // 追加する問題の中でループ回数が100回を超えるものが出てきたときにはexecute.jsを参考にしてください
     codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
         "\n    loopcnt += 1\n" +
         "    if loopcnt > 100:\n" +

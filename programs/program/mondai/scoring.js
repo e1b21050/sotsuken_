@@ -50,18 +50,18 @@ function runScoringCode(variableNamesInput, variableNamesAnswer){
         // 変数名が一致したものがあるかを確認
         if(!variableNamesAnswer.includes(variableNamesInput[i])){
             if(!flgTmp){
-                document.getElementById('result').innerHTML += `<br>[変数]: ${variableNamesInput[i]}`;
+                document.getElementById('result').innerHTML += `<br>[不要な変数]: ${variableNamesInput[i]}`;
             }else{
-                document.getElementById('result').innerHTML += `<br>[変数]: なし`;
+                document.getElementById('result').innerHTML += `<br>[不要な変数]: なし`;
             }    
             flg = true;
         }
     }
     if(!flg){
-        document.getElementById('result').innerHTML += `<br>[変数]: なし`;
+        document.getElementById('result').innerHTML += `<br>[不要な変数]: なし`;
     }
-    document.getElementById('result').innerHTML += `<br>[空行]: ${deductionPointOfEmptyLine}箇所`;
-    document.getElementById('result').innerHTML += `<br>[空白]: ${deductionPointOfEmpties}箇所`;
+    document.getElementById('result').innerHTML += `<br>[不要な空行]: ${deductionPointOfEmptyLine}箇所`;
+    document.getElementById('result').innerHTML += `<br>[不要な空白]: ${deductionPointOfEmpties}箇所`;
 }
 
 // ボタンがクリックされたときの処理
