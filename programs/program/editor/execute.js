@@ -6,10 +6,11 @@ function exe(code) {
             let codeLoop = "loopcnt = 0\n" + code;
         
             // while文にカウントを追加
-            // 無限ループを防止するために100回で打ち切る
+            // 無限ループを防止するための回数をeditor.htmlから読み取りその回数で打ち切る
+            let loopLimit = document.getElementById("loopCnt").value;
             codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
             "\n    loopcnt += 1\n" +
-            "    if loopcnt > 100:\n" +
+            "    if loopcnt > " + loopLimit + ":\n" +
             "        print('無限ループを防止しました')\n" +
             "        break");
             let captureOutputCode = `
@@ -50,10 +51,12 @@ function countLoop(code) {
         let codeLoop = "loopcnt = 0\n" + code;
         
         // while文にカウントを追加
-        // 無限ループを防止するために100回で打ち切る
-        codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
+            // 無限ループを防止するための回数をeditor.htmlから読み取りその回数で打ち切る
+            let loopLimit = document.getElementById("loopCnt").value;
+            codeLoop = codeLoop.replace(/while\s+.*?:/, (match) => match + 
             "\n    loopcnt += 1\n" +
-            "    if loopcnt > 100:\n" +
+            "    if loopcnt > " + loopLimit + ":\n" +
+            "        print('無限ループを防止しました')\n" +
             "        break");
         
         //console.log("組み込み後コード\n"+code);

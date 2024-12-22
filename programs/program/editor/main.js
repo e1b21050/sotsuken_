@@ -16,6 +16,7 @@ let codeLines = [];
 let k = 0;
 let loop = [];
 let loopcnt_s = 0;
+let pushStepCnt = 0;
 
 async function loadPyodideAndPackages() {
     let pyodide = await loadPyodide();
@@ -37,6 +38,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     });
 
     pushRun_step.addEventListener("click", function () {
+        pushStepCnt++;
+        if(pushStepCnt > 1){
+            removeHighlight(currentStep); // 現在のハイライトを削除
+        }
         let code = editor.getSession().getValue();
         codeLines = code.split('\n'); // コードを行ごとに分割
         currentStep = 0;
@@ -62,6 +67,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
     pushRun_loop.addEventListener("click", function () {
+        removeHighlight(currentStep); // 現在のハイライトを削除
         k = 0;
         if(flg == 1 && k < loop.length && loop[k].includes("print(")){
             exe_loop(loop[k]);

@@ -77,3 +77,27 @@ function getLoopIterable_t3(forLine) {
     return match ? match[3] : null;
 }
 
+function getLoopWhileVariable(whileLine) {
+    // `while i < 5:`のような行から`i`を抽出
+    let match = whileLine.match(/while (\w+) /);
+    return match ? match[1] : null;
+}
+
+function getLoopWhileConditon(whileLine) {
+    // `while i < 5:`のような行から`<`を抽出
+    let match = whileLine.match(/while \w+ (<|>|<=|>=|==|!=) (-?\d+):/);
+    return match ? match[1] : null;
+}
+
+function getLoopWhileIterable(whileLine) {
+    // `while i < 5:`のような行から`5`を抽出
+    let match = whileLine.match(/while \w+ (<|>|<=|>=|==|!=) (-?\d+):/);
+    return match ? match[2] : null;
+}
+
+function getLoopWhileCondition_s(whileLine) {
+    // while n % a != 0 or n % b != 0: のような行から`n % a != 0 or n % b != 0`を抽出
+    let match = whileLine.match(/while (.+):/);
+    return match ? match[1] : null;
+}
+

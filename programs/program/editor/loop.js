@@ -11,26 +11,9 @@ from io import StringIO
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
-# 無限ループ防止のための制限
-MAX_ITERATIONS = 1000
-iteration_count = 0
-
-def safe_exec(code, global_vars):
-    global iteration_count
-    try:
-        if iteration_count >= MAX_ITERATIONS:
-            print("Error: Too many iterations")
-        else:
-            exec(code, global_vars)
-            iteration_count += 1
-    except Exception as e:
-        print(f"Error: {e}")
-
-# ステップごとのコードを実行
-safe_exec('''${code}''', globals())
+${code}
 
 sys.stdout = old_stdout
-
 mystdout.getvalue()
 
 `;

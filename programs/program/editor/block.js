@@ -347,7 +347,7 @@ function getCodeBlock(lines, index) {
             i++;
         }
         if(loopCondition_s !== null){
-            for(let m = 0; m < elementCnt_s; m++){    
+            for(let m = 0; m < loopcnt_s; m++){    
                 indentBlock.forEach(line => {
                     codeBlock += line + "\n";
                     loop.push(codeBlock);
@@ -371,7 +371,6 @@ function getCodeBlock(lines, index) {
             codeBlock = lines.slice(0, index + 1).join('\n');
         }
     }
-    console.log(codeBlock);
     
     return codeBlock;
 }
