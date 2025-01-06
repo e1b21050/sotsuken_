@@ -15,7 +15,9 @@ let variableNamesAnswer = []; // 正解の変数名を保存
 let variableNamesInsert = []; // 変数名を保存
 let cntEmptyLine = 0; // 空行のカウント
 let deductionPointOfEmptyLine = 0; // 空行の減点
+let resultEmptyLine = ''; // 空行の減点
 let deductionPointOfEmpties = 0; // 空白の減点
+let resultEmpties = ''; // 空白の減点
 let flgTmp = false; // tmpが含まれているかのフラグ
 
 async function loadPyodideAndPackages() {
@@ -60,8 +62,8 @@ function runScoringCode(variableNamesInput, variableNamesAnswer){
     if(!flg){
         document.getElementById('result').innerHTML += `<br>[不要な変数]: なし`;
     }
-    document.getElementById('result').innerHTML += `<br>[不要な空行]: ${deductionPointOfEmptyLine}箇所`;
-    document.getElementById('result').innerHTML += `<br>[不要な空白]: ${deductionPointOfEmpties}箇所`;
+    document.getElementById('result').innerHTML += `<br>[不要な空行]: ${deductionPointOfEmptyLine}箇所<br>${resultEmptyLine}`;
+    document.getElementById('result').innerHTML += `<br>[不要な空白]: ${deductionPointOfEmpties}箇所<br>${resultEmpties}`;
 }
 
 // ボタンがクリックされたときの処理
@@ -89,6 +91,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
         cntPushScoring = 0; // 採点ボタンが押された回数をリセット
         mondaiNumber = 0; // 問題番号をリセット
         deductionPointOfEmpties = 0; // 空白の減点をリセット
+        resultEmpties = ''; // 空白の減点をリセット
+        resultEmptyLine = ''; // 空行の減点をリセット
         results = []; // 入力例ごとの実行結果をリセット
         resultsAnswer = []; // 入力例ごとの正解の実行結果をリセット
         variableNamesInput = []; // 変数名をリセット

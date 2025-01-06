@@ -1,6 +1,10 @@
 function getVariables(code, variableNamesInput) {
     // 変数名を取得
     let codeLines = code.split('\n');
+    let lineNumberScoring = 1; // 行番号
+    let tmpPointOfEmpties = 0; // 一時的保存減点
+    let startEmptyline = 1; // 空行の開始行
+    let endEmptyline = 1; // 空行の終了行
     let emptiesDouble = [];
     for (let line of codeLines) {
         // 変数→'='が含まれている行として処理
@@ -34,19 +38,27 @@ function getVariables(code, variableNamesInput) {
                     variableNamesInsert.push(ValueOrName);
                 }
             }
-        }else if(line === '\r'){
+        }else if(line === '\r' || line === '    \r'){
+            if(cntEmptyLine === 0){
+                startEmptyline = lineNumberScoring;
+            }
             cntEmptyLine++;
         }else if(cntEmptyLine > 1 && line !== ''){
+            endEmptyline = lineNumberScoring - 1;
             deductionPointOfEmptyLine++;
+            cntEmptyLine = 0;
+            resultEmptyLine += startEmptyline + '行-' + endEmptyline + '行 ';           
+        }else{
             cntEmptyLine = 0;
         }
         // 空白が2つ以上含まれている行として処理
-        if(line.includes('  ')){
+        if(line.includes('  ') && !line.includes('    ')){
             // 行の中で空白が2つ以上含まれている箇所をカウント
             emptiesDouble = line.match(/  /g);
             if(emptiesDouble.length > 0){
                 deductionPointOfEmpties += emptiesDouble.length;
             }
+
         }
         // 括弧やコロンなどの後に空白が含まれている行として処理
         // ダメとするパターン(_を不要な空白とする)
@@ -75,9 +87,13 @@ function getVariables(code, variableNamesInput) {
         if(line.includes(' :')){
             deductionPointOfEmpties++;
         }
+        if(lineNumberScoring !== codeLines.length && deductionPointOfEmpties !== 0){
+            resultEmpties += lineNumberScoring + '行目: ' + (deductionPointOfEmpties - tmpPointOfEmpties) + '箇所<br>';
+        }
+        lineNumberScoring++;
+        tmpPointOfEmpties = deductionPointOfEmpties;
     }
     checkTmp(variableNamesInsert, variableNamesInput);
-    //console.log(emptiesDouble);
 }
 
 // swapでのパターン対応

@@ -17,6 +17,7 @@ let k = 0;
 let loop = [];
 let loopcnt_s = 0;
 let pushStepCnt = 0;
+let pushLoopCnt = 0;
 
 async function loadPyodideAndPackages() {
     let pyodide = await loadPyodide();
@@ -66,8 +67,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
             exe_step(codeLines, currentStep); // 次のステップを実行
         }
     });
+
     pushRun_loop.addEventListener("click", function () {
+        pushLoopCnt++;
         removeHighlight(currentStep); // 現在のハイライトを削除
+        // 変換コードの表示
+        let getCode = editor.getSession().getValue();
+        let stringConvertCode = '\n\n---<変換コード>---\n';
+        if(pushLoopCnt === 1){
+            editor.getSession().setValue(getCode + stringConvertCode + loop[loop.length-1]);
+        }
         k = 0;
         if(flg == 1 && k < loop.length && loop[k].includes("print(")){
             exe_loop(loop[k]);
