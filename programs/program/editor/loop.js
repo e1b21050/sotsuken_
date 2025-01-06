@@ -1,7 +1,7 @@
 // loop実行する関数
 function exe_loop(code){
     pyodideReadyPromise.then(pyodide => {
-        console.log(code);
+        //console.log(code);
         try {
             //　読み取ったコードを１行ずつ実行
             let captureOutputCode = `

@@ -48,9 +48,9 @@ body {
 
 #selectLoopCnt {
     position: fixed;
-    top: 5%;
+    top: 4.8%;
     right: 22%;
-    width: 18%;
+    width: 23%;
     height: 3%;
     border: 2px solid #111111;
     overflow-y: auto;
