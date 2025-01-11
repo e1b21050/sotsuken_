@@ -14,6 +14,9 @@ let currentStep = 0;
 let codeLines = [];
 
 let k = 0;
+let k_loop = 0;
+let lineNoConvertCode = 0;
+let flg_loop = 0;
 let loop = [];
 let loopcnt_s = 0;
 let pushStepCnt = 0;
@@ -73,29 +76,76 @@ document.addEventListener('DOMContentLoaded', (event) => {
         removeHighlight(currentStep); // 現在のハイライトを削除
         // 変換コードの表示
         let getCode = editor.getSession().getValue();
+        //getCodeを行ごとに分割
+        let getCodeLines = getCode.split('\n');
+        console.log(getCodeLines);
         let stringConvertCode = '\n\n---<変換コード>---\n';
         if(pushLoopCnt === 1){
             editor.getSession().setValue(getCode + stringConvertCode + loop[loop.length-1]);
         }
         k = 0;
-        if(flg == 1 && k < loop.length && loop[k].includes("print(")){
+        k_loop = 0;
+        lineNoConvertCode = getCode.split('\n').length + 2; // 変換コードの行
+        highlightLine(k_loop); // 現在の行をハイライト
+        console.log(flgDoubleForLoop);
+        if(getCodeLines.includes("while ")){//while文がある場合
+            for(let i = 0; i < l - 1; i++){
+                highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                if(i < l - 1){
+                    lineNoConvertCode++;
+                }
+            }
+        }else if(flgDoubleForLoop === 1){//二重ループがある場合
+            for(let i = 0; i < l + 1; i++){
+                highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                if(i < l ){
+                    lineNoConvertCode++;
+                }
+            }
+        }else{
+            for(let i = 0; i < l; i++){//一重for文がある場合
+                highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                if(i < l - 1){
+                    lineNoConvertCode++;
+                }
+            }
+        }
+        if(flg == 1 && k < loop.length - 1 && loop[k].includes("print(")){
             exe_loop(loop[k]);
         }else if(flg == 0){
             document.getElementById("loop").innerHTML = "<p>＜ループ実行＞</p><pre>繰り返し処理がありません</pre>";
         }
     });
+
     pushRun_loop_prev.addEventListener("click", function () {
         if(k > 0 ){
+            removeHighlight(lineNoConvertCode); // 変換コードのハイライトを削除
+            lineNoConvertCode--;
+            removeHighlight(k_loop); // 現在のハイライトを削除
+            k_loop--;
             k--;
-            if(k < loop.length && loop[k].includes("print(")){
+            if(k < loop.length - 1 && loop[k].includes("print(")){
                 exe_loop(loop[k]);
             }
         }
     });
+
     pushRun_loop_next.addEventListener("click", function () {
         if(k < loop.length - 1){
+            if(k === 0){
+                removeHighlight(k);
+                for(let i = lineNoConvertCode; i >= lineNoConvertCode - l; i--){
+                    removeHighlight(i); // 変換コードのハイライトを削除
+                }
+            }
+            removeHighlight(lineNoConvertCode); // 変換コードのハイライト
+            if(k_loop  < l){
+                removeHighlight(k_loop); // 現在のハイライトを削除
+                k_loop++;
+            }
+            lineNoConvertCode++;
             k++;
-            if(k < loop.length && loop[k].includes("print(")){
+            if(k < loop.length - 1 ){
                 exe_loop(loop[k]);
             }
         }else{
