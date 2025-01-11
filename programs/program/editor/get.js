@@ -101,3 +101,9 @@ function getLoopWhileCondition_s(whileLine) {
     return match ? match[1] : null;
 }
 
+function getIfVariable(ifLine) {
+    // `if x == 1:`のような行から`x`を抽出
+    let match = ifLine.match(/if (\w+) /);
+    return match ? match[1] : null;
+
+}

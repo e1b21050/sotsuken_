@@ -1,10 +1,12 @@
 let flg = 0; // for文のフラグ
 let flgDoubleFor = 0; // 2重for文のフラグ
+let flgDoubleForLoop = 0; 
 let variable = []; // 変数名
 let value = []; // 値
 let number = 0; // 変数の数
 let codeBlockTmp = ""; // コードブロックの一時保存
 let variablesSecond = []; // 2重for文の変数名
+let l = 0;
 
 //コードブロックとして変換する関数
 function getCodeBlock(lines, index) {
@@ -35,7 +37,7 @@ function getCodeBlock(lines, index) {
     // `for` 文の変換
     else if (lines[index].trim().startsWith("for ") && flgDoubleFor === 0) {
         flg = 1;
-        let l = 1;
+        l = 1;
         if(lines[index-l]){
             while(true){
                 if(lines[index-l]){
@@ -51,6 +53,7 @@ function getCodeBlock(lines, index) {
         }else{
             codeBlock = "i=0\n";
         }
+        loop.push(codeBlock);
         let iterator = {
             variable: null,
             value: null
@@ -149,10 +152,10 @@ function getCodeBlock(lines, index) {
             i++;
         }
         indentBlock.push("i+=1\n");
-        console.log(indentBlock);
-        console.log(indentBlockTmp);
-        console.log(variable, value, iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3, variableIf);
-        console.log(iteratorSecond, iteratorSecond_f, iteratorSecond_d1, iteratorSecond_d2, iteratorSecond_t1, iteratorSecond_t2, iteratorSecond_t3);
+        //console.log(indentBlock);
+        //console.log(indentBlockTmp);
+        //console.log(variable, value, iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3, variableIf);
+        //console.log(iteratorSecond, iteratorSecond_f, iteratorSecond_d1, iteratorSecond_d2, iteratorSecond_t1, iteratorSecond_t2, iteratorSecond_t3);
         if (iterator.variable !== null && iterator.value !== null) {
             loop.push(codeBlock);
             let j = 0;
@@ -186,14 +189,20 @@ function getCodeBlock(lines, index) {
                     for(k = 0; k < elementCntSecond; k++) {
                         indentBlockTmp.forEach(line => {
                             if(line.includes('print(')) {
-                                if(k === 0){
+                                if(j === 0 && k === 0){
+                                    codeBlock += 'j=0\n\n';
+                                }else if(k === 0) {
                                     codeBlock += 'j=0\n';
                                 }
                                 codeBlock += line.replace('(' + loopVariableSecond, '(' + iterator.variable + '[' + j + ']' + '[' + k + ']');
                             }else if(k === elementCntSecond - 1 && j === elementCnt - 1) {
                                 codeBlock += line.replace('j+=1', '');
                             }else {
-                                codeBlock += line;
+                                if(k !== elementCntSecond - 1) {
+                                    codeBlock += line + '\n'; 
+                                }else{
+                                    codeBlock += line.replace('j+=1\n', '');
+                                }
                             }
                             loop.push(codeBlock);
                         });
@@ -206,6 +215,9 @@ function getCodeBlock(lines, index) {
                 codeBlockTmp = codeBlock;
             }else {
                 for (j = 0; j < elementCnt; j++) {
+                    if(j === 0){
+                        codeBlock += '\n';
+                    }
                     indentBlock.forEach(line => {
                         codeBlock += line.replace('(' + loopVariable, '(' + iterator.variable + '[' + j + ']');
                         loop.push(codeBlock);
@@ -219,30 +231,11 @@ function getCodeBlock(lines, index) {
             // iterator_fを数字に変換
             iterator_f = Number(iterator_f);
             iteratorSecond_f = Number(iteratorSecond_f);
-            if(iteratorSecond_f !== null) {
-                for(j = 0; j < iterator_f; j++) {
-                    for(k = 0; k < iteratorSecond_f; k++) {
-                        indentBlockTmp.forEach(line => {
-                            if(line.includes('[')) {
-                                if(k === 0){
-                                    codeBlock += 'j=0\n';
-                                }
-                                codeBlock += line.replace('[' + loopVariable + ']' + '[' + loopVariableSecond, '[' + j + ']' + '[' + k); // print(x[i][j])に対応
-                            }else if(k === iteratorSecond_f - 1) {
-                                codeBlock += line.replace('j+=1', '');
-                            }else {
-                                codeBlock += line;
-                            }
-                            loop.push(codeBlock);
-                        });
-                        loop.push(codeBlock);
-                    }
-                    if(j !== iterator_f - 1) {
-                        codeBlock += 'i+=1\n';
-                    }
-                }
-            }else {
-                for (j = 0; j < iterator_f; j++) {
+            console.log(iterator_f, iteratorSecond_f);
+            // iteratorSecond_fがNaNでiteratorに数値があるとき
+            if(isNaN(iteratorSecond_f) && !isNaN(iterator_f)) {
+                 //console.log(indentBlock);
+                 for (j = 0; j < iterator_f; j++) {
                     indentBlock.forEach(line => {
                         if(line.includes('[')) {
                             codeBlock += line.replace('[' + loopVariable, '[' + j); // print(x[i])に対応
@@ -256,14 +249,39 @@ function getCodeBlock(lines, index) {
                         loop.push(codeBlock);
                     });
                 }
+            }else {
+                //console.log(indentBlock);
+                for(j = 0; j < iterator_f; j++) {
+                    for(k = 0; k < iteratorSecond_f; k++) {
+                        indentBlockTmp.forEach(line => {
+                            if(line.includes('[')) {
+                                if(k === 0){
+                                    codeBlock += 'j=0\n';
+                                }
+                                codeBlock += line.replace('[' + loopVariable + ']' + '[' + loopVariableSecond, '[' + j + ']' + '[' + k); // print(x[i][j])に対応
+                            }else if(k === iteratorSecond_f - 1) {
+                                codeBlock += line.replace('j+=1\n', '');
+                            }else {
+                                codeBlock += line + '\n';
+                            }
+                            loop.push(codeBlock);
+                        });
+                        loop.push(codeBlock);
+                    }
+                    if(j !== iterator_f - 1) {
+                        codeBlock += 'i+=1\n';
+                    }
+                }
             }
             codeBlockTmp = codeBlock;
+            //console.log(loop);
         } else if (iterator_d1 !== null && iterator_d2 !== null) {
             let j = 0;
             // iterator_d1~4を数字に変換
             iterator_d1 = Number(iterator_d1);
             iterator_d2 = Number(iterator_d2);
             for (j = iterator_d1; j < iterator_d2; j++) {
+                codeBlock = codeBlock.replace('i=0', 'i=' + iterator_d1);
                 indentBlock.forEach(line => {
                     if(line.includes('(')) {
                         codeBlock += line.replace('(' + loopVariable, '(' + j);
@@ -287,13 +305,14 @@ function getCodeBlock(lines, index) {
             // iterator_t3が負のときはiterator_t1がiterator_t2より大きい間ループ
             if(iterator_t3 > 0) {
                 for (j = iterator_t1; j < iterator_t2; j += iterator_t3) {
+                    codeBlock = codeBlock.replace('i=0', 'i=' + iterator_t1);
                     indentBlock.forEach(line => {
                         if(line.includes('(')) {
                             codeBlock += line.replace('(' + loopVariable, '(' + j);
                         }else if(j == iterator_t2 - 1) {
                             codeBlock += line.replace('i+=1', '');
                         }else {
-                            codeBlock += line;
+                            codeBlock += line.replace('i+=1', 'i+=' + iterator_t3);
                         }
                         loop.push(codeBlock);
                     });
@@ -304,10 +323,10 @@ function getCodeBlock(lines, index) {
                     indentBlock.forEach(line => {
                         if(line.includes('(')) {
                             codeBlock += line.replace('(' + loopVariable, '(' + j);
-                        }else if(j == iterator_d2 + 1) {
+                        }else if(j == iterator_t2 + 1) {
                             codeBlock += line.replace('i+=1', '');
                         }else {
-                            codeBlock += line.replace('i+=1', 'i-=1');
+                            codeBlock += line.replace('i+=1', 'i-=' + Math.abs(iterator_t3));
                         }
                         loop.push(codeBlock);
                     });
@@ -318,12 +337,13 @@ function getCodeBlock(lines, index) {
     }
     else if (lines[index].trim().startsWith("for ") && flgDoubleFor === 1) {
         codeBlock = codeBlockTmp;
+        flgDoubleForLoop = flgDoubleFor;
         flgDoubleFor = 0;
     }   
     // `while` 文の変換
     else if (lines[index].trim().startsWith("while ")) {
         flg = 1;
-        let l = 1;
+        l = 1;
         if(lines[index-l]){
             while(true){
                 if(lines[index-l]){
@@ -336,6 +356,7 @@ function getCodeBlock(lines, index) {
                 codeBlock += lines[index-i+1]+ "\n";
             }
         }
+        loop.push(codeBlock);
         let loopCondition_s = getLoopWhileCondition_s(lines[index]);
         //インデントが同じになるまでコードを追加
         const indentBlock = [];
@@ -349,8 +370,10 @@ function getCodeBlock(lines, index) {
         if(loopCondition_s !== null){
             for(let m = 0; m < loopcnt_s; m++){    
                 indentBlock.forEach(line => {
-                    codeBlock += line + "\n";
-                    loop.push(codeBlock);
+                    if(line !== ""){
+                        codeBlock += line + "\n";
+                        loop.push(codeBlock);
+                    }
                 });
             }
             codeBlockTmp = codeBlock;
