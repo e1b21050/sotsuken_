@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         cntPushScoring = 0; // 採点ボタンが押された回数をリセット
         mondaiNumber = 0; // 問題番号をリセット
         deductionPointOfEmpties = 0; // 空白の減点をリセット
+        deductionPointOfEmptyLine = 0; // 空行の減点をリセット
         resultEmpties = ''; // 空白の減点をリセット
         resultEmptyLine = ''; // 空行の減点をリセット
         results = []; // 入力例ごとの実行結果をリセット

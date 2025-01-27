@@ -1,12 +1,15 @@
 let flg = 0; // for文のフラグ
 let flgDoubleFor = 0; // 2重for文のフラグ
 let flgDoubleForLoop = 0; 
+let flgWhile = 0; // while文のフラグ
 let variable = []; // 変数名
 let value = []; // 値
 let number = 0; // 変数の数
 let codeBlockTmp = ""; // コードブロックの一時保存
 let variablesSecond = []; // 2重for文の変数名
-let l = 0;
+let l = 0; //インデントが下がった行数
+const indentBlock = []; // インデントブロック
+const indentBlockTmp = []; // インデントブロックの一時保存
 
 //コードブロックとして変換する関数
 function getCodeBlock(lines, index) {
@@ -90,8 +93,6 @@ function getCodeBlock(lines, index) {
         
         let loopVariable = getLoopVariable(lines[index]);
         let loopVariableSecond;
-        const indentBlock = [];
-        const indentBlockTmp = [];
         let codeBlockNest = "";
         let variableIf = "";
         let i = index + 1;
@@ -190,7 +191,8 @@ function getCodeBlock(lines, index) {
                         indentBlockTmp.forEach(line => {
                             if(line.includes('print(')) {
                                 if(j === 0 && k === 0){
-                                    codeBlock += 'j=0\n\n';
+                                    codeBlock += 'j=0\n\n\n';
+                                    loop.push('\n\n');
                                 }else if(k === 0) {
                                     codeBlock += 'j=0\n';
                                 }
@@ -236,6 +238,10 @@ function getCodeBlock(lines, index) {
             if(isNaN(iteratorSecond_f) && !isNaN(iterator_f)) {
                  //console.log(indentBlock);
                  for (j = 0; j < iterator_f; j++) {
+                    if(j === 0){
+                        loop.push('\n');
+                        codeBlock += '\n';
+                    }
                     indentBlock.forEach(line => {
                         if(line.includes('[')) {
                             codeBlock += line.replace('[' + loopVariable, '[' + j); // print(x[i])に対応
@@ -257,6 +263,11 @@ function getCodeBlock(lines, index) {
                             if(line.includes('[')) {
                                 if(k === 0){
                                     codeBlock += 'j=0\n';
+                                    if(j === 0){
+                                        codeBlock += '\n\n';
+                                        loop.push('\n');
+                                        loop.push(codeBlock);
+                                    }
                                 }
                                 codeBlock += line.replace('[' + loopVariable + ']' + '[' + loopVariableSecond, '[' + j + ']' + '[' + k); // print(x[i][j])に対応
                             }else if(k === iteratorSecond_f - 1) {
@@ -344,6 +355,7 @@ function getCodeBlock(lines, index) {
     else if (lines[index].trim().startsWith("while ")) {
         flg = 1;
         l = 1;
+        flgWhile = 1;
         if(lines[index-l]){
             while(true){
                 if(lines[index-l]){
@@ -356,10 +368,11 @@ function getCodeBlock(lines, index) {
                 codeBlock += lines[index-i+1]+ "\n";
             }
         }
+        codeBlock += "\n\n";
         loop.push(codeBlock);
+        loop.push("\n");
         let loopCondition_s = getLoopWhileCondition_s(lines[index]);
         //インデントが同じになるまでコードを追加
-        const indentBlock = [];
         let i = index + 1;
         while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
             //\rを削除

@@ -38,6 +38,12 @@ function getVariables(code, variableNamesInput) {
                     variableNamesInsert.push(ValueOrName);
                 }
             }
+            if(cntEmptyLine > 1 && line !== ''){
+                endEmptyline = lineNumberScoring - 1;
+                deductionPointOfEmptyLine++;
+                cntEmptyLine = 0;
+                resultEmptyLine += startEmptyline + '行-' + endEmptyline + '行 ';           
+            }
         }else if(line === '\r' || line === '    \r'){
             if(cntEmptyLine === 0){
                 startEmptyline = lineNumberScoring;
