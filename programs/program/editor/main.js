@@ -71,14 +71,15 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
+    let getCode;
+    let getCodeLines;
     pushRun_loop.addEventListener("click", function () {
         pushLoopCnt++;
         removeHighlight(currentStep); // 現在のハイライトを削除
         // 変換コードの表示
-        let getCode = editor.getSession().getValue();
+        getCode = editor.getSession().getValue();
         //getCodeを行ごとに分割
-        let getCodeLines = getCode.split('\n');
-        console.log(getCodeLines);
+        getCodeLines = getCode.split('\n');
         let stringConvertCode = '\n\n---<変換コード>---\n';
         if(pushLoopCnt === 1){
             editor.getSession().setValue(getCode + stringConvertCode + loop[loop.length-1]);
@@ -87,13 +88,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         k_loop = 0;
         lineNoConvertCode = getCode.split('\n').length + 2; // 変換コードの行
         highlightLine(k_loop); // 現在の行をハイライト
-        console.log(flgDoubleForLoop);
-        if(getCodeLines.includes("while ")){//while文がある場合
+        if(flgWhile === 1){//while文がある場合
             for(let i = 0; i < l - 1; i++){
                 highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
-                if(i < l - 1){
-                    lineNoConvertCode++;
-                }
+                lineNoConvertCode++;
             }
         }else if(flgDoubleForLoop === 1){//二重ループがある場合
             for(let i = 0; i < l + 1; i++){
@@ -102,8 +100,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     lineNoConvertCode++;
                 }
             }
-        }else{
-            for(let i = 0; i < l; i++){//一重for文がある場合
+        }else{ //一重for文がある場合
+            for(let i = 0; i < l; i++){
                 highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
                 if(i < l - 1){
                     lineNoConvertCode++;
@@ -127,6 +125,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
             if(k < loop.length - 1 && loop[k].includes("print(")){
                 exe_loop(loop[k]);
             }
+        }else if(k === 0){
+            lineNoConvertCode--;
+            if(flgWhile === 1){//while文がある場合
+                for(let i = 0; i < l - 1; i++){
+                    highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                    lineNoConvertCode++;
+                }
+            }else if(flgDoubleForLoop === 1){//二重ループがある場合
+                for(let i = 0; i < l + 1; i++){
+                    highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                    if(i < l ){
+                        lineNoConvertCode++;
+                    }
+                }
+            }else{
+                for(let i = 0; i < l; i++){//一重for文がある場合
+                    highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
+                    if(i < l - 1){
+                        lineNoConvertCode++;
+                    }
+                }
+            }
         }
     });
 
@@ -139,9 +159,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 }
             }
             removeHighlight(lineNoConvertCode); // 変換コードのハイライト
-            if(k_loop  < l){
-                removeHighlight(k_loop); // 現在のハイライトを削除
-                k_loop++;
+            if(flgWhile === 1){//while文がある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop  <= l){
+                    k_loop++;
+                }else{
+                    k_loop -= indentBlock.length - 1;
+                }
+            }else if(flgDoubleForLoop === 1){//二重ループがある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop  <= l){
+                    k_loop++;
+                }else{
+                    k_loop -= indentBlock.length - 2;
+                }
+            }else{ //一重for文がある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop  < l){
+                    k_loop++;
+                }else{
+                    k_loop -= indentBlock.length - 2;
+                }
             }
             lineNoConvertCode++;
             k++;
