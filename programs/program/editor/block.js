@@ -7,7 +7,7 @@ let value = []; // 値
 let number = 0; // 変数の数
 let codeBlockTmp = ""; // コードブロックの一時保存
 let variablesSecond = []; // 2重for文の変数名
-let l = 0; //インデントが下がった行数
+let indentDownNumOfLines = 0; //インデントが下がった行数
 const indentBlock = []; // インデントブロック
 const indentBlockTmp = []; // インデントブロックの一時保存
 
@@ -40,16 +40,16 @@ function getCodeBlock(lines, index) {
     // `for` 文の変換
     else if (lines[index].trim().startsWith("for ") && flgDoubleFor === 0) {
         flg = 1;
-        l = 1;
-        if(lines[index-l]){
+        indentDownNumOfLines = 1;
+        if(lines[index-indentDownNumOfLines]){
             while(true){
-                if(lines[index-l]){
-                    l++;
+                if(lines[index-indentDownNumOfLines]){
+                    indentDownNumOfLines++;
                 }else{
                     break;
                 }
             }
-            for(let i = l; i > 1; i--){
+            for(let i = indentDownNumOfLines; i > 1; i--){
                 codeBlock += lines[index-i+1]+ "\n";
             }
             codeBlock += "i=0\n";
@@ -96,63 +96,65 @@ function getCodeBlock(lines, index) {
         let codeBlockNest = "";
         let variableIf = "";
         let i = index + 1;
-        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            let code = lines[i].replace(/\r/g, '');
-            if(lines[i].trim().startsWith("if ") || lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else ")){
-                // インデントの削除
-                codeBlockNest = code.replace(/^\s+/, '');
-                variableIf = getIfVariable(lines[i]);
-                if(variableIf !== null){
-                    codeBlockNest = codeBlockNest.replace(variableIf, iterator.variable + '[i]');
-                }else{
+        if(indentBlock.length === 0){
+            while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+                let code = lines[i].replace(/\r/g, '');
+                if(lines[i].trim().startsWith("if ") || lines[i].trim().startsWith("elif ") || lines[i].trim().startsWith("else ")){
+                    // インデントの削除
                     codeBlockNest = code.replace(/^\s+/, '');
-                }
-            }else if(lines[i].trim().startsWith("for ")){
-                flgDoubleFor = 1;
-                iteratorSecond.variable = getLoopIterable(lines[i]);
-                // iteratorがrangeの場合の処理
-                if(iteratorSecond.variable.startsWith('range(')) {
-                    iteratorSecond.variable = null;
-                }
-                for(let j = 0; j < number; j++) {
-                    if(iteratorSecond.variable === variable[j]) {
-                        iteratorSecond.value = value[j];
-                    }
-                }
-                // iteratorがrange(O)の場合の処理
-                iteratorSecond_f = getLoopIterable_f(lines[i]);
-                // iteratorがrange(O, O)の場合の処理
-                iteratorSecond_d1 = getLoopIterable_d1(lines[i]);
-                iteratorSecond_d2 = getLoopIterable_d2(lines[i]);
-                // iteratorがrange(O, O, O)の場合の処理
-                iteratorSecond_t1 = getLoopIterable_t1(lines[i]);
-                iteratorSecond_t2 = getLoopIterable_t2(lines[i]);
-                iteratorSecond_t3 = getLoopIterable_t3(lines[i]);
-                loopVariableSecond = getLoopVariable(lines[i]);
-                let j = i + 1;
-                while (j < lines.length && getIndentLevel(lines[j]) > getIndentLevel(lines[i])) {
-                    let code = lines[j].replace(/\r/g, '');
-                    if(getIndentLevel(lines[j]) > getIndentLevel(lines[j-1])){
-                        indentBlockTmp.push(code.replace(/^\s+/, '') + "\n");
-                        indentBlockTmp.push('j+=1\n');
+                    variableIf = getIfVariable(lines[i]);
+                    if(variableIf !== null){
+                        codeBlockNest = codeBlockNest.replace(variableIf, iterator.variable + '[i]');
                     }else{
-                        indentBlockTmp.push(code.replace(/^\s+/, '') + "\n");
+                        codeBlockNest = code.replace(/^\s+/, '');
                     }
-                    j++;
+                }else if(lines[i].trim().startsWith("for ")){
+                    flgDoubleFor = 1;
+                    iteratorSecond.variable = getLoopIterable(lines[i]);
+                    // iteratorがrangeの場合の処理
+                    if(iteratorSecond.variable.startsWith('range(')) {
+                        iteratorSecond.variable = null;
+                    }
+                    for(let j = 0; j < number; j++) {
+                        if(iteratorSecond.variable === variable[j]) {
+                            iteratorSecond.value = value[j];
+                        }
+                    }
+                    // iteratorがrange(O)の場合の処理
+                    iteratorSecond_f = getLoopIterable_f(lines[i]);
+                    // iteratorがrange(O, O)の場合の処理
+                    iteratorSecond_d1 = getLoopIterable_d1(lines[i]);
+                    iteratorSecond_d2 = getLoopIterable_d2(lines[i]);
+                    // iteratorがrange(O, O, O)の場合の処理
+                    iteratorSecond_t1 = getLoopIterable_t1(lines[i]);
+                    iteratorSecond_t2 = getLoopIterable_t2(lines[i]);
+                    iteratorSecond_t3 = getLoopIterable_t3(lines[i]);
+                    loopVariableSecond = getLoopVariable(lines[i]);
+                    let j = i + 1;
+                    while (j < lines.length && getIndentLevel(lines[j]) > getIndentLevel(lines[i])) {
+                        let code = lines[j].replace(/\r/g, '');
+                        if(getIndentLevel(lines[j]) > getIndentLevel(lines[j-1])){
+                            indentBlockTmp.push(code.replace(/^\s+/, '') + "\n");
+                            indentBlockTmp.push('j+=1\n');
+                        }else{
+                            indentBlockTmp.push(code.replace(/^\s+/, '') + "\n");
+                        }
+                        j++;
+                    }
+                }else if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
+                        if(variableIf !== ''){
+                            indentBlock.push(codeBlockNest + " " + code.replace(/^\s+/, '') + "\n");
+                            indentBlock.push(codeBlockNest + variableIf + "=" + iterator.variable + "[i]\n");
+                        }else{
+                            indentBlock.push(code.replace(/^\s+/, '') + "\n");
+                        }
+                }else{
+                    indentBlock.push(code.replace(/^\s+/, '') + "\n");
                 }
-            }else if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
-                    if(variableIf !== ''){
-                        indentBlock.push(codeBlockNest + " " + code.replace(/^\s+/, '') + "\n");
-                        indentBlock.push(codeBlockNest + variableIf + "=" + iterator.variable + "[i]\n");
-                    }else{
-                        indentBlock.push(code.replace(/^\s+/, '') + "\n");
-                    }
-            }else{
-                indentBlock.push(code.replace(/^\s+/, '') + "\n");
+                i++;
             }
-            i++;
+            indentBlock.push("i+=1\n");
         }
-        indentBlock.push("i+=1\n");
         //console.log(indentBlock);
         //console.log(indentBlockTmp);
         //console.log(variable, value, iterator, iterator_f, iterator_d1, iterator_d2, iterator_t1, iterator_t2, iterator_t3, variableIf);
@@ -225,6 +227,8 @@ function getCodeBlock(lines, index) {
                         loop.push(codeBlock);
                     });
                 }
+                codeBlock += "\n";
+                loop.push(codeBlock);
                 codeBlockTmp = codeBlock;
             }
         } else if (iterator_f !== null) {
@@ -233,7 +237,7 @@ function getCodeBlock(lines, index) {
             // iterator_fを数字に変換
             iterator_f = Number(iterator_f);
             iteratorSecond_f = Number(iteratorSecond_f);
-            console.log(iterator_f, iteratorSecond_f);
+            //console.log(iterator_f, iteratorSecond_f);
             // iteratorSecond_fがNaNでiteratorに数値があるとき
             if(isNaN(iteratorSecond_f) && !isNaN(iterator_f)) {
                  //console.log(indentBlock);
@@ -354,17 +358,17 @@ function getCodeBlock(lines, index) {
     // `while` 文の変換
     else if (lines[index].trim().startsWith("while ")) {
         flg = 1;
-        l = 1;
+        indentDownNumOfLines = 1;
         flgWhile = 1;
-        if(lines[index-l]){
+        if(lines[index-indentDownNumOfLines]){
             while(true){
-                if(lines[index-l]){
-                    l++;
+                if(lines[index-indentDownNumOfLines]){
+                    indentDownNumOfLines++;
                 }else{
                     break;
                 }
             }
-            for(let i = l; i > 1; i--){
+            for(let i = indentDownNumOfLines; i > 1; i--){
                 codeBlock += lines[index-i+1]+ "\n";
             }
         }
@@ -374,11 +378,13 @@ function getCodeBlock(lines, index) {
         let loopCondition_s = getLoopWhileCondition_s(lines[index]);
         //インデントが同じになるまでコードを追加
         let i = index + 1;
-        while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
-            //\rを削除
-            let code = lines[i].replace(/\r/g, '');
-            indentBlock.push(code.replace(/^\s+/, ''));
-            i++;
+        if(indentBlock.length === 0){
+            while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+                //\rを削除
+                let code = lines[i].replace(/\r/g, '');
+                indentBlock.push(code.replace(/^\s+/, ''));
+                i++;
+            }
         }
         if(loopCondition_s !== null){
             for(let m = 0; m < loopcnt_s; m++){    
@@ -389,6 +395,8 @@ function getCodeBlock(lines, index) {
                     }
                 });
             }
+            codeBlock += "\n";
+            loop.push(codeBlock);
             codeBlockTmp = codeBlock;
         }
     } else {
@@ -407,6 +415,5 @@ function getCodeBlock(lines, index) {
             codeBlock = lines.slice(0, index + 1).join('\n');
         }
     }
-    
     return codeBlock;
 }

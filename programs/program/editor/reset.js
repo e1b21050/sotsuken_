@@ -11,6 +11,7 @@ pushReset.addEventListener("click", function () {
     document.getElementById("variables_table").innerHTML = "<tr><td>変数名</td><td>値</td></tr>"; // 変数表をクリア
     removeHighlight(currentStep); // 現在のハイライトを削除
     k = 0; // ループ回数をリセット
-    loop = [];
+    while(loop.length > 0) loop.pop(); // ループスタックをリセット
     flg = 0; // ループフラグをリセット
+    flgWhileRest = 0; // while文変換制限フラグをリセット
 });

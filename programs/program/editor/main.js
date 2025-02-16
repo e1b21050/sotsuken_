@@ -10,17 +10,17 @@ const pushShow_step = document.getElementById("show_step");
 const pushShow_loop = document.getElementById("show_loop");
 const pushHelp = document.getElementById("help_button");
 
-let currentStep = 0;
-let codeLines = [];
+let currentStep = 0; // 現在のステップ
+let codeLines = []; // コードを行ごとに分割
 
-let k = 0;
-let k_loop = 0;
-let lineNoConvertCode = 0;
-let flg_loop = 0;
-let loop = [];
-let loopcnt_s = 0;
-let pushStepCnt = 0;
-let pushLoopCnt = 0;
+let k = 0; // ループ回数
+let k_loop = 0; // ループ回数（ループ実行用）
+let lineNoConvertCode = 0; // 変換コードの行
+let flg_loop = 0; // ループフラグ
+let loop = []; // ループのコード
+let loopcnt_s = 0; // 繰り返し回数
+let pushStepCnt = 0; // ステップ実行ボタンを押した回数
+let pushLoopCnt = 0; // ループ実行ボタンを押した回数
 
 async function loadPyodideAndPackages() {
     let pyodide = await loadPyodide();
@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById("prev_step").addEventListener("click", function () {
         if (currentStep > 0) {
             removeHighlight(currentStep); // 現在のハイライトを削除
+            while(loop.length > 0){
+                loop.pop();
+            }
             currentStep--;
             document.getElementById("output").innerHTML = ""; // 出力をクリア
             exe_step(codeLines, currentStep); // 前のステップを実行
@@ -89,21 +92,21 @@ document.addEventListener('DOMContentLoaded', (event) => {
         lineNoConvertCode = getCode.split('\n').length + 2; // 変換コードの行
         highlightLine(k_loop); // 現在の行をハイライト
         if(flgWhile === 1){//while文がある場合
-            for(let i = 0; i < l - 1; i++){
+            for(let i = 0; i < indentDownNumOfLines - 1; i++){
                 highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
                 lineNoConvertCode++;
             }
         }else if(flgDoubleForLoop === 1){//二重ループがある場合
             for(let i = 0; i < l + 1; i++){
                 highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
-                if(i < l ){
+                if(i < indentDownNumOfLines){
                     lineNoConvertCode++;
                 }
             }
         }else{ //一重for文がある場合
-            for(let i = 0; i < l; i++){
+            for(let i = 0; i < indentDownNumOfLines; i++){
                 highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
-                if(i < l - 1){
+                if(i < indentDownNumOfLines - 1){
                     lineNoConvertCode++;
                 }
             }
@@ -115,34 +118,56 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 
+    /*初めの行（1,2行目）に戻るときにバグあり */
     pushRun_loop_prev.addEventListener("click", function () {
-        if(k > 0 ){
+        if(k > 0){
             removeHighlight(lineNoConvertCode); // 変換コードのハイライトを削除
+            if(flgWhile === 1){//while文がある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop > indentDownNumOfLines){
+                    k_loop--;
+                }else{
+                    k_loop += indentBlock.length - 1;
+                }
+            }else if(flgDoubleForLoop === 1){//二重ループがある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop > indentDownNumOfLines){
+                    k_loop--;
+                }else{
+                    k_loop += indentBlock.length - 2;
+                }
+            }else{ //一重for文がある場合
+                removeHighlight(k_loop); // 変換コードのハイライトを削除
+                if(k_loop > indentDownNumOfLines){
+                    k_loop--;
+                }else{
+                    k_loop += indentBlock.length - 2;
+                }
+            }
             lineNoConvertCode--;
-            removeHighlight(k_loop); // 現在のハイライトを削除
-            k_loop--;
             k--;
-            if(k < loop.length - 1 && loop[k].includes("print(")){
+            if(k < loop.length - 1){
                 exe_loop(loop[k]);
             }
         }else if(k === 0){
             lineNoConvertCode--;
+            removeHighlight(k_loop);
             if(flgWhile === 1){//while文がある場合
-                for(let i = 0; i < l - 1; i++){
+                for(let i = 0; i < indentDownNumOfLines - 1; i++){
                     highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
                     lineNoConvertCode++;
                 }
             }else if(flgDoubleForLoop === 1){//二重ループがある場合
-                for(let i = 0; i < l + 1; i++){
+                for(let i = 0; i < indentDownNumOfLines + 1; i++){
                     highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
-                    if(i < l ){
+                    if(i < indentDownNumOfLines){
                         lineNoConvertCode++;
                     }
                 }
             }else{
-                for(let i = 0; i < l; i++){//一重for文がある場合
+                for(let i = 0; i < indentDownNumOfLines; i++){//一重for文がある場合
                     highlightLine(lineNoConvertCode); // 変換コードの行をハイライト
-                    if(i < l - 1){
+                    if(i < indentDownNumOfLines - 1){
                         lineNoConvertCode++;
                     }
                 }
@@ -154,28 +179,28 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if(k < loop.length - 1){
             if(k === 0){
                 removeHighlight(k);
-                for(let i = lineNoConvertCode; i >= lineNoConvertCode - l; i--){
+                for(let i = lineNoConvertCode; i >= lineNoConvertCode - indentDownNumOfLines; i--){
                     removeHighlight(i); // 変換コードのハイライトを削除
                 }
             }
             removeHighlight(lineNoConvertCode); // 変換コードのハイライト
             if(flgWhile === 1){//while文がある場合
                 removeHighlight(k_loop); // 変換コードのハイライトを削除
-                if(k_loop  <= l){
+                if(k_loop  <= indentDownNumOfLines){
                     k_loop++;
                 }else{
                     k_loop -= indentBlock.length - 1;
                 }
             }else if(flgDoubleForLoop === 1){//二重ループがある場合
                 removeHighlight(k_loop); // 変換コードのハイライトを削除
-                if(k_loop  <= l){
+                if(k_loop  <= indentDownNumOfLines){
                     k_loop++;
                 }else{
                     k_loop -= indentBlock.length - 2;
                 }
             }else{ //一重for文がある場合
                 removeHighlight(k_loop); // 変換コードのハイライトを削除
-                if(k_loop  < l){
+                if(k_loop  < indentDownNumOfLines){
                     k_loop++;
                 }else{
                     k_loop -= indentBlock.length - 2;
@@ -183,7 +208,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             }
             lineNoConvertCode++;
             k++;
-            if(k < loop.length - 1 ){
+            if(k < loop.length - 1){
                 exe_loop(loop[k]);
             }
         }else{
