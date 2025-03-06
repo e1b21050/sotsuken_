@@ -1,3 +1,4 @@
+/* タイトルの配置 */
 #title {
     font-size: 4em;
     font-weight: bold;
@@ -11,8 +12,9 @@
     transform: translate(-50%, -50%);
 }
 
+/* editorボタンの配置 */
 #moveEditor {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -29,15 +31,16 @@
     left: 45%;
     box-shadow: 5px 5px 0px #1567C3;
 }
-
+/* ボタンを押した時のスタイル */
 #moveEditor:hover {
     background-color: #45a049;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* mondaiボタンの配置 */
 #moveMondai {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -54,13 +57,14 @@
     left:45%;
     box-shadow: 5px 5px 0px #1567C3;
 }
-
+/* ボタンを押した時のスタイル */
 #moveMondai:hover {
     background-color: #45a049;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* ヘルプボタンの配置 */
 #helpTitle {
     border-radius: 50%;
     position: absolute;
@@ -73,6 +77,7 @@
     font-size: 18px;
 }
 
+/* ヘルプテキストの配置 */
 #helpTextTitle {
     position: absolute;
     top: 0;
@@ -86,6 +91,7 @@
     background-color: #ddd;
 }
 
+/* 全体をリセット */
 body {
     background: linear-gradient(to right, #f5f4f3, #585552);
     height: 100vh;

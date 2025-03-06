@@ -6,10 +6,14 @@
     <link rel="stylesheet" href="../css/style-editor.css">
 </head>
 <body>
+    <!-- 遷移ボタン -->
     <button id="mondai" onclick="location.href='mondai.html'">問題へ</button>
     <button id="title" onclick="location.href='index.html'">タイトルへ</button>
+    <!-- editor部分 -->
     <div id="editor"></div>
+    <!-- runボタン -->
     <button id="run">run</button>
+    <!-- 繰り返し処理上限回数部分-->
     <p id="selectLoopCnt">繰り返しの上限回数を選択</p>
     <select id="loopCnt">
         <option value="50">50</option>
@@ -17,23 +21,25 @@
         <option value="150">150</option>
         <option value="200">200</option>
     </select>
+    <!-- compileボタン -->
     <button id="compile">compile</button>
+    <!-- resetボタン -->
     <button id="reset">reset</button>
-    
+    <!-- 構文解析ログ部分 -->
     <div id="result">
         <p>＜構文解析ログ＞</p>
     </div>
-
+    <!-- 表示切り替えボタン群 -->
     <div id="controls">
         <button id="show_execute">一括実行</button>
         <button id="show_step">ステップ実行</button>
         <button id="show_loop">ループ実行</button>
     </div>
-    
+    <!-- 一括実行表示部分 -->
     <div id="execute">
         <p>＜実行結果＞</p>
     </div>
-
+    <!-- 変数表(一括実行) -->
     <div id="variable_table">
         <p>＜変数表＞</p>
         <table id="variables_table">
@@ -45,11 +51,11 @@
             </tbody>
         </table>
     </div>
-
+    <!-- ステップ実行表示部分 -->
     <div id="output" class="hidden">
         <p>＜ステップ実行＞</p>
     </div>
-    
+    <!-- 変数表(ステップ) -->
     <div id="variable_table_output" class="hidden">
         <p>＜変数表-ステップ＞</p>
         <table id="variables_table_output">
@@ -61,11 +67,11 @@
             </tbody>
         </table>
     </div>
-
+    <!-- ループ実行表示部分 -->
     <div id="loop" class="hidden">
         <p>＜ループ実行＞</p>
     </div>
-
+    <!-- 変数表(ループ) -->
     <div id="variable_table_loop" class="hidden">
         <p>＜変数表-ループ＞</p>
         <table id="variables_table_loop">
@@ -77,15 +83,17 @@
             </tbody>
         </table>
     </div>
-
+    <!-- stepボタン群 -->
     <button id="run_step" class="hidden">step</button>
     <button id="prev_step" class="hidden">&lt;</button>
     <button id="next_step" class="hidden">&gt;</button>
+    <!-- loopボタン群 -->
     <button id="step_loop" class="hidden">loop</button>
     <button id="prev_loop" class="hidden">&lt;</button>
     <button id="next_loop" class="hidden">&gt;</button>
-
+    <!-- ヘルプボタン -->
     <button id="help_button">？</button>
+    <!-- ヘルプテキスト -->
     <div id="help_text" class="modal" style="display:none;">
         <b>使い方</b><br>
         「×」ボタンを押すと、ヘルプが閉じます<br>

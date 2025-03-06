@@ -13,27 +13,30 @@ const indentBlockTmp = []; // インデントブロックの一時保存
 
 //コードブロックとして変換する関数
 function getCodeBlock(lines, index) {
-    let codeBlock = "";
-    let currentIndentLevel = getIndentLevel(lines[index]);
+    let codeBlock = ""; // コードブロック
+    let currentIndentLevel = getIndentLevel(lines[index]); // 現在のインデントレベル
     
     // `if` 文 or `elif` 文 or `else` 文の変換
     if (lines[index].trim().startsWith("if ") || lines[index].trim().startsWith("elif ") || lines[index].trim().startsWith("else")) {
         //インデントが同じになるまでコードを追加
-        let i = index + 1;
-        let codeBlockNest = "";
+        let i = index + 1; // インデントが同じ行のインデックス
+        let codeBlockNest = ""; // ネストされたコードブロック
         codeBlockNest = lines[index].replace(/^\s+/, '');  // `if` 文 or `elif` 文 or `else` 文
-        if(getIndentLevel(lines[index]) === 0){
+        if(getIndentLevel(lines[index]) === 0){ // インデントレベル(深さ)が0の時
             while (i < lines.length && getIndentLevel(lines[i]) > currentIndentLevel) {
+                // インデントレベル(深さ)が現在のインデントレベルより大きい間codeBlockに追加
                 let code = lines[i];
                 if(getIndentLevel(lines[i]) > getIndentLevel(lines[i-1])){
                         codeBlock += codeBlockTmp + codeBlockNest + ' ' + code.replace(/^\s+/, '') + "\n";
                 }else{
                     codeBlock += code.replace(/^\s+/, '') + "\n";
                 }
+                // 追加内容を保持
                 codeBlockTmp = codeBlock;
                 i++;
             }
         }else{
+            // インデントレベル(深さ)が0以外の時,保持内容を追加
             codeBlock = codeBlockTmp;
         }
     }
@@ -292,7 +295,7 @@ function getCodeBlock(lines, index) {
             //console.log(loop);
         } else if (iterator_d1 !== null && iterator_d2 !== null) {
             let j = 0;
-            // iterator_d1~4を数字に変換
+            // iterator_d1~2を数字に変換
             iterator_d1 = Number(iterator_d1);
             iterator_d2 = Number(iterator_d2);
             for (j = iterator_d1; j < iterator_d2; j++) {
@@ -310,7 +313,7 @@ function getCodeBlock(lines, index) {
             }
             codeBlockTmp = codeBlock;
         } else if (iterator_t1 !== null && iterator_t2 !== null && iterator_t3 !== null) {
-            // iterator_t1~7を数字に変換
+            // iterator_t1~3を数字に変換
             iterator_t1 = Number(iterator_t1);
             iterator_t2 = Number(iterator_t2);
             iterator_t3 = Number(iterator_t3);

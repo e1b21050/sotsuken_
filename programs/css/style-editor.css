@@ -18,6 +18,7 @@ body {
     border: 2px solid #ccc;
 }
 
+/* compileボタンの配置 */
 #compile {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -32,6 +33,7 @@ body {
     font-size: 18px;
 }
 
+/* runボタンの配置 */
 #run {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -46,6 +48,7 @@ body {
     font-size: 18px;
 }
 
+/* loopCnt(回数)の配置 */
 #selectLoopCnt {
     position: fixed;
     top: 4.8%;
@@ -57,6 +60,7 @@ body {
     font-size: 18px;
 }
 
+/* loopCnt(表記)の配置 */
 #loopCnt {
     position: fixed;
     top: 6%;
@@ -68,6 +72,7 @@ body {
     font-size: 18px;
 }
 
+/* resetボタンの配置 */
 #reset {
     border-radius: 0 0 100% 100%;
     position: fixed;
@@ -93,7 +98,7 @@ body {
     font-size: 18px;
 }
 
-
+/* step実行結果の配置 */
 #output {
     position: fixed;
     bottom: 49.6%;
@@ -106,6 +111,7 @@ body {
     font-size: 18px;
 }
 
+/* 変数テーブル(step実行用)の配置 */
 #variable_table_output {
     position: fixed;
     bottom: 5%;
@@ -117,6 +123,7 @@ body {
     font-size: 18px;
 }
 
+/* stepボタンの配置 */
 #run_step {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -131,6 +138,7 @@ body {
     font-size: 18px;
 }
 
+/* [<](step実行用)ボタンの配置 */
 #prev_step {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -145,6 +153,7 @@ body {
     font-size: 18px;
 }
 
+/* [>](step実行用)ボタンの配置 */
 #next_step {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -159,6 +168,7 @@ body {
     font-size: 18px;
 }
 
+/* loop実行結果の配置 */
 #loop {
     position: fixed;
     bottom: 49.6%;
@@ -171,6 +181,7 @@ body {
     font-size: 18px;
 }
 
+/* 変数テーブル(loop実行用)の配置 */
 #variable_table_loop {
     position: fixed;
     bottom: 5%;
@@ -182,6 +193,7 @@ body {
     font-size: 18px;
 }
 
+/* loopボタンの配置 */
 #step_loop {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -196,6 +208,7 @@ body {
     font-size:18px;
 }
 
+/* [<](loop実行用)ボタンの配置 */
 #prev_loop {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -210,6 +223,7 @@ body {
     font-size: 18px;
 }
 
+/* [>](loop実行用)ボタンの配置 */
 #next_loop {
     border-radius: 100% 100% 0 0;
     position: fixed;
@@ -224,6 +238,7 @@ body {
     font-size: 18px;
 }
 
+/* 一括実行結果の配置 */
 #execute {
     position: fixed;
     bottom : 49.6%;
@@ -236,6 +251,7 @@ body {
     font-size: 18px;
 }
 
+/* 変数テーブル(一括実行用)の配置 */
 #variable_table {
     position: fixed;
     bottom : 5%;
@@ -247,6 +263,8 @@ body {
     font-size: 18px;
 }
 
+/* 変数表用のスタイル */
+/* 一括実行用 */
 #variables_table {
     width: 100%;
     border-collapse: collapse;
@@ -257,7 +275,7 @@ body {
     text-align: left;
     border: 4px solid #ddd;
 }
-
+/* step実行用 */
 #variables_table_output {
     width: 100%;
     border-collapse: collapse;
@@ -268,7 +286,7 @@ body {
     text-align: left;
     border: 4px solid #ddd;
 }
-
+/* loop実行用 */
 #variables_table_loop {
     width: 100%;
     border-collapse: collapse;
@@ -280,14 +298,17 @@ body {
     border: 4px solid #ddd;
 }
 
+/* ハイライト用のスタイル */
 .highlight-line {
     background-color: rgb(255, 81, 0) !important;
 }
 
+/* hiddenにする */
 .hidden {
     display: none;
 }
 
+/* 一括実行表示ボタンの配置 */
 #show_execute {
     border-radius: 0 0 100% 100%;
     position: fixed;
@@ -302,6 +323,7 @@ body {
     font-size: 18px;
 }
 
+/* step実行表示ボタンの配置 */
 #show_step {
     border-radius: 0 0 100% 100%;
     position: fixed;
@@ -316,6 +338,7 @@ body {
     font-size: 18px;
 }
 
+/* loop実行表示ボタンの配置 */
 #show_loop {
     border-radius: 0 0 100% 100%;
     position: fixed;
@@ -330,8 +353,8 @@ body {
     font-size:18px;
 }
 
+/* ヘルプボタンの配置 */
 #help_button {
-    /*丸くしたい場合*/
     border-radius: 50%;
     position: fixed;
     top: 10%;
@@ -343,6 +366,7 @@ body {
     font-size: 18px;
 }
 
+/* ヘルプテキストの配置 */
 #help_text {
     position: fixed;
     top: 0;
@@ -356,8 +380,9 @@ body {
     background-color: #ddd;
 }
 
+/* mondaiボタンの配置 */
 #mondai{
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -373,15 +398,16 @@ body {
     left: 0;
     box-shadow: 5px 5px 0px #1567C3;
 }
-
+/* ボタンを押した時のスタイル */
 #mondai:hover {
     background-color: #45a049;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* titleボタンの配置 */
 #title{
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -398,6 +424,7 @@ body {
     box-shadow: 5px 5px 0px #1567C3;
 }
 
+/* ボタンを押した時のスタイル */
 #title:hover {
     background-color: #45a049;
     box-shadow: unset;

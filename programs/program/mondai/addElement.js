@@ -38,6 +38,7 @@ function getVariables(code, variableNamesInput) {
                     variableNamesInsert.push(ValueOrName);
                 }
             }
+        // 空行の減点
             if(cntEmptyLine > 1 && line !== ''){
                 endEmptyline = lineNumberScoring - 1;
                 deductionPointOfEmptyLine++;

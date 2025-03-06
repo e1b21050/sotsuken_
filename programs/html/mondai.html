@@ -6,9 +6,12 @@
     <link rel="stylesheet" href="../css/style-mondai.css">
 </head>
 <body>
+    <!-- 遷移ボタン -->
     <button id="goEditor" onclick="location.href='editor.html'">エディターへ</button>
     <button id="title" onclick="location.href='index.html'">タイトルへ</button>
+    <!-- ヘルプモーダルを表示するボタン -->
     <button id="helpMondai">？</button>
+    <!-- ヘルプモーダルの内容 -->
     <div id="helpMondaiText" class="modal" style="display:none;">
         <b>説明</b><br>
         問題を解いて採点するページです。<br>
@@ -25,19 +28,23 @@
         コーディング規約はPEP8を一部参考にしています。<br>
         ※問題について<br>
         各問題にAtCoderでの問題番号を表示しています。<br>
-        問題は「問題一覧」下のボタンを押すことで表示されます。<br>
-        各問題には解答例が用意されています。<br>
-        解答例は「解答例一覧」下のボタンを押すことで表示されます。<br>
-        あくまでも解答例は一例であり、他にも正解がありえます。<br>
     </div>
+    <!-- エディターの表示部分 -->
     <div id="editor"></div>
+    <!-- 問題一覧の表示部分 -->
     <div id="mondai">＜問題一覧＞</div>
+    <!-- 解答例一覧の表示部分 -->
     <div id="answer">＜解答例一覧＞</div>
+    <!-- 問題を選択するボタン -->
     <button id="selectMondai">問題を選択</button>
+    <!-- 採点を行うボタン -->
     <button id="submit">採点する</button>
+    <!-- 採点結果をリセットするボタン -->
     <button id="reset">リセット</button>
+    <!-- 採点結果の表示部分 -->
     <div id="result">＜結果＞</div>
 
+    <!-- 問題選択モーダル -->
     <div id="mondaiSelector" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>採点する問題を選択してください</h2>
