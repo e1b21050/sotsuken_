@@ -18,6 +18,7 @@ body {
     border: 2px solid #ccc;
 }
 
+/* 問題文の配置 */
 #mondai {
     position: fixed;
     top: 6%;
@@ -29,6 +30,7 @@ body {
     font-size: 18px;
 }
 
+/* 解答の配置 */
 #answer {
     position: fixed;
     top: 66.5%;
@@ -40,55 +42,34 @@ body {
     font-size: 18px;
 }
 
-#help_button {
-    /*丸くしたい場合*/
-    border-radius: 50%;
-    position: fixed;
-    top: 29.5%;
-    right: 0;
-    width: 5%;
-    height: 5%;
-    border: 4px solid #0e0d0e;
-    overflow-y: auto;
-    font-size: 18px;
-}
-
-#help_text {
-    position: fixed;
-    top: 0;
-    right: 5%;
-    width: 60%;
-    height: 75%;
-    border: 4px solid #0e0d0e;
-    overflow-y: auto;
-    font-size: 18px;
-    display: none;
-    background-color: #ddd;
-}
-
+/* 問題文の表示リンク */
 .toggle-btn {
     color: blue;
     cursor: pointer;
     text-decoration: underline;
 }
 
+/* 問題文の表示テキスト */
 .problem-text {
     margin-left: 10px;
 }
 
+/* 解答の表示リンク */
 .toggle-btn_s{
     color: blue;
     cursor: pointer;
     text-decoration: underline;
 }
 
+/* 解答の表示テキスト */
 .answer-text {
     margin-left: 10px;
     padding-left: 20px;
 }
 
+/* titleボタンの配置 */
 #title{
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -104,13 +85,14 @@ body {
     left: 17%;
     box-shadow: 5px 5px 0px #1567C3;
 }
-
+/* ボタンを押した時のスタイル */
 #title:hover {
     background-color: #45a049;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* editorボタンの配置 */
 #goEditor{
     background-color: #4CAF50; /* Green */
     border: none;
@@ -129,12 +111,14 @@ body {
     box-shadow: 5px 5px 0px #1567C3;
 }
 
+/* ボタンを押した時のスタイル */
 #goEditor:hover {
     background-color: #45a049;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* helpボタンの配置 */
 #helpMondai{
     border-radius: 50%;
     position: absolute;
@@ -147,6 +131,7 @@ body {
     font-size: 18px;
 }
 
+/* helpテキストの配置 */
 #helpMondaiText{
     position: absolute;
     top: 5.5%;
@@ -161,6 +146,7 @@ body {
     z-index: 1;/*最前に表示したいため指定（基準値が0のため）*/
 }
 
+/* mondai選択ボタンの配置 */
 #selectMondai{
     background-color: #f44336; /* Red */
     border: none;
@@ -179,15 +165,15 @@ body {
     right: 33.6%;
     box-shadow: 5px 5px 0px #1567C3;
 }
-
+/* ボタンを押した時のスタイル */
 #selectMondai:hover {
     background-color: #da190b;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
-
+/* 採点ボタンの配置 */
 #submit{
-    background-color: #f44336; /* Red */
+    background-color: #f44336;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -204,13 +190,14 @@ body {
     right: 20%;
     box-shadow: 5px 5px 0px #1566c3;
 }
-
+/* ボタンを押した時のスタイル */
 #submit:hover {
     background-color: #da190b;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* resetボタンの配置 */
 #reset{
     background-color: #f44336; /* Red */
     border: none;
@@ -229,13 +216,14 @@ body {
     right: 6.4%;
     box-shadow: 5px 5px 0px #1566c3;
 }
-
+/* ボタンを押した時のスタイル */
 #reset:hover {
     background-color: #da190b;
     box-shadow: unset;
     transform: translate(4px,4px);
 }
 
+/* 採点結果の配置 */
 #result{
     position: fixed;
     bottom: 3.2%;
@@ -247,6 +235,7 @@ body {
     font-size: 18px;
 }
 
+/* モーダルのスタイル */
 .modal {
     position: fixed;
     z-index: 1000;
